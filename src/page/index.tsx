@@ -20,7 +20,7 @@ const menu = [
     },
     {
         title: 'GitHub source',
-        href: 'https://github.com/EasyWebApp/scaffold'
+        href: 'https://github.com/kaiyuanshe/PWA'
     }
 ];
 

@@ -1,22 +1,25 @@
 ![](src/image/WebCell-0.png)
 
-# WebCell scaffold
+# KaiYuanShe PWA
 
-App Project scaffold of **WebCell** v2
+[开源社][1]官方网站的[渐进式 Web 应用][2]
 
-https://web-cell.dev/scaffold/
+[![NPM Dependency](https://david-dm.org/kaiyuanshe/PWA.svg)][3]
+[![CI & CD](https://github.com/kaiyuanshe/PWA/workflows/CI%20&%20CD/badge.svg)][4]
 
-[![NPM Dependency](https://david-dm.org/EasyWebApp/scaffold.svg)][1]
-[![CI & CD](https://github.com/EasyWebApp/scaffold/workflows/API%20Document/badge.svg?branch=master)][2]
+## 重要链接
+
+-   开发看板：https://github.com/kaiyuanshe/PWA/projects/1?fullscreen=true
+-   后端 API：https://github.com/kaiyuanshe/service
 
 ## Technology stack
 
--   Language: [TypeScript v4][3]
--   Component engine: [WebCell v2][4]
--   Component suite: [BootStrap v4][5]
--   PWA framework: [Workbox v4][6]
--   Package bundler: [Parcel v1][7]
--   CI / CD: GitHub [Actions][8] + [Pages][9]
+-   Language: [TypeScript v4][5]
+-   Component engine: [WebCell v2][6]
+-   Component suite: [BootStrap v4][7]
+-   PWA framework: [Workbox v4][8]
+-   Package bundler: [Parcel v1][9]
+-   CI / CD: GitHub [Actions][10] + [Pages][11]
 
 ## Development
 
@@ -32,12 +35,14 @@ npm start
 npm run build
 ```
 
-[1]: https://david-dm.org/EasyWebApp/scaffold
-[2]: https://github.com/EasyWebApp/scaffold/actions
-[3]: https://typescriptlang.org
-[4]: https://web-cell.dev/
-[5]: https://getbootstrap.com
-[6]: https://developers.google.com/web/tools/workbox
-[7]: https://parceljs.org
-[8]: https://github.com/features/actions
-[9]: https://pages.github.com/
+[1]: https://kaiyuanshe.cn/
+[2]: https://developer.mozilla.org/zh-CN/docs/Web/Progressive_web_apps
+[3]: https://david-dm.org/kaiyuanshe/PWA
+[4]: https://github.com/kaiyuanshe/PWA/actions
+[5]: https://typescriptlang.org/
+[6]: https://web-cell.dev/
+[7]: https://getbootstrap.com/
+[8]: https://developers.google.com/web/tools/workbox
+[9]: https://parceljs.org/
+[10]: https://github.com/features/actions
+[11]: https://pages.github.com/
