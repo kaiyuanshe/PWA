@@ -2,7 +2,10 @@ import { component, mixin, createCell } from 'web-cell';
 import { ButtonGroup } from 'boot-cell/source/Form/ButtonGroup';
 import { Button } from 'boot-cell/source/Form/Button';
 import { Icon } from 'boot-cell/source/Reminder/Icon';
+
 import style from './MainShowRoom.module.less';
+import { Partner } from '../component/Partner';
+import { service } from '../model/service';
 
 const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
 
@@ -50,17 +53,27 @@ export class MainShowRoom extends mixin() {
                     }}
                 >
                     <div style={{ float: 'left', marginLeft: '5px' }}>
-                        <Icon name="arrow-left-circle" width={32} />
-                        <p
-                            style={{
-                                display: 'inline',
-                                marginTop: '13',
-                                marginLeft: '5',
-                                marginBottom: '0'
-                            }}
-                        >
-                            回 到 首 页
-                        </p>
+                        <div style={{ display: 'block', float: 'left' }}>
+                            <Icon name="arrow-left-circle" width={32} />
+                            <p
+                                style={{
+                                    display: 'inline',
+                                    marginTop: '13',
+                                    marginLeft: '5',
+                                    marginBottom: '0'
+                                }}
+                            >
+                                回 到 首 页
+                            </p>
+                        </div>
+
+                        <div className={style.logos}>
+                            <Partner />
+                            <Partner />
+                            <Partner />
+                            <Partner />
+                            <Partner />
+                        </div>
                     </div>
                 </div>
             </div>
