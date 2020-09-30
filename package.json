@@ -36,6 +36,8 @@
         "koajax": "^0.6.2",
         "less": "^3.12.2",
         "lint-staged": "^10.4.0",
+        "mobx": "^5.15.7",
+        "mobx-web-cell": "^0.3.2",
         "parcel-bundler": "^1.12.4",
         "postcss-modules": "^3.2.2",
         "prettier": "^2.1.2",
