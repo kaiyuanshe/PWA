@@ -36,11 +36,16 @@ export class Partner extends mixin() {
             upperTagstyle = style.sponsorTag;
             tag = '品牌赞助商';
         }
+
         return (
             <div className={framestyle}>
                 <div className={upperTagstyle}>{tag}</div>
                 <h5 style={{ fontSize: '16px' }}>{organization.slogan}</h5>
-                <Embed is="iframe" src={organization.video.url} />
+                {organization.video ? (
+                    <Embed is="iframe" src={organization.video.url} />
+                ) : (
+                    <div />
+                )}
                 <p style={{ fontSize: '13px' }}>{organization.summary}</p>
                 <Image
                     className={style.logoTag}

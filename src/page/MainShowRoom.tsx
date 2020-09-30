@@ -5,7 +5,6 @@ import { Icon } from 'boot-cell/source/Reminder/Icon';
 
 import style from './MainShowRoom.module.less';
 import { Partner } from '../component/Partner';
-import { service } from '../model/service';
 
 const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
 
@@ -68,11 +67,11 @@ export class MainShowRoom extends mixin() {
                         </div>
 
                         <div className={style.logos}>
-                            <Partner />
-                            <Partner />
-                            <Partner />
-                            <Partner />
-                            <Partner />
+                            <Partner id="1" />
+                            <Partner id="1" />
+                            <Partner id="1" />
+                            <Partner id="1" />
+                            <Partner id="1" />
                         </div>
                     </div>
                 </div>
