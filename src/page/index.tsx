@@ -20,6 +20,10 @@ const menu = [
         href: 'clock'
     },
     {
+        title: '主展厅',
+        href: 'showroom'
+    },
+    {
         title: 'GitHub source',
         href: 'https://github.com/kaiyuanshe/PWA'
     }
@@ -44,7 +48,7 @@ export function PageFrame() {
             </NavBar>
 
             <CellRouter
-                className="container"
+                // className="container"
                 style={{ minHeight: '60vh' }}
                 history={history}
                 routes={[

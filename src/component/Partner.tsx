@@ -4,7 +4,7 @@ import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
 
 import style from './Partner.module.less';
-import { partnership } from '../model';
+import { Partnership } from '../model';
 
 @observer
 @component({
@@ -14,33 +14,47 @@ import { partnership } from '../model';
 export class Partner extends mixin() {
     @attribute
     @watch
-    id = '';
-
-    connectedCallback() {
-        partnership.getOne(this.id);
-
-        super.connectedCallback();
-    }
+    partnership: Partnership;
 
     render() {
-        const { type, organization } = partnership.current;
+        const organization = this.partnership.organization,
+            type = this.partnership.type,
+            level = this.partnership.level;
 
         let framestyle, upperTagstyle, tag;
-        if (type === 'community') {
-            framestyle = style.communityframe;
-            upperTagstyle = style.communityTag;
-            tag = '首席独家赞助商';
+        switch (type) {
+            case 'community':
+                tag = '社区合作伙伴';
+                break;
+            case 'media':
+                tag = '直播媒体合作伙伴';
+                break;
+            default:
+                break;
         }
-        if (type === 'sponsor') {
-            framestyle = style.sponsorframe;
-            upperTagstyle = style.sponsorTag;
-            tag = '品牌赞助商';
+        switch (level) {
+            case 1:
+                framestyle = style.frame_1;
+                upperTagstyle = style.tag_1;
+                break;
+            case 2:
+                framestyle = style.frame_2;
+                upperTagstyle = style.tag_2;
+                break;
+            default:
+                break;
         }
 
         return (
             <div className={framestyle}>
                 <div className={upperTagstyle}>{tag}</div>
-                <h5 style={{ fontSize: '16px' }}>{organization.slogan}</h5>
+                {organization.slogan ? (
+                    <h5 style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        {organization.slogan}
+                    </h5>
+                ) : (
+                    <div />
+                )}
                 {organization.video ? (
                     <Embed is="iframe" src={organization.video.url} />
                 ) : (

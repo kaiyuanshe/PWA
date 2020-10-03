@@ -1,77 +1,73 @@
-import { component, mixin, createCell } from 'web-cell';
+import { component, mixin, createCell, watch, attribute } from 'web-cell';
+import { observer } from 'mobx-web-cell';
 import { ButtonGroup } from 'boot-cell/source/Form/ButtonGroup';
 import { Button } from 'boot-cell/source/Form/Button';
-import { Icon } from 'boot-cell/source/Reminder/Icon';
 
 import style from './MainShowRoom.module.less';
 import { Partner } from '../component/Partner';
+import { activity, partnership } from '../model';
 
 const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
 
+@observer
 @component({
     tagName: 'main-playroom',
     renderTarget: 'children'
 })
 export class MainShowRoom extends mixin() {
+    @attribute
+    @watch
+    id = '';
+
+    partner_info = [];
+
+    connectedCallback() {
+        this.id = '1';
+        activity.getOne(this.id);
+        partnership.getAll();
+        super.connectedCallback();
+    }
+
     render() {
+        const { name, slogan } = activity.current;
+        let partners = [];
+        partnership.all
+            .filter(p => p.activity.id == this.id)
+            .forEach(p => partners.push(<Partner partnership={p} />));
+
         return (
             <div>
                 <div className={style.ground}>
-                    <h2>DevOpsDays Online Forum</h2>
-                    <h4 style={{ marginTop: '20', marginBottom: '20' }}>
-                        [2020 DevOpsDays 在线峰会]
-                    </h4>
-                    <iframe
-                        src="//player.bilibili.com/player.html?aid=754280090&bvid=BV1Dk4y117oW&cid=226560058&page=1"
-                        scrolling="no"
-                        border="0"
-                        frameborder="no"
-                        framespacing="0"
-                        allowfullscreen="true"
-                        width="660"
-                        height="330"
-                    />
-                    <div className={style.buttonsTray}>
-                        <ButtonGroup>
-                            {buttons.map(text => (
-                                <Button
-                                    className={style.buttons}
-                                    color="secondary"
-                                >
-                                    {text}
-                                </Button>
-                            ))}
-                        </ButtonGroup>
-                    </div>
-                </div>
-
-                <div
-                    className={style.ground}
-                    style={{
-                        overflow: 'hidden'
-                    }}
-                >
-                    <div style={{ float: 'left', marginLeft: '5px' }}>
-                        <div style={{ display: 'block', float: 'left' }}>
-                            <Icon name="arrow-left-circle" width={32} />
-                            <p
-                                style={{
-                                    display: 'inline',
-                                    marginTop: '13',
-                                    marginLeft: '5',
-                                    marginBottom: '0'
-                                }}
-                            >
-                                回 到 首 页
-                            </p>
+                    <div style={{ maxWidth: '1090', margin: 'auto' }}>
+                        <h2>{name}</h2>
+                        <h4 style={{ marginTop: '20', marginBottom: '20' }}>
+                            {slogan}
+                        </h4>
+                        <iframe
+                            src="//player.bilibili.com/player.html?aid=754280090&bvid=BV1Dk4y117oW&cid=226560058&page=1"
+                            scrolling="no"
+                            border="0"
+                            frameborder="no"
+                            framespacing="0"
+                            allowfullscreen="true"
+                            width="660"
+                            height="330"
+                        />
+                        <div className={style.buttonsTray}>
+                            <ButtonGroup>
+                                {buttons.map(text => (
+                                    <Button
+                                        className={style.buttons}
+                                        color="secondary"
+                                    >
+                                        {text}
+                                    </Button>
+                                ))}
+                            </ButtonGroup>
                         </div>
 
-                        <div className={style.logos}>
-                            <Partner id="1" />
-                            <Partner id="1" />
-                            <Partner id="1" />
-                            <Partner id="1" />
-                            <Partner id="1" />
+                        <div style={{ overflow: 'auto' }}>
+                            <div className={style.logos}>{partners}</div>
                         </div>
                     </div>
                 </div>

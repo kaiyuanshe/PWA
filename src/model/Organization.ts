@@ -3,7 +3,7 @@ import { Editor, MediaData } from './service';
 export interface Organization {
     id: string;
     name: string;
-    slogan: string;
+    slogan?: string;
     logo?: MediaData;
     link: string;
     summary: string;
