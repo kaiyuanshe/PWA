@@ -41,8 +41,10 @@ export class PartnershipModel {
         return (this.current = body);
     }
 
-    async getAll() {
-        const { body } = await service.get<Partnership[]>('partner-ships');
+    async getAllOfOneActivity(id: string) {
+        const { body } = await service.get<Partnership[]>(
+            'partner-ships?_sort=type&activity=' + id
+        );
 
         return (this.all = body);
     }

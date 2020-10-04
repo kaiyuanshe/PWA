@@ -48,7 +48,6 @@ export function PageFrame() {
             </NavBar>
 
             <CellRouter
-                // className="container"
                 style={{ minHeight: '60vh' }}
                 history={history}
                 routes={[
