@@ -8,6 +8,7 @@ import WebCell_0 from '../image/WebCell-0.png';
 
 import { Hello } from './Hello';
 import { CellClock } from './Clock';
+import { MainShowRoom } from './MainShowRoom';
 
 const menu = [
     {
@@ -17,6 +18,10 @@ const menu = [
     {
         title: 'Clock',
         href: 'clock'
+    },
+    {
+        title: '主展厅',
+        href: 'showroom'
     },
     {
         title: 'GitHub source',
@@ -43,10 +48,13 @@ export function PageFrame() {
             </NavBar>
 
             <CellRouter
-                className="container"
                 style={{ minHeight: '60vh' }}
                 history={history}
                 routes={[
+                    {
+                        paths: ['showroom'],
+                        component: MainShowRoom
+                    },
                     {
                         paths: ['clock'],
                         component: CellClock

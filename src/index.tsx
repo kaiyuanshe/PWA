@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime';
 import { auto } from 'browser-unhandled-rejection';
 import { serviceWorkerUpdate } from 'web-utility';
 import { documentReady, render, createCell } from 'web-cell';
