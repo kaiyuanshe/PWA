@@ -7,6 +7,10 @@
     padding-bottom: 30px;
 }
 
+.main-video {
+    height: 90vh;
+}
+
 .buttonsTray {
     background: #d298db;
     margin-top: 10px;
@@ -36,4 +40,43 @@
     margin-top: 30px;
     padding-right: 20px;
     padding-left: 20px;
+}
+
+.frame {
+    height: 100%;
+    border: 2px solid #efdb94;
+    border-radius: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 1rem;
+    position: relative;
+    .tag {
+        background: #efdb94;
+        color: black;
+        backdrop-filter: blur(4px);
+        border-radius: 20px;
+        margin: -12px auto 10px;
+        width: 200px;
+        height: 23px;
+    }
+    .logoTag {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%, 50%);
+        width: 140px;
+        height: 42px;
+        object-fit: contain;
+    }
+    &.VIP {
+        border-color: #fc6100;
+        .tag {
+            background: linear-gradient(
+                    269.98deg,
+                    #eecb12 27.19%,
+                    rgba(255, 255, 255, 0) 56.18%
+                ),
+                #fa7b05;
+        }
+    }
 }

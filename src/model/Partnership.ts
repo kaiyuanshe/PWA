@@ -1,6 +1,6 @@
 import { observable } from 'mobx';
 
-import { Editor, service } from './service';
+import { BaseData, service } from './service';
 import { Organization } from './Organization';
 import { Activity } from './Activity';
 
@@ -14,18 +14,15 @@ export enum PartnershipTypes {
     vendor = 'vendor'
 }
 
-export interface Partnership {
-    id: string;
+export interface Partnership extends BaseData {
     title: string;
-    activity?: Activity;
+    activity: Activity;
     level: number;
     organization: Organization;
-    type: string;
+    type: PartnershipTypes;
     accounts: [];
     verified: boolean;
     default: false;
-    created_by?: Editor;
-    updated_by?: Editor;
 }
 
 export class PartnershipModel {

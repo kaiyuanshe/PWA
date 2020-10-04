@@ -1,13 +1,20 @@
-import { component, mixin, createCell, watch, attribute } from 'web-cell';
+import { component, mixin, watch, attribute, createCell } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import classNames from 'classnames';
+import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { ButtonGroup } from 'boot-cell/source/Form/ButtonGroup';
 import { Button } from 'boot-cell/source/Form/Button';
+import { Embed } from 'boot-cell/source/Media/Embed';
+import { Image } from 'boot-cell/source/Media/Image';
 
 import style from './MainShowRoom.module.less';
-import { Partner } from '../component/Partner';
-import { partnership } from '../model';
+import { PartnershipTypes, Partnership, activity } from '../model';
 
-const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
+const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'],
+    PartnerMap = {
+        [PartnershipTypes.community]: '社区合作伙伴',
+        [PartnershipTypes.media]: '直播媒体合作伙伴'
+    };
 
 @observer
 @component({
@@ -20,31 +27,54 @@ export class MainShowRoom extends mixin() {
     id = '';
 
     connectedCallback() {
-        this.id = '1';
-        partnership.getAllOfOneActivity(this.id);
+        activity.getOne(this.id);
+
         super.connectedCallback();
     }
 
+    renderPartner({
+        organization: { slogan, video, summary, logo },
+        type,
+        level
+    }: Partnership) {
+        return (
+            <div className="col-12 col-sm-6 col-md-3 my-4">
+                <div
+                    className={classNames(style.frame, level > 1 && style.VIP)}
+                >
+                    <div className={style.tag}>{PartnerMap[type]}</div>
+                    {slogan ? (
+                        <h5 style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                            {slogan}
+                        </h5>
+                    ) : (
+                        <div />
+                    )}
+                    {video && <Embed is="iframe" src={video.url} />}
+                    <p style={{ fontSize: '13px' }}>{summary}</p>
+                    <Image className={style.logoTag} thumbnail src={logo.url} />
+                </div>
+            </div>
+        );
+    }
+
     render() {
-        const { name, slogan } = partnership.all[0].activity;
-        const partners = partnership.all.map(p => <Partner partnership={p} />);
+        const {
+            loading,
+            current: { name, slogan, partner_ships }
+        } = activity;
 
         return (
-            <div className={style.ground}>
-                <div style={{ maxWidth: '1090', margin: 'auto' }}>
-                    <h2>{name}</h2>
-                    <h4 style={{ marginTop: '20', marginBottom: '20' }}>
-                        {slogan}
-                    </h4>
-                    <iframe
-                        src="//player.bilibili.com/player.html?aid=754280090&bvid=BV1Dk4y117oW&cid=226560058&page=1"
-                        scrolling="no"
-                        border="0"
-                        frameborder="no"
+            <SpinnerBox className={style.ground} cover={loading}>
+                <div className="container overflow-auto">
+                    <h1 className="mt-5">{name}</h1>
+                    <p className="h4 my-4">{slogan}</p>
+                    <Embed
+                        is="iframe"
+                        className={style['main-video']}
+                        src="//player.bilibili.com/player.html?aid=754280090&amp;bvid=BV1Dk4y117oW&amp;cid=226560058&amp;page=1"
                         framespacing="0"
                         allowfullscreen="true"
-                        width="660"
-                        height="330"
                     />
                     <div className={style.buttonsTray}>
                         <ButtonGroup>
@@ -59,11 +89,11 @@ export class MainShowRoom extends mixin() {
                         </ButtonGroup>
                     </div>
 
-                    <div style={{ overflow: 'auto' }}>
-                        <div className={style.logos}>{partners}</div>
+                    <div className="row mt-5">
+                        {partner_ships?.map(this.renderPartner)}
                     </div>
                 </div>
-            </div>
+            </SpinnerBox>
         );
     }
 }

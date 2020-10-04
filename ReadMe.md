@@ -1,4 +1,4 @@
-![](src/image/WebCell-0.png)
+![](https://kaiyuanshe.cn/image/KaiYuanShe-logo.png)
 
 # KaiYuanShe PWA
 

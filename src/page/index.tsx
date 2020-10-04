@@ -4,27 +4,15 @@ import { NavBar } from 'boot-cell/source/Navigator/NavBar';
 import { NavLink } from 'boot-cell/source/Navigator/Nav';
 
 import { history } from '../model';
-import WebCell_0 from '../image/WebCell-0.png';
-
-import { Hello } from './Hello';
-import { CellClock } from './Clock';
 import { MainShowRoom } from './MainShowRoom';
 
 const menu = [
     {
-        title: 'Hello',
-        href: 'hello'
+        title: '中国开源年会',
+        href: 'showroom?id=1'
     },
     {
-        title: 'Clock',
-        href: 'clock'
-    },
-    {
-        title: '主展厅',
-        href: 'showroom'
-    },
-    {
-        title: 'GitHub source',
+        title: '开放源码',
         href: 'https://github.com/kaiyuanshe/PWA'
     }
 ];
@@ -37,7 +25,7 @@ export function PageFrame() {
                 brand={
                     <img
                         alt="WebCell scaffold"
-                        src={WebCell_0}
+                        src="https://kaiyuanshe.cn/image/KaiYuanShe-logo.png"
                         style={{ width: '2rem' }}
                     />
                 }
@@ -50,20 +38,7 @@ export function PageFrame() {
             <CellRouter
                 style={{ minHeight: '60vh' }}
                 history={history}
-                routes={[
-                    {
-                        paths: ['showroom'],
-                        component: MainShowRoom
-                    },
-                    {
-                        paths: ['clock'],
-                        component: CellClock
-                    },
-                    {
-                        paths: ['hello', ''],
-                        component: Hello
-                    }
-                ]}
+                routes={[{ paths: ['showroom'], component: MainShowRoom }]}
             />
             <footer className="text-center bg-light py-5">
                 Proudly developed with

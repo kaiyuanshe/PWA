@@ -22,12 +22,11 @@
         "browser-unhandled-rejection": "^1.0.2",
         "cell-router": "^2.0.1",
         "classnames": "^2.2.6",
-        "core-js": "^3.6.5",
-        "regenerator-runtime": "^0.13.7",
         "web-cell": "^2.2.0",
         "web-utility": "^1.8.0"
     },
     "devDependencies": {
+        "@types/classnames": "^2.2.10",
         "@typescript-eslint/parser": "^4.2.0",
         "autoprefixer": "^9.8.6",
         "eslint": "^7.9.0",

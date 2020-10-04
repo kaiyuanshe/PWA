@@ -1,10 +1,9 @@
 import { observable } from 'mobx';
 
-import { Editor, MediaData, service } from './service';
+import { BaseData, MediaData, service } from './service';
 import { Partnership } from './Partnership';
 
-export interface Activity {
-    id: string;
+export interface Activity extends BaseData {
     name: string;
     slogan: string;
     banner: MediaData;
@@ -13,19 +12,31 @@ export interface Activity {
     start_time: Date;
     end_time: Date;
     location: string;
-    created_by: Editor;
-    updated_by: Editor;
 }
 
 export class ActivityModel {
     @observable
-    current: Activity = {} as Activity;
+    loading = false;
+
     @observable
-    partnerships: Partnership[];
+    current: Activity = {} as Activity;
 
     async getOne(id: string) {
-        const { body } = await service.get<Activity>('activities/' + id);
+        this.loading = true;
 
-        return (this.current = body);
+        const { body } = await service.get<Partnership[]>(
+            'partner-ships?_sort=level:DESC&activity=' + id
+        );
+        var activity: Activity;
+
+        if (body[0]) {
+            activity = { ...body[0].activity };
+            activity.partner_ships = body;
+        } else
+            activity = (await service.get<Activity>('activities?id=' + id))
+                .body;
+
+        this.loading = false;
+        return (this.current = activity);
     }
 }

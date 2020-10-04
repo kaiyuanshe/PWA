@@ -1,4 +1,3 @@
-import 'core-js/es/string/match-all';
 import { HTTPClient } from 'koajax';
 
 export const service = new HTTPClient({
@@ -6,13 +5,18 @@ export const service = new HTTPClient({
     responseType: 'json'
 });
 
-export interface Editor {
+export interface BaseData {
+    id: number;
+    created_by: User;
+    updated_by: User;
+}
+
+export interface User {
     id: string;
     firstname: string;
     lastname: string;
     username: string;
     email: string;
-    password: string;
     resetPasswordToken: string;
     registrationToken: string;
     isActive: boolean;
@@ -20,8 +24,7 @@ export interface Editor {
     blocked: boolean;
 }
 
-export interface MediaData {
-    id: string;
+export interface MediaData extends BaseData {
     name: string;
     alternativeText: string;
     caption: string;
@@ -37,6 +40,4 @@ export interface MediaData {
     provider: string;
     provider_metadata: [];
     related: string;
-    created_by: string;
-    updated_by: string;
 }

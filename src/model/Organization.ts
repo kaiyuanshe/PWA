@@ -1,7 +1,6 @@
-import { Editor, MediaData } from './service';
+import { BaseData, MediaData } from './service';
 
-export interface Organization {
-    id: string;
+export interface Organization extends BaseData {
     name: string;
     slogan?: string;
     logo?: MediaData;
@@ -9,6 +8,4 @@ export interface Organization {
     summary: string;
     video?: MediaData;
     message_link: string;
-    created_by?: Editor;
-    updated_by?: Editor;
 }

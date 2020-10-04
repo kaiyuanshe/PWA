@@ -12,9 +12,9 @@
   "background_color": "transparent",
   "icons": [
     {
-      "src": "image/WebCell-0.png",
+      "src": "https://kaiyuanshe.cn/image/KaiYuanShe-logo.png",
       "type": "image/png",
-      "sizes": "300x300"
+      "sizes": "337x337"
     }
   ]
 }
