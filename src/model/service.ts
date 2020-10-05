@@ -41,3 +41,8 @@ export interface MediaData extends BaseData {
     provider_metadata: [];
     related: string;
 }
+
+export interface Category extends BaseData {
+    name: string;
+    summary: string;
+}

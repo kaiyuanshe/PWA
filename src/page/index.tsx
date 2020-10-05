@@ -5,6 +5,7 @@ import { NavLink } from 'boot-cell/source/Navigator/Nav';
 
 import { history } from '../model';
 import { MainShowRoom } from './MainShowRoom';
+import { PartnerDetail } from './PartnerDetail';
 
 const menu = [
     {
@@ -38,7 +39,10 @@ export function PageFrame() {
             <CellRouter
                 style={{ minHeight: '60vh' }}
                 history={history}
-                routes={[{ paths: ['showroom'], component: MainShowRoom }]}
+                routes={[
+                    { paths: ['showroom'], component: MainShowRoom },
+                    { paths: ['org?id=2'], component: PartnerDetail }
+                ]}
             />
             <footer className="text-center bg-light py-5">
                 Proudly developed with
