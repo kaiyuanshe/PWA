@@ -1,4 +1,6 @@
-import { observable } from 'mobx';
+import { computed, observable } from 'mobx';
+import { Day, formatDate } from 'web-utility/source/date';
+import { buildURLData } from 'web-utility/source/URL';
 
 import { BaseData, User, MediaData, Category, service } from './service';
 import { Partnership } from './Partnership';
@@ -42,7 +44,23 @@ export class ActivityModel {
     @observable
     currentAgenda: Program[] = [];
 
-    async getOne(id: string) {
+    @computed
+    get currentDays() {
+        const { start_time, end_time } = this.current,
+            days: string[] = [];
+
+        if (!start_time || !end_time) return [];
+
+        var start = new Date(start_time),
+            end = new Date(end_time);
+        do {
+            days.push(formatDate(start, 'YYYY-MM-DD'));
+        } while (+(start = new Date(+start + Day)) <= +end);
+
+        return days;
+    }
+
+    async getOne(id: number) {
         this.loading = true;
 
         const { body } = await service.get<Partnership[]>(
@@ -62,9 +80,17 @@ export class ActivityModel {
     }
 
     async getAgenda(aid = this.current.id) {
+        this.loading = true;
+
         const { body } = await service.get<Program[]>(
-            'programs?type_ne=exhibition&activity=' + aid
+            'programs?' +
+                buildURLData({
+                    type_ne: 'exhibition',
+                    activity: aid,
+                    _sort: 'start_time:ASC'
+                })
         );
+        this.loading = false;
         return (this.currentAgenda = body);
     }
 }
