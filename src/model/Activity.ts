@@ -1,7 +1,8 @@
 import { observable } from 'mobx';
 
-import { BaseData, MediaData, service } from './service';
+import { BaseData, User, MediaData, Category, service } from './service';
 import { Partnership } from './Partnership';
+import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
     name: string;
@@ -14,12 +15,32 @@ export interface Activity extends BaseData {
     location: string;
 }
 
+export interface Program extends BaseData {
+    title: string;
+    start_time: string;
+    end_time: string;
+    summary?: string;
+    mentors: User[];
+    activity: Activity;
+    type: 'lecture' | 'workshop' | 'exhibition';
+    place?: any;
+    evaluations: any[];
+    accounts: any[];
+    documents: MediaData[];
+    verified: boolean;
+    category: Category;
+    organization?: Organization;
+}
+
 export class ActivityModel {
     @observable
     loading = false;
 
     @observable
     current: Activity = {} as Activity;
+
+    @observable
+    currentAgenda: Program[] = [];
 
     async getOne(id: string) {
         this.loading = true;
@@ -38,5 +59,12 @@ export class ActivityModel {
 
         this.loading = false;
         return (this.current = activity);
+    }
+
+    async getAgenda(aid = this.current.id) {
+        const { body } = await service.get<Program[]>(
+            'programs?type_ne=exhibition&activity=' + aid
+        );
+        return (this.currentAgenda = body);
     }
 }

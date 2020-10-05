@@ -37,7 +37,7 @@ documentReady.then(async () => {
 
     render(<PageFrame />);
 
-    if (!token) return;
+    if (!token) return session.getProfile();
 
     await session.signIn(token);
 

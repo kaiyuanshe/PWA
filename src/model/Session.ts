@@ -14,4 +14,15 @@ export class SessionModel {
         setToken(jwt);
         return (this.user = user);
     }
+
+    signOut() {
+        setToken('');
+        self.location.replace('');
+    }
+
+    async getProfile() {
+        const { body } = await service.get<User>('users/me');
+
+        return (this.user = body);
+    }
 }

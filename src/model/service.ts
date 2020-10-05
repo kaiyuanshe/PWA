@@ -1,5 +1,7 @@
 import { HTTPClient } from 'koajax';
 
+import { Organization } from './Organization';
+
 var token: string = self.localStorage.token || '';
 
 export function setToken(raw: string) {
@@ -19,21 +21,22 @@ export const service = new HTTPClient({
 
 export interface BaseData {
     id: number;
+    created_at: string;
     created_by: User;
+    updated_at: string;
     updated_by: User;
 }
 
-export interface User {
-    id: string;
-    firstname: string;
-    lastname: string;
+export interface User extends BaseData {
     username: string;
     email: string;
-    resetPasswordToken: string;
-    registrationToken: string;
-    isActive: boolean;
-    roles: [];
+    provider?: string;
+    confirmed: boolean;
     blocked: boolean;
+    role: any;
+    name?: string;
+    organizations: Organization[];
+    avatar?: MediaData;
 }
 
 export interface MediaData extends BaseData {
@@ -52,4 +55,9 @@ export interface MediaData extends BaseData {
     provider: string;
     provider_metadata: [];
     related: string;
+}
+
+export interface Category extends BaseData {
+    name: string;
+    summary?: string;
 }
