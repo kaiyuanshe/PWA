@@ -1,8 +1,20 @@
 import { HTTPClient } from 'koajax';
 
+var token: string = self.localStorage.token || '';
+
+export function setToken(raw: string) {
+    token = self.localStorage.token = raw;
+}
+
 export const service = new HTTPClient({
     baseURI: 'https://data.kaiyuanshe.cn/',
     responseType: 'json'
+}).use(({ request }, next) => {
+    if (token)
+        (request.headers = request.headers || {})['Authorization'] =
+            'Bearer ' + token;
+
+    return next();
 });
 
 export interface BaseData {

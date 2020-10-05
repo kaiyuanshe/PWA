@@ -43,6 +43,7 @@
 }
 
 .frame {
+    display: block;
     height: 100%;
     border: 2px solid #efdb94;
     border-radius: 20px;
@@ -59,15 +60,6 @@
         width: 200px;
         height: 23px;
     }
-    .logoTag {
-        position: absolute;
-        left: 50%;
-        bottom: 0;
-        transform: translate(-50%, 50%);
-        width: 140px;
-        height: 42px;
-        object-fit: contain;
-    }
     &.VIP {
         border-color: #fc6100;
         .tag {
@@ -78,5 +70,18 @@
                 ),
                 #fa7b05;
         }
+    }
+    p {
+        text-align: left;
+        font-size: small;
+    }
+    .logoTag {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%, 50%);
+        width: 140px;
+        height: 42px;
+        object-fit: contain;
     }
 }

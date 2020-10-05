@@ -2,14 +2,15 @@ import { createCell, Fragment } from 'web-cell';
 import { CellRouter } from 'cell-router/source';
 import { NavBar } from 'boot-cell/source/Navigator/NavBar';
 import { NavLink } from 'boot-cell/source/Navigator/Nav';
+import { Button } from 'boot-cell/source/Form/Button';
 
-import { history } from '../model';
+import { history, service } from '../model';
 import { MainShowRoom } from './MainShowRoom';
 
 const menu = [
     {
         title: '中国开源年会',
-        href: 'showroom?id=1'
+        href: 'showroom?aid=1'
     },
     {
         title: '开放源码',
@@ -33,6 +34,7 @@ export function PageFrame() {
                 {menu.map(({ title, ...props }) => (
                     <NavLink {...props}>{title}</NavLink>
                 ))}
+                <Button href={service.baseURI + 'connect/github/'}>登录</Button>
             </NavBar>
 
             <CellRouter
