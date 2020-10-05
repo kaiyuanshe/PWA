@@ -1,5 +1,6 @@
 import { component, mixin, watch, attribute, createCell } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import { formatDate } from 'web-utility/source/date';
 import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
@@ -52,11 +53,16 @@ export class PartnerDetail extends mixin() {
                         className="row mb-5 px-2"
                         style={{ backgroundColor: '#745491' }}
                     >
-                        <div className="col-5 my-4">
+                        <div
+                            className="col-5 my-4"
+                            style={{ borderRight: '1px dashed white' }}
+                        >
                             <p style={{ textAlign: 'left' }}>{title}</p>
                             <p style={{ textAlign: 'left' }}>
-                                {start_time.toString().split('T')[0]} ~{' '}
-                                {end_time.toString().split('T')[0]}
+                                {start_time.split('T')[0]}&nbsp;&nbsp;
+                                {formatDate(start_time, 'HH:mm') +
+                                    ' ~ ' +
+                                    formatDate(end_time, 'HH:mm')}
                             </p>
                             <p style={{ textAlign: 'left' }}>{place}</p>
                         </div>
@@ -72,14 +78,18 @@ export class PartnerDetail extends mixin() {
                             style={{ backgroundColor: '#745491' }}
                         >
                             <div className="col-2 my-4">
-                                <Image thumbnail src={mentor.avatar.url} />
+                                {mentor.avatar ? (
+                                    <Image thumbnail src={mentor.avatar.url} />
+                                ) : (
+                                    <div />
+                                )}
                             </div>
                             <div className="col-10 my-4">
                                 <h5 style={{ textAlign: 'left' }}>
                                     {mentor.name}
                                 </h5>
                                 <p style={{ textAlign: 'left' }}>研究生在读</p>{' '}
-                                {/*职业{mentor.role}？*/}
+                                {/* 讲师职业 */}
                                 <p style={{ textAlign: 'left' }}>
                                     华东师范大学研二在读，XLab实验室的一员，从19年开始在导师王伟老师的引领下慢慢接触开源社区。在这之前，“开源”两个字对我来说仅仅意味着源代码的开放，去年的开源年会包括后来一系列对其他社区的接触让我意识到这是一个更宽广也更深刻的命题。今年也是以实验室为契机，我接触到了CHAOSS项目，这算是我真正意义上去“混”的第一个社区，非常幸运，它足够成熟，也足够开放包容，7月份的Google
                                     Season of
@@ -100,7 +110,6 @@ export class PartnerDetail extends mixin() {
             current: { name, slogan },
             program
         } = organization;
-
         return (
             <SpinnerBox className={style.ground} cover={loading}>
                 <div className="container overflow-auto">
