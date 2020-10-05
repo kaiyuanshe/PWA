@@ -24,23 +24,29 @@ const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社�
 export class MainShowRoom extends mixin() {
     @attribute
     @watch
-    id = '';
+    aid = '';
 
     connectedCallback() {
-        activity.getOne(this.id);
+        activity.getOne(this.aid);
 
         super.connectedCallback();
     }
 
     renderPartner({
-        organization: { slogan, video, summary, logo },
+        organization: { id, slogan, video, summary, logo },
         type,
         level
     }: Partnership) {
         return (
             <div className="col-12 col-sm-6 col-md-3 my-4">
-                <div
-                    className={classNames(style.frame, level > 1 && style.VIP)}
+                <a
+                    className={classNames(
+                        style.frame,
+                        level > 1 && style.VIP,
+                        'text-decoration-none',
+                        'text-white'
+                    )}
+                    href={'organization?oid=' + id}
                 >
                     <div className={style.tag}>{PartnerMap[type]}</div>
                     {slogan ? (
@@ -53,7 +59,7 @@ export class MainShowRoom extends mixin() {
                     {video && <Embed is="iframe" src={video.url} />}
                     <p style={{ fontSize: '13px' }}>{summary}</p>
                     <Image className={style.logoTag} thumbnail src={logo.url} />
-                </div>
+                </a>
             </div>
         );
     }
@@ -89,9 +95,9 @@ export class MainShowRoom extends mixin() {
                         </ButtonGroup>
                     </div>
 
-                    <div className="row mt-5">
+                    <section className="row mt-5">
                         {partner_ships?.map(this.renderPartner)}
-                    </div>
+                    </section>
                 </div>
             </SpinnerBox>
         );

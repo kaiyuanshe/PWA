@@ -4,6 +4,7 @@ import { serviceWorkerUpdate } from 'web-utility';
 import { documentReady, render, createCell } from 'web-cell';
 
 import { PageFrame } from './page';
+import { session } from './model';
 
 auto();
 
@@ -31,4 +32,15 @@ serviceWorker?.addEventListener('controllerchange', () =>
     window.location.reload()
 );
 
-documentReady.then(() => render(<PageFrame />));
+documentReady.then(async () => {
+    const token = new URLSearchParams(self.location.search).get('access_token');
+
+    render(<PageFrame />);
+
+    if (!token) return session.getProfile();
+
+    await session.signIn(token);
+
+    history.replaceState(null, document.title, '/');
+    self.location.replace('');
+});

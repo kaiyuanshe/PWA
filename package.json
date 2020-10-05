@@ -1,7 +1,7 @@
 {
-    "name": "webcell-scaffold",
-    "version": "0.3.0",
-    "description": "App Project scaffold of WebCell v2",
+    "name": "@kaiyuanshe/pwa",
+    "version": "0.6.0",
+    "description": "PWA of KaiYuanShe",
     "keywords": [
         "web-component",
         "typescript",
@@ -17,7 +17,7 @@
     },
     "main": "src/index.html",
     "dependencies": {
-        "boot-cell": "^1.1.1",
+        "boot-cell": "^1.1.2",
         "bootstrap-icons": "^1.0.0",
         "browser-unhandled-rejection": "^1.0.2",
         "cell-router": "^2.0.1",
@@ -27,9 +27,9 @@
     },
     "devDependencies": {
         "@types/classnames": "^2.2.10",
-        "@typescript-eslint/parser": "^4.2.0",
+        "@typescript-eslint/parser": "^4.4.0",
         "autoprefixer": "^9.8.6",
-        "eslint": "^7.9.0",
+        "eslint": "^7.10.0",
         "eslint-config-prettier": "^6.12.0",
         "eslint-plugin-prettier": "^3.1.4",
         "husky": "^4.3.0",

@@ -72,7 +72,7 @@ export class PartnerDetail extends mixin() {
                             style={{ backgroundColor: '#745491' }}
                         >
                             <div className="col-2 my-4">
-                                <Image thumbnail src={mentor.avatar} />
+                                <Image thumbnail src={mentor.avatar.url} />
                             </div>
                             <div className="col-10 my-4">
                                 <h5 style={{ textAlign: 'left' }}>

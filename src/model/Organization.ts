@@ -1,6 +1,6 @@
 import { observable } from 'mobx';
 import { BaseData, MediaData, service } from './service';
-import { Program } from './Program';
+import { Program } from './Activity';
 
 export interface Organization extends BaseData {
     name: string;
