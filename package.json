@@ -26,6 +26,7 @@
         "web-utility": "^1.8.0"
     },
     "devDependencies": {
+        "@nuintun/qrcode": "^3.0.1",
         "@types/classnames": "^2.2.10",
         "@typescript-eslint/parser": "^4.4.0",
         "autoprefixer": "^9.8.6",
