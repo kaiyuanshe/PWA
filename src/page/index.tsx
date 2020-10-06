@@ -55,7 +55,7 @@ export const PageFrame = observer(() => (
             routes={[
                 { paths: [''], component: AgendaPage },
                 { paths: ['showroom'], component: MainShowRoom },
-                { paths: ['org?id=2'], component: PartnerDetail }
+                { paths: ['organization'], component: PartnerDetail }
             ]}
         />
         <footer className="text-center bg-light py-5">
