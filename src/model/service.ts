@@ -37,6 +37,7 @@ export interface User extends BaseData {
     name?: string;
     organizations: Organization[];
     avatar?: MediaData;
+    summary: string;
 }
 
 export interface MediaData extends BaseData {
