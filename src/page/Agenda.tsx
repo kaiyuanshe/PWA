@@ -1,4 +1,11 @@
-import { component, mixin, watch, attribute, createCell } from 'web-cell';
+import {
+    component,
+    mixin,
+    watch,
+    attribute,
+    createCell,
+    Fragment
+} from 'web-cell';
 import { observer } from 'mobx-web-cell';
 import { formatDate } from 'web-utility/source/date';
 import { scrollTo } from 'web-utility/source/DOM';
@@ -13,7 +20,12 @@ import { Badge } from 'boot-cell/source/Reminder/Badge';
 
 import { activity, Program } from '../model';
 
-const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
+const BadgeColors = [...Object.values(Status), ...Object.values(Theme)],
+    ProgramMap = {
+        lecture: '演讲',
+        workshop: '动手训练营',
+        exhibition: '展位'
+    };
 
 interface AgendaPageState {
     date: string;
@@ -72,9 +84,11 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         id,
         title,
         category: { id: cid, name },
+        type,
         start_time,
         end_time,
-        mentors
+        mentors,
+        place
     }: Program) => (
         <div
             className="col-12 col-sm-6 col-md-3 mb-4"
@@ -85,9 +99,12 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                 className="h-100"
                 title={title}
                 header={
-                    <div className="text-center">
+                    <div className="d-flex justify-content-around">
                         <Badge color={BadgeColors[cid % BadgeColors.length]}>
                             {name}
+                        </Badge>
+                        <Badge color={type === 'lecture' ? 'info' : 'warning'}>
+                            {ProgramMap[type]}
                         </Badge>
                     </div>
                 }
@@ -101,16 +118,26 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
             >
                 <dl>
                     <dt>讲师</dt>
-                    <dd className="d-flex">
+                    <dd className="d-flex py-2">
                         {mentors.map(({ avatar, username }) => (
                             <div>
                                 {avatar && (
-                                    <Image thumbnail src={avatar.previewUrl} />
+                                    <Image
+                                        className="rounded mr-2"
+                                        style={{ width: '2rem' }}
+                                        src={avatar.url}
+                                    />
                                 )}
                                 {username}
                             </div>
                         ))}
                     </dd>
+                    {place && (
+                        <>
+                            <dt>场地</dt>
+                            <dd>{place.location}</dd>
+                        </>
+                    )}
                 </dl>
             </Card>
         </div>
@@ -119,7 +146,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
     render(_, { date, category }: AgendaPageState) {
         const {
             loading,
-            current: { banner },
+            current: { banner, id },
             currentAgenda,
             currentDays
         } = activity;
@@ -173,7 +200,11 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                             )}
                         </FormField>
                         <div className="col-12 col-sm-4">
-                            <Button block onClick={this.showCurrent}>
+                            <Button
+                                block
+                                color="success"
+                                onClick={this.showCurrent}
+                            >
                                 当前议题
                             </Button>
                         </div>
@@ -182,10 +213,16 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                         {programs[0] ? (
                             programs.map(this.renderProgram)
                         ) : (
-                            <p>没有议程</p>
+                            <p className="text-center">没有议程</p>
                         )}
                     </section>
                 </main>
+
+                <footer className="my-5 text-center">
+                    <Button size="lg" href={'showroom?aid=' + id}>
+                        合作伙伴
+                    </Button>
+                </footer>
             </SpinnerBox>
         );
     }

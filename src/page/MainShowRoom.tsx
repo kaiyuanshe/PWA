@@ -24,10 +24,10 @@ const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社�
 export class MainShowRoom extends mixin() {
     @attribute
     @watch
-    aid = '';
+    aid = 0;
 
     connectedCallback() {
-        activity.getOne(this.aid);
+        if (this.aid !== activity.current.id) activity.getOne(this.aid);
 
         super.connectedCallback();
     }
@@ -73,8 +73,8 @@ export class MainShowRoom extends mixin() {
         return (
             <SpinnerBox className={style.ground} cover={loading}>
                 <div className="container overflow-auto">
-                    <h1 className="mt-5">{name}</h1>
-                    <p className="h4 my-4">{slogan}</p>
+                    <h1 className="mt-5 text-center">{name}</h1>
+                    <p className="h4 my-4 text-center">{slogan}</p>
                     <Embed
                         is="iframe"
                         className={style['main-video']}

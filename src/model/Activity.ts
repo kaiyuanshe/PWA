@@ -2,8 +2,7 @@ import { computed, observable } from 'mobx';
 import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
 
-import { BaseData, User, MediaData, Category, service } from './service';
-import { Partnership } from './Partnership';
+import { BaseData, User, MediaData, Category, Place, service } from './service';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -25,13 +24,33 @@ export interface Program extends BaseData {
     mentors: User[];
     activity: Activity;
     type: 'lecture' | 'workshop' | 'exhibition';
-    place?: any;
+    place?: Place;
     evaluations: any[];
     accounts: any[];
     documents: MediaData[];
     verified: boolean;
     category: Category;
     organization?: Organization;
+}
+
+export enum PartnershipTypes {
+    sponsor = 'sponsor',
+    place = 'place',
+    media = 'media',
+    community = 'community',
+    device = 'device',
+    travel = 'travel',
+    vendor = 'vendor'
+}
+
+export interface Partnership extends BaseData {
+    title: string;
+    activity: Activity;
+    level: number;
+    organization: Organization;
+    type: PartnershipTypes;
+    accounts: any[];
+    verified: boolean;
 }
 
 export class ActivityModel {
@@ -79,7 +98,7 @@ export class ActivityModel {
         return (this.current = activity);
     }
 
-    async getAgenda(aid = this.current.id) {
+    async getAgenda(aid = this.current.id, verified = true) {
         this.loading = true;
 
         const { body } = await service.get<Program[]>(
@@ -87,6 +106,7 @@ export class ActivityModel {
                 buildURLData({
                     type_ne: 'exhibition',
                     activity: aid,
+                    verified,
                     _sort: 'start_time:ASC'
                 })
         );

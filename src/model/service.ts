@@ -62,3 +62,15 @@ export interface Category extends BaseData {
     name: string;
     summary?: string;
 }
+
+export interface Place extends BaseData {
+    name: string;
+    location: string;
+    capacity: number;
+    indoor: boolean;
+    available_times: any[];
+    contacts: User[];
+    owner: Organization;
+    equipments: any[];
+    films: MediaData[];
+}

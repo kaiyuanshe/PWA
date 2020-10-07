@@ -1,4 +1,5 @@
 import { observable } from 'mobx';
+
 import { BaseData, MediaData, service } from './service';
 import { Program } from './Activity';
 
@@ -20,24 +21,23 @@ export class OrganizationModel {
     current: Organization = {} as Organization;
 
     @observable
-    program: Program[];
+    programs: Program[] = [];
 
-    async getOne(id: string) {
+    async getOne(id: number) {
         this.loading = true;
 
-        const { body } = await service.get<Program[]>(
+        const { body: list } = await service.get<Program[]>(
             'programs/?organization=' + id
         );
+        this.programs = list;
 
-        if (body[0]) {
+        if (list[0]) {
             this.loading = false;
-            this.current = body[0].organization;
-            return (this.program = body);
-        } else {
-            this.loading = false;
-            return (this.current = (
-                await service.get<Organization>('organizations/' + id)
-            ).body);
+            return (this.current = list[0].organization);
         }
+        const { body } = await service.get<Organization>('organizations/' + id);
+
+        this.loading = false;
+        return (this.current = body);
     }
 }

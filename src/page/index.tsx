@@ -1,4 +1,4 @@
-import { createCell } from 'web-cell';
+import { createCell, Fragment } from 'web-cell';
 import { CellRouter } from 'cell-router/source';
 import { observer } from 'mobx-web-cell';
 
@@ -14,10 +14,6 @@ import { PartnerDetail } from './PartnerDetail';
 
 const menu = [
     {
-        title: '中国开源年会',
-        href: 'showroom?aid=1'
-    },
-    {
         title: '开放源码',
         href: 'https://github.com/kaiyuanshe/PWA'
     }
@@ -28,11 +24,14 @@ export const PageFrame = observer(() => (
         <NavBar
             narrow
             brand={
-                <img
-                    alt="WebCell scaffold"
-                    src="https://kaiyuanshe.cn/image/KaiYuanShe-logo.png"
-                    style={{ width: '2rem' }}
-                />
+                <>
+                    <img
+                        alt="WebCell scaffold"
+                        src="https://kaiyuanshe.cn/image/KaiYuanShe-logo.png"
+                        style={{ width: '2rem', marginRight: '0.5rem' }}
+                    />
+                    开源社
+                </>
             }
         >
             {menu.map(({ title, ...props }) => (
