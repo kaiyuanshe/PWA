@@ -1,4 +1,6 @@
-import { BaseData, MediaData } from './service';
+import { observable } from 'mobx';
+import { BaseData, MediaData, service } from './service';
+import { Program } from './Activity';
 
 export interface Organization extends BaseData {
     name: string;
@@ -8,4 +10,34 @@ export interface Organization extends BaseData {
     summary: string;
     video?: MediaData;
     message_link: string;
+}
+
+export class OrganizationModel {
+    @observable
+    loading = false;
+
+    @observable
+    current: Organization = {} as Organization;
+
+    @observable
+    program: Program[];
+
+    async getOne(id: string) {
+        this.loading = true;
+
+        const { body } = await service.get<Program[]>(
+            'programs/?organization=' + id
+        );
+
+        if (body[0]) {
+            this.loading = false;
+            this.current = body[0].organization;
+            return (this.program = body);
+        } else {
+            this.loading = false;
+            return (this.current = (
+                await service.get<Organization>('organizations/' + id)
+            ).body);
+        }
+    }
 }

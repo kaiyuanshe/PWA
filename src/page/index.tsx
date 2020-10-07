@@ -10,6 +10,7 @@ import { DropMenu, DropMenuItem } from 'boot-cell/source/Navigator/DropMenu';
 import { history, service, session } from '../model';
 import { AgendaPage } from './Agenda';
 import { MainShowRoom } from './MainShowRoom';
+import { PartnerDetail } from './PartnerDetail';
 
 const menu = [
     {
@@ -53,7 +54,8 @@ export const PageFrame = observer(() => (
             history={history}
             routes={[
                 { paths: [''], component: AgendaPage },
-                { paths: ['showroom'], component: MainShowRoom }
+                { paths: ['showroom'], component: MainShowRoom },
+                { paths: ['organization'], component: PartnerDetail }
             ]}
         />
         <footer className="text-center bg-light py-5">
