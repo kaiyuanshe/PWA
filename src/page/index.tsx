@@ -11,6 +11,7 @@ import { history, service, session } from '../model';
 import { AgendaPage } from './Agenda';
 import { MainShowRoom } from './MainShowRoom';
 import { PartnerDetail } from './PartnerDetail';
+import { AgendaDetail } from './AgendaDetail';
 
 const menu = [
     {
@@ -54,7 +55,8 @@ export const PageFrame = observer(() => (
             routes={[
                 { paths: [''], component: AgendaPage },
                 { paths: ['showroom'], component: MainShowRoom },
-                { paths: ['organization'], component: PartnerDetail }
+                { paths: ['organization'], component: PartnerDetail },
+                { paths: ['program'], component: AgendaDetail }
             ]}
         />
         <footer className="text-center bg-light py-5">
