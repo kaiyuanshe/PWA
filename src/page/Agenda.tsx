@@ -88,7 +88,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         return (
             <form
                 className="row m-0 py-4 sticky-top bg-white"
-                style={{ top: '3.6rem' }}
+                style={{ top: '3.6rem', zIndex: 1000 }}
             >
                 <FormField
                     is="select"

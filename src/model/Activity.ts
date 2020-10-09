@@ -4,6 +4,7 @@ import { buildURLData } from 'web-utility/source/URL';
 
 import { User, MediaData, Category, Place, service } from './service';
 import { BaseData, BaseModel, NewData } from './Base';
+import { Project } from './Project';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -31,6 +32,7 @@ export interface Program extends BaseData {
     documents: MediaData[];
     verified: boolean;
     category: Category;
+    project?: Project;
     organization?: Organization;
 }
 

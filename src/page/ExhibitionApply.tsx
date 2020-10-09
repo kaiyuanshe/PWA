@@ -7,6 +7,7 @@ import {
     Fragment
 } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import { formToJSON } from 'web-utility/source/DOM';
 import debounce from 'lodash.debounce';
 
 import { TabPanel, TabView } from 'boot-cell/source/Content/TabView';
@@ -14,8 +15,7 @@ import { Step } from 'boot-cell/source/Navigator/Stepper';
 import { Button } from 'boot-cell/source/Form/Button';
 import { FormField } from 'boot-cell/source/Form/FormField';
 
-import { activity, organization } from '../model';
-import { formToJSON } from 'web-utility/source/DOM';
+import { activity, organization, project, session } from '../model';
 
 export interface ExhibitionApplyProps {
     aid: number;
@@ -47,6 +47,12 @@ export class ExhibitionApply extends mixin<
         super.connectedCallback();
     }
 
+    handleBack = (event: Event) => {
+        event.stopPropagation();
+
+        return this.setState({ step: 0 });
+    };
+
     searchOrganization = debounce(
         ({ data }: InputEvent) => data && organization.searchBy('name', data),
         500
@@ -59,10 +65,14 @@ export class ExhibitionApply extends mixin<
             organization.select('name', value);
     };
 
-    saveOrganization = async (event: MouseEvent) => {
-        event.preventDefault();
+    saveOrganization = async (event: Event) => {
+        event.preventDefault(), event.stopPropagation();
 
-        const { type, form } = event.target as HTMLButtonElement;
+        const { type, target } = event;
+        const form =
+            type === 'submit'
+                ? (target as HTMLFormElement)
+                : (target as HTMLButtonElement).form;
 
         const { id, name } = await organization.update(formToJSON(form));
 
@@ -72,7 +82,8 @@ export class ExhibitionApply extends mixin<
             activity: this.aid,
             organization: id,
             type: 'exhibition',
-            title: name
+            title: name,
+            mentors: [session.user.id]
         });
         self.alert(`展示组织 ${name} 的展位申请已提交`);
 
@@ -82,11 +93,12 @@ export class ExhibitionApply extends mixin<
     renderOrganization() {
         const {
             list,
-            current: { slogan, summary, link, message_link }
+            current: { id = 0, slogan, summary, link, message_link }
         } = organization;
 
         return (
-            <form>
+            <form onSubmit={this.saveOrganization} onReset={this.handleBack}>
+                <input type="hidden" name="id" value={id} />
                 <FormField
                     type="search"
                     name="name"
@@ -124,14 +136,99 @@ export class ExhibitionApply extends mixin<
                     placeholder="加群二维码、公众平台账号等对应的链接"
                     value={message_link ?? ''}
                 />
-                <Button
-                    type="submit"
-                    color="success"
-                    onClick={this.saveOrganization}
-                >
-                    展示组织
-                </Button>
-                <Button onClick={this.saveOrganization}>展示项目</Button>
+                <div className="text-center">
+                    <Button className="px-4 mr-3" type="submit" color="success">
+                        提交组织
+                    </Button>
+                    <Button
+                        className="px-4 mr-3"
+                        onClick={this.saveOrganization}
+                    >
+                        展示项目
+                    </Button>
+                    <Button className="px-4" type="reset" color="danger">
+                        返回
+                    </Button>
+                </div>
+            </form>
+        );
+    }
+
+    searchProject = debounce(
+        ({ data }: InputEvent) => data && project.searchBy('name', data),
+        500
+    );
+
+    selectProject = ({ target }: Event) => {
+        const { value } = target as HTMLInputElement;
+
+        if (project.current.name !== value) project.select('name', value);
+    };
+
+    saveProject = async (event: Event) => {
+        event.preventDefault(), event.stopPropagation();
+
+        const { id, name } = await project.update(
+            formToJSON(event.target as HTMLFormElement)
+        );
+        await activity.createProgram({
+            activity: this.aid,
+            project: id,
+            type: 'exhibition',
+            title: name,
+            mentors: [session.user.id]
+        });
+        self.alert(`展示项目 ${name} 的展位申请已提交`);
+
+        history.back();
+    };
+
+    renderProject() {
+        const {
+            list,
+            current: { id = 0, summary, link }
+        } = project;
+
+        return (
+            <form onSubmit={this.saveProject} onReset={this.handleBack}>
+                <input type="hidden" name="id" value={id} />
+                <FormField
+                    type="search"
+                    name="name"
+                    required
+                    label="名称"
+                    placeholder="可搜索已注册项目"
+                    list="project-list"
+                    onInput={this.searchProject}
+                    onChange={this.searchProject}
+                    onBlur={this.selectProject}
+                />
+                <datalist id="project-list">
+                    {list.map(({ name }) => (
+                        <option value={name} />
+                    ))}
+                </datalist>
+
+                <FormField
+                    is="textarea"
+                    name="summary"
+                    label="简介"
+                    value={summary ?? ''}
+                />
+                <FormField
+                    type="url"
+                    name="link"
+                    label="官方网址"
+                    value={link ?? ''}
+                />
+                <div className="text-center">
+                    <Button className="px-4 mr-3" type="submit" color="success">
+                        提交项目
+                    </Button>
+                    <Button className="px-4" type="reset" color="danger">
+                        返回
+                    </Button>
+                </div>
             </form>
         );
     }
@@ -143,8 +240,9 @@ export class ExhibitionApply extends mixin<
 
                 <TabView linear activeIndex={step}>
                     <Step icon={1}>参展单位</Step>
-                    <TabPanel>
+                    <TabPanel className="text-center">
                         <Button
+                            className="px-5 mr-3"
                             color="warning"
                             size="lg"
                             onClick={() => this.setState({ step: 2 })}
@@ -152,6 +250,7 @@ export class ExhibitionApply extends mixin<
                             个人
                         </Button>
                         <Button
+                            className="px-5"
                             size="lg"
                             onClick={() => this.setState({ step: 1 })}
                         >
@@ -163,7 +262,7 @@ export class ExhibitionApply extends mixin<
                     <TabPanel>{this.renderOrganization()}</TabPanel>
 
                     <Step icon={3}>项目信息</Step>
-                    <TabPanel></TabPanel>
+                    <TabPanel>{this.renderProject()}</TabPanel>
                 </TabView>
             </>
         );
