@@ -17,9 +17,12 @@ self.addEventListener('unhandledrejection', event => {
 
     const text =
         body &&
-        `${body.message}
-
-${Object.values(body.data.errors).flat().join('\n')}`;
+        [
+            body.message,
+            body.data && Object.values(body.data.errors).flat().join('\n')
+        ]
+            .filter(Boolean)
+            .join('\n\n');
 
     self.alert(text || message);
 });

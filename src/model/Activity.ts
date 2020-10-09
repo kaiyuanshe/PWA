@@ -3,7 +3,7 @@ import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
 
 import { User, MediaData, Category, Place, service } from './service';
-import { BaseData, BaseModel } from './Base';
+import { BaseData, BaseModel, NewData } from './Base';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -12,8 +12,8 @@ export interface Activity extends BaseData {
     banner: MediaData;
     description: string;
     partner_ships: Partnership[];
-    start_time: Date;
-    end_time: Date;
+    start_time: string;
+    end_time: string;
     location: string;
 }
 
@@ -119,6 +119,29 @@ export class ActivityModel extends BaseModel<Activity> {
         this.loading = false;
         this.currentAgenda = agenda;
         this.currentExhibitions = exhibitions;
+        return body;
+    }
+
+    async createProgram({
+        type,
+        start_time,
+        end_time,
+        activity,
+        ...data
+    }: NewData<Program>) {
+        if (type === 'exhibition') {
+            if (!(start_time && end_time) && activity !== this.current.id)
+                await this.getOne(activity);
+
+            ({ start_time, end_time } = this.current);
+        }
+        const { body } = await service.post<Program>('programs', {
+            type,
+            start_time,
+            end_time,
+            activity,
+            ...data
+        });
         return body;
     }
 }

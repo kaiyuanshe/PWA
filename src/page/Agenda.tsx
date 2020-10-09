@@ -221,6 +221,16 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
             ? programsOfToday
             : programsOfToday.filter(({ category: { id } }) => category === id);
 
+        const applyButton = (
+            <Button
+                className="mt-3"
+                href={'exhibition/apply?aid=' + id}
+                disabled={!session.user}
+            >
+                立即申请
+            </Button>
+        );
+
         return (
             <SpinnerBox cover={loading}>
                 {banner && <Image background src={banner.url} />}
@@ -242,15 +252,13 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     <p className="mt-4 text-center text-muted">
                         本届大会的开源市集设置于<strong>成都分会场</strong>
                         <br />
-                        <TooltipBox text={session.user ? '' : '请先登录'}>
-                            <Button
-                                className="mt-3"
-                                href="exhibition/apply"
-                                disabled={!session.user}
-                            >
-                                立即申请
-                            </Button>
-                        </TooltipBox>
+                        {session.user ? (
+                            applyButton
+                        ) : (
+                            <TooltipBox text="请先登录">
+                                {applyButton}
+                            </TooltipBox>
+                        )}
                     </p>
                     <section className="row">
                         {currentExhibitions.map(this.renderExhibition)}

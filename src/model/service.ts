@@ -27,7 +27,7 @@ export type APIError = HTTPError<{
     statusCode: number;
     error: string;
     message: string;
-    data: { errors: Record<string, string[]> };
+    data?: { errors: Record<string, string[]> };
 }>;
 
 export interface User extends BaseData {

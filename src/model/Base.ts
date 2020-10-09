@@ -8,6 +8,10 @@ export interface BaseData {
     updated_at: string;
 }
 
+export type NewData<T extends BaseData> = {
+    [key in keyof T]?: T[key] extends BaseData ? number : T[key];
+};
+
 export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
     abstract scope: string;
 
