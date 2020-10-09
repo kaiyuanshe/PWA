@@ -2,7 +2,8 @@ import { computed, observable } from 'mobx';
 import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
 
-import { BaseData, User, MediaData, Category, Place, service } from './service';
+import { User, MediaData, Category, Place, service } from './service';
+import { BaseData, BaseModel } from './Base';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -53,15 +54,14 @@ export interface Partnership extends BaseData {
     verified: boolean;
 }
 
-export class ActivityModel {
-    @observable
-    loading = false;
-
-    @observable
-    current: Activity = {} as Activity;
+export class ActivityModel extends BaseModel<Activity> {
+    scope = 'activities';
 
     @observable
     currentAgenda: Program[] = [];
+
+    @observable
+    currentExhibitions: Program[] = [];
 
     @computed
     get currentDays() {
@@ -98,19 +98,27 @@ export class ActivityModel {
         return (this.current = activity);
     }
 
-    async getAgenda(aid = this.current.id, verified = true) {
+    async getPrograms(aid = this.current.id, verified = true) {
         this.loading = true;
 
         const { body } = await service.get<Program[]>(
             'programs?' +
                 buildURLData({
-                    type_ne: 'exhibition',
                     activity: aid,
                     verified,
                     _sort: 'start_time:ASC'
                 })
         );
+        const agenda: Program[] = [],
+            exhibitions: Program[] = [];
+
+        for (const program of body)
+            if (program.type !== 'exhibition') agenda.push(program);
+            else exhibitions.push(program);
+
         this.loading = false;
-        return (this.currentAgenda = body);
+        this.currentAgenda = agenda;
+        this.currentExhibitions = exhibitions;
+        return body;
     }
 }

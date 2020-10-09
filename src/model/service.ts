@@ -1,15 +1,19 @@
-import { HTTPClient } from 'koajax';
+import { HTTPClient, HTTPError } from 'koajax';
 
+import { BaseData } from './Base';
 import { Organization } from './Organization';
 
-var token: string = self.localStorage.token || '';
+const { localStorage, location } = self;
 
-export function setToken(raw: string) {
-    token = self.localStorage.token = raw;
-}
+var token: string = localStorage.token || '';
+
+export const setToken = (raw: string) => (token = localStorage.token = raw);
 
 export const service = new HTTPClient({
-    baseURI: 'https://data.kaiyuanshe.cn/',
+    baseURI:
+        location.hostname === 'localhost'
+            ? 'http://localhost:1337/'
+            : 'https://data.kaiyuanshe.cn/',
     responseType: 'json'
 }).use(({ request }, next) => {
     if (token)
@@ -19,13 +23,12 @@ export const service = new HTTPClient({
     return next();
 });
 
-export interface BaseData {
-    id: number;
-    created_at: string;
-    created_by: User;
-    updated_at: string;
-    updated_by: User;
-}
+export type APIError = HTTPError<{
+    statusCode: number;
+    error: string;
+    message: string;
+    data: { errors: Record<string, string[]> };
+}>;
 
 export interface User extends BaseData {
     username: string;

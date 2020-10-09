@@ -17,8 +17,9 @@ import { FormField } from 'boot-cell/source/Form/FormField';
 import { Button } from 'boot-cell/source/Form/Button';
 import { Card } from 'boot-cell/source/Content/Card';
 import { Badge } from 'boot-cell/source/Reminder/Badge';
+import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
 
-import { activity, Program } from '../model';
+import { activity, Program, session } from '../model';
 
 const BadgeColors = [...Object.values(Status), ...Object.values(Theme)],
     ProgramMap = {
@@ -57,7 +58,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                 date: currentDays.find(day => day === today) || currentDays[0]
             });
         });
-        activity.getAgenda(this.aid);
+        activity.getPrograms(this.aid);
 
         super.connectedCallback();
     }
@@ -80,7 +81,53 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         if (id) scrollTo('#program-' + id);
     };
 
-    renderProgram = ({
+    renderFilter(programsOfToday: Program[]) {
+        const { date } = this.state,
+            { currentDays } = activity;
+
+        return (
+            <form
+                className="row m-0 py-4 sticky-top bg-white"
+                style={{ top: '3.6rem' }}
+            >
+                <FormField
+                    is="select"
+                    className="col-6 col-sm-4"
+                    value={date}
+                    onChange={({ target }) =>
+                        this.setState({
+                            date: (target as HTMLSelectElement).value
+                        })
+                    }
+                >
+                    {currentDays.map(day => (
+                        <option>{day}</option>
+                    ))}
+                </FormField>
+                <FormField
+                    is="select"
+                    className="col-6 col-sm-4"
+                    onChange={({ target }) =>
+                        this.setState({
+                            category: +(target as HTMLSelectElement).value
+                        })
+                    }
+                >
+                    <option value={0}>全部类别</option>
+                    {programsOfToday.map(({ category: { id, name } }) => (
+                        <option value={id}>{name}</option>
+                    ))}
+                </FormField>
+                <div className="col-12 col-sm-4">
+                    <Button block color="success" onClick={this.showCurrent}>
+                        当前议题
+                    </Button>
+                </div>
+            </form>
+        );
+    }
+
+    renderAgenda = ({
         id,
         title,
         category: { id: cid, name },
@@ -91,7 +138,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         place
     }: Program) => (
         <div
-            className="col-12 col-sm-6 col-md-3 mb-4"
+            className="col-12 col-sm-6 col-md-4 mb-4"
             id={'program-' + id}
             key={'program-' + id}
         >
@@ -143,12 +190,28 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         </div>
     );
 
+    renderExhibition = ({ id, organization, place }: Program) => (
+        <div
+            className="col-12 col-sm-6 col-md-4 mb-4"
+            id={'program-' + id}
+            key={'program-' + id}
+        >
+            <Card
+                title={organization?.name}
+                image={organization?.logo?.url}
+                footer={place?.location}
+            >
+                {organization?.summary}
+            </Card>
+        </div>
+    );
+
     render(_, { date, category }: AgendaPageState) {
         const {
             loading,
             current: { banner, id },
             currentAgenda,
-            currentDays
+            currentExhibitions
         } = activity;
 
         const programsOfToday = currentAgenda.filter(({ start_time }) =>
@@ -162,59 +225,35 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
             <SpinnerBox cover={loading}>
                 {banner && <Image background src={banner.url} />}
 
-                <main className="container my-5">
-                    <h2 className="text-center">大会议程</h2>
-                    <form
-                        className="row m-0 py-4 sticky-top bg-white"
-                        style={{ top: '3.6rem' }}
-                    >
-                        <FormField
-                            is="select"
-                            className="col-6 col-sm-4"
-                            value={date}
-                            onChange={({ target }) =>
-                                this.setState({
-                                    date: (target as HTMLSelectElement).value
-                                })
-                            }
-                        >
-                            {currentDays.map(day => (
-                                <option>{day}</option>
-                            ))}
-                        </FormField>
-                        <FormField
-                            is="select"
-                            className="col-6 col-sm-4"
-                            onChange={({ target }) =>
-                                this.setState({
-                                    category: +(target as HTMLSelectElement)
-                                        .value
-                                })
-                            }
-                        >
-                            <option value={0}>全部类别</option>
-                            {programsOfToday.map(
-                                ({ category: { id, name } }) => (
-                                    <option value={id}>{name}</option>
-                                )
+                <main className="container">
+                    <h2 className="mt-5 text-center">大会议程</h2>
+                    <section>
+                        {this.renderFilter(programsOfToday)}
+                        <div className="row">
+                            {programs[0] ? (
+                                programs.map(this.renderAgenda)
+                            ) : (
+                                <p className="m-auto">没有议程</p>
                             )}
-                        </FormField>
-                        <div className="col-12 col-sm-4">
-                            <Button
-                                block
-                                color="success"
-                                onClick={this.showCurrent}
-                            >
-                                当前议题
-                            </Button>
                         </div>
-                    </form>
+                    </section>
+
+                    <h2 className="mt-5 text-center">开源市集</h2>
+                    <p className="mt-4 text-center text-muted">
+                        本届大会的开源市集设置于<strong>成都分会场</strong>
+                        <br />
+                        <TooltipBox text={session.user ? '' : '请先登录'}>
+                            <Button
+                                className="mt-3"
+                                href="exhibition/apply"
+                                disabled={!session.user}
+                            >
+                                立即申请
+                            </Button>
+                        </TooltipBox>
+                    </p>
                     <section className="row">
-                        {programs[0] ? (
-                            programs.map(this.renderProgram)
-                        ) : (
-                            <p className="text-center">没有议程</p>
-                        )}
+                        {currentExhibitions.map(this.renderExhibition)}
                     </section>
                 </main>
 

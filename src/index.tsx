@@ -4,18 +4,24 @@ import { serviceWorkerUpdate } from 'web-utility';
 import { documentReady, render, createCell } from 'web-cell';
 
 import { PageFrame } from './page';
-import { session } from './model';
+import { APIError, session } from './model';
 
 auto();
 
 self.addEventListener('unhandledrejection', event => {
-    const { message } = event.reason;
+    const { message, body } = event.reason as APIError;
 
     if (!message) return;
 
     event.preventDefault();
 
-    self.alert(message);
+    const text =
+        body &&
+        `${body.message}
+
+${Object.values(body.data.errors).flat().join('\n')}`;
+
+    self.alert(text || message);
 });
 
 const { serviceWorker } = window.navigator;
