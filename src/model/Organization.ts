@@ -1,6 +1,7 @@
 import { observable } from 'mobx';
 
-import { BaseData, MediaData, service } from './service';
+import { MediaData, service } from './service';
+import { BaseData, BaseModel } from './Base';
 import { Program } from './Activity';
 
 export interface Organization extends BaseData {
@@ -13,12 +14,11 @@ export interface Organization extends BaseData {
     message_link: string;
 }
 
-export class OrganizationModel {
-    @observable
-    loading = false;
-
-    @observable
-    current: Organization = {} as Organization;
+export class OrganizationModel extends BaseModel<
+    Organization,
+    'name' | 'slogan' | 'summary'
+> {
+    scope = 'organizations';
 
     @observable
     programs: Program[] = [];

@@ -1,6 +1,6 @@
 {
     "name": "@kaiyuanshe/pwa",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "description": "PWA of KaiYuanShe",
     "keywords": [
         "web-component",
@@ -22,12 +22,14 @@
         "browser-unhandled-rejection": "^1.0.2",
         "cell-router": "^2.0.1",
         "classnames": "^2.2.6",
+        "lodash.debounce": "^4.0.8",
         "web-cell": "^2.2.0",
         "web-utility": "^1.8.0"
     },
     "devDependencies": {
         "@nuintun/qrcode": "^3.0.1",
         "@types/classnames": "^2.2.10",
+        "@types/lodash.debounce": "^4.0.6",
         "@typescript-eslint/parser": "^4.4.0",
         "autoprefixer": "^9.8.6",
         "eslint": "^7.10.0",
@@ -52,9 +54,7 @@
         "tabWidth": 4
     },
     "lint-staged": {
-        "*.{html,md,css,less,json,yml}": [
-            "prettier --write"
-        ],
+        "*.{html,md,css,less,json,yml}": "prettier --write",
         "*.{js,ts,tsx}": [
             "prettier --write",
             "eslint --fix"

@@ -9,6 +9,7 @@ import { DropMenu, DropMenuItem } from 'boot-cell/source/Navigator/DropMenu';
 
 import { history, service, session } from '../model';
 import { AgendaPage } from './Agenda';
+import { ExhibitionApply } from './ExhibitionApply';
 import { MainShowRoom } from './MainShowRoom';
 import { PartnerDetail } from './PartnerDetail';
 import { AgendaDetail } from './AgendaDetail';
@@ -54,6 +55,7 @@ export const PageFrame = observer(() => (
             history={history}
             routes={[
                 { paths: [''], component: AgendaPage },
+                { paths: ['exhibition/apply'], component: ExhibitionApply },
                 { paths: ['showroom'], component: MainShowRoom },
                 { paths: ['organization'], component: PartnerDetail },
                 { paths: ['program'], component: AgendaDetail }

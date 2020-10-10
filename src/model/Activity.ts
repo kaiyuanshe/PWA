@@ -2,7 +2,9 @@ import { computed, observable } from 'mobx';
 import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
 
-import { BaseData, User, MediaData, Category, Place, service } from './service';
+import { User, MediaData, Category, Place, service } from './service';
+import { BaseData, BaseModel, NewData } from './Base';
+import { Project } from './Project';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -11,8 +13,8 @@ export interface Activity extends BaseData {
     banner: MediaData;
     description: string;
     partner_ships: Partnership[];
-    start_time: Date;
-    end_time: Date;
+    start_time: string;
+    end_time: string;
     location: string;
 }
 
@@ -30,6 +32,7 @@ export interface Program extends BaseData {
     documents: MediaData[];
     verified: boolean;
     category: Category;
+    project?: Project;
     organization?: Organization;
 }
 
@@ -53,15 +56,14 @@ export interface Partnership extends BaseData {
     verified: boolean;
 }
 
-export class ActivityModel {
-    @observable
-    loading = false;
-
-    @observable
-    current: Activity = {} as Activity;
+export class ActivityModel extends BaseModel<Activity> {
+    scope = 'activities';
 
     @observable
     currentAgenda: Program[] = [];
+
+    @observable
+    currentExhibitions: Program[] = [];
 
     @computed
     get currentDays() {
@@ -98,19 +100,50 @@ export class ActivityModel {
         return (this.current = activity);
     }
 
-    async getAgenda(aid = this.current.id, verified = true) {
+    async getPrograms(aid = this.current.id, verified = true) {
         this.loading = true;
 
         const { body } = await service.get<Program[]>(
             'programs?' +
                 buildURLData({
-                    type_ne: 'exhibition',
                     activity: aid,
                     verified,
                     _sort: 'start_time:ASC'
                 })
         );
+        const agenda: Program[] = [],
+            exhibitions: Program[] = [];
+
+        for (const program of body)
+            if (program.type !== 'exhibition') agenda.push(program);
+            else exhibitions.push(program);
+
         this.loading = false;
-        return (this.currentAgenda = body);
+        this.currentAgenda = agenda;
+        this.currentExhibitions = exhibitions;
+        return body;
+    }
+
+    async createProgram({
+        type,
+        start_time,
+        end_time,
+        activity,
+        ...data
+    }: NewData<Program>) {
+        if (type === 'exhibition') {
+            if (!(start_time && end_time) && activity !== this.current.id)
+                await this.getOne(activity);
+
+            ({ start_time, end_time } = this.current);
+        }
+        const { body } = await service.post<Program>('programs', {
+            type,
+            start_time,
+            end_time,
+            activity,
+            ...data
+        });
+        return body;
     }
 }
