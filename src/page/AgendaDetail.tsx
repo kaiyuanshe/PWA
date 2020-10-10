@@ -14,12 +14,8 @@ import { NavLink } from 'boot-cell/source/Navigator/Nav';
 
 import style from './MainShowRoom.module.less';
 import { program, User } from '../model';
-
-const ProgramMap = {
-    lecture: '演讲',
-    workshop: '动手训练营',
-    exhibition: '展位'
-};
+import { ProgramMap } from './Common';
+import { Evaluation } from '../component/Evaluation';
 
 @observer
 @component({
@@ -37,7 +33,7 @@ export class AgendaDetail extends mixin() {
 
     connectedCallback() {
         program.getOne(this.pid);
-        program.getSameCategory(this.cid);
+        program.getSameCategory(this.pid, this.cid);
         super.connectedCallback();
     }
 
@@ -75,15 +71,15 @@ export class AgendaDetail extends mixin() {
                     <h1 className="mt-5 text-center">{title}</h1>
                     <div class="row mt-3">
                         <div class="col-4 text-left">
-                            {start_time?.split('T')[0]}&nbsp;&nbsp;
-                            {formatDate(start_time, 'HH:mm') +
-                                ' ~ ' +
-                                formatDate(end_time, 'HH:mm')}
+                            {start_time?.split('T')[0]}
+                            <span class="mx-2" />
+                            {formatDate(start_time, 'HH:mm')} ~{' '}
+                            {formatDate(end_time, 'HH:mm')}
                         </div>
                         <div class="col-4 text-center">{ProgramMap[type]}</div>
                         <div class="col-4 text-right">{place}</div>
                     </div>
-                    {summary ? (
+                    {summary && (
                         <>
                             <h2 class="text-center mt-5">议题简介</h2>
                             <div
@@ -93,8 +89,6 @@ export class AgendaDetail extends mixin() {
                                 {summary}
                             </div>
                         </>
-                    ) : (
-                        <div />
                     )}
                     <h2 class="text-center mt-5">演讲者</h2>
                     <section className="mt-4 mb-5">
@@ -133,10 +127,9 @@ export class AgendaDetail extends mixin() {
                                     </NavLink>
                                 ))}
                             </div>
-                        ) : (
-                            <div />
-                        )}
+                        ) : null}
                     </div>
+                    <Evaluation />
                 </div>
             </SpinnerBox>
         );

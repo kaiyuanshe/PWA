@@ -20,12 +20,12 @@ export class ProgramModel {
         return (this.current = body);
     }
 
-    async getSameCategory(cid: number) {
+    async getSameCategory(pid: number, cid: number) {
         this.loading = true;
         const { body } = await service.get<Program[]>(
-            'programs?category=' + cid
+            'programs?category=' + cid + '&id_ne=' + pid
         );
         this.loading = false;
-        return (this.programs = body.filter(b => b.id !== this.current.id));
+        return (this.programs = body);
     }
 }

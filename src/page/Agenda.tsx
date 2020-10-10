@@ -19,13 +19,8 @@ import { Card } from 'boot-cell/source/Content/Card';
 import { Badge } from 'boot-cell/source/Reminder/Badge';
 
 import { activity, Program } from '../model';
-
-const BadgeColors = [...Object.values(Status), ...Object.values(Theme)],
-    ProgramMap = {
-        lecture: '演讲',
-        workshop: '动手训练营',
-        exhibition: '展位'
-    };
+import { ProgramMap } from './Common';
+const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
 interface AgendaPageState {
     date: string;
