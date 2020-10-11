@@ -49,4 +49,10 @@ export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
 
         return (this.current = body);
     }
+
+    async getById(id: D[keyof D]) {
+        const { body } = await service.get<D>(`${this.scope}/${id}`);
+
+        return (this.current = body);
+    }
 }

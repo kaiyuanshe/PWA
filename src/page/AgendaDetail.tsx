@@ -32,7 +32,7 @@ export class AgendaDetail extends mixin() {
     cid = 0;
 
     connectedCallback() {
-        program.getOne(this.pid);
+        program.getById(this.pid);
         program.getSameCategory(this.pid, this.cid);
         super.connectedCallback();
     }
@@ -62,7 +62,7 @@ export class AgendaDetail extends mixin() {
                 mentors,
                 category
             },
-            programs
+            list
         } = program;
 
         return (
@@ -104,7 +104,7 @@ export class AgendaDetail extends mixin() {
                             {category?.name}
                         </h5>
                         <p class="mb-3 px-3">{category?.summary}</p>
-                        {programs.length > 0 ? (
+                        {list.length > 0 ? (
                             <div
                                 class="col-12 text-center py-2"
                                 style={{
@@ -113,7 +113,7 @@ export class AgendaDetail extends mixin() {
                                 }}
                             >
                                 <h5 class="pt-2">主题相关议题</h5>
-                                {programs.map(p => (
+                                {list.map(p => (
                                     <NavLink
                                         style={{ color: 'black' }}
                                         href={
