@@ -31,6 +31,7 @@
         "web-utility": "^1.8.2"
     },
     "devDependencies": {
+        "@octokit/types": "^5.5.0",
         "@types/classnames": "^2.2.10",
         "@types/lodash.debounce": "^4.0.6",
         "@typescript-eslint/parser": "^4.4.0",

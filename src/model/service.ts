@@ -23,11 +23,16 @@ export const service = new HTTPClient({
     return next();
 });
 
+export const github = new HTTPClient({
+    baseURI: 'https://api.github.com/',
+    responseType: 'json'
+});
+
 export type APIError = HTTPError<{
     statusCode: number;
     error: string;
     message: string;
-    data?: { errors: Record<string, string[]> };
+    data?: { messages: Record<string, string>[] }[];
 }>;
 
 export interface User extends BaseData {
