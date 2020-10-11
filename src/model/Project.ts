@@ -1,6 +1,6 @@
-import { BaseData, BaseModel } from './Base';
+import { BaseData, MediaData, BaseModel } from './Base';
 import { Organization } from './Organization';
-import { MediaData, User } from './service';
+import { User } from './service';
 
 export interface Project extends BaseData {
     name: string;
@@ -14,5 +14,6 @@ export interface Project extends BaseData {
 }
 
 export class ProjectModel extends BaseModel<Project, 'name' | 'summary'> {
-    scope = 'projects';
+    name = 'project';
+    basePath = 'projects';
 }

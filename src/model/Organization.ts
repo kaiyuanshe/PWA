@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 
-import { MediaData, service } from './service';
-import { BaseData, BaseModel } from './Base';
+import { service } from './service';
+import { BaseData, MediaData, BaseModel } from './Base';
 import { Program } from './Activity';
 
 export interface Organization extends BaseData {
@@ -18,7 +18,8 @@ export class OrganizationModel extends BaseModel<
     Organization,
     'name' | 'slogan' | 'summary'
 > {
-    scope = 'organizations';
+    name = 'organization';
+    basePath = 'organizations';
 
     @observable
     programs: Program[] = [];

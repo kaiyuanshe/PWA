@@ -88,7 +88,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         return (
             <form
                 className="row m-0 py-4 sticky-top bg-white"
-                style={{ top: '3.6rem', zIndex: 1000 }}
+                style={{ top: '3.6rem', zIndex: '1000' }}
             >
                 <FormField
                     is="select"
@@ -190,18 +190,18 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         </div>
     );
 
-    renderExhibition = ({ id, organization, place }: Program) => (
+    renderExhibition = ({ id, organization, project, place }: Program) => (
         <div
             className="col-12 col-sm-6 col-md-4 mb-4"
             id={'program-' + id}
             key={'program-' + id}
         >
             <Card
-                title={organization?.name}
-                image={organization?.logo?.url}
+                title={project ? project.name : organization?.name}
+                image={project ? project.logo?.url : organization?.logo?.url}
                 footer={place?.location}
             >
-                {organization?.summary}
+                {project ? project.summary : organization?.summary}
             </Card>
         </div>
     );

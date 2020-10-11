@@ -11,6 +11,7 @@ export const activity = new ActivityModel();
 export const organization = new OrganizationModel();
 export const project = new ProjectModel();
 export * from './service';
+export * from './Base';
 export * from './Session';
 export * from './Activity';
 export * from './Organization';
