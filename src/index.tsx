@@ -18,8 +18,17 @@ self.addEventListener('unhandledrejection', event => {
     const text =
         body &&
         [
-            body.message,
-            body.data && Object.values(body.data.errors).flat().join('\n')
+            message,
+            body.data
+                ?.map(({ messages }) =>
+                    messages.map(message =>
+                        Object.entries(message).map(
+                            ([key, value]) => `${key}: ${value}`
+                        )
+                    )
+                )
+                .flat()
+                .join('\n')
         ]
             .filter(Boolean)
             .join('\n\n');
@@ -48,8 +57,8 @@ documentReady.then(async () => {
 
     if (!token) return session.getProfile();
 
-    await session.signIn(token);
+    const { name, avatar } = await session.signIn(token);
 
     history.replaceState(null, document.title, '/');
-    self.location.replace('');
+    self.location.replace(!name || !avatar ? '#profile' : '');
 });

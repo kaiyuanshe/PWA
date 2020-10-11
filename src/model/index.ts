@@ -15,6 +15,7 @@ export const program = new ProgramModel();
 export const project = new ProjectModel();
 export const evaluation = new EvaluationModel();
 export * from './service';
+export * from './Base';
 export * from './Session';
 export * from './Activity';
 export * from './Organization';

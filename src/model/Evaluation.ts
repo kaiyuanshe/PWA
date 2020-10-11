@@ -11,5 +11,6 @@ export interface Evaluation extends BaseData {
 }
 
 export class EvaluationModel extends BaseModel<Evaluation> {
-    scope = 'evaluations';
+    name = 'evaluation';
+    basePath = 'evaluations';
 }

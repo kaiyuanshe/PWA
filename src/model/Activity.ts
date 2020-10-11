@@ -2,8 +2,8 @@ import { computed, observable } from 'mobx';
 import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
 
-import { User, MediaData, Category, Place, service } from './service';
-import { BaseData, BaseModel, NewData } from './Base';
+import { User, Category, Place, service } from './service';
+import { BaseData, MediaData, BaseModel, NewData } from './Base';
 import { Project } from './Project';
 import { Organization } from './Organization';
 
@@ -57,7 +57,8 @@ export interface Partnership extends BaseData {
 }
 
 export class ActivityModel extends BaseModel<Activity> {
-    scope = 'activities';
+    name = 'activity';
+    basePath = 'activities';
 
     @observable
     currentAgenda: Program[] = [];

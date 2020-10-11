@@ -1,9 +1,15 @@
 import { observable } from 'mobx';
-import { User, service, setToken } from './service';
+import { UsersGetByUsernameResponseData } from '@octokit/types';
+
+import { User, service, setToken, APIError, github } from './service';
+import { NewData } from './Base';
 
 export class SessionModel {
     @observable
     user?: User;
+
+    @observable
+    userGithub?: UsersGetByUsernameResponseData;
 
     async signIn(token: string, provider = 'github') {
         const {
@@ -21,7 +27,24 @@ export class SessionModel {
     }
 
     async getProfile() {
-        const { body } = await service.get<User>('users/me');
+        try {
+            const { body } = await service.get<User>('users/me');
+
+            return (this.user = body);
+        } catch (error) {
+            if ((error as APIError).status !== 400) throw error;
+        }
+    }
+
+    async getGithubProfile(name: string) {
+        const { body } = await github.get<UsersGetByUsernameResponseData>(
+            'users/' + name
+        );
+        return (this.userGithub = body);
+    }
+
+    async updateProfile({ id = this.user?.id, ...data }: NewData<User>) {
+        const { body } = await service.put<User>('users/' + id, data);
 
         return (this.user = body);
     }

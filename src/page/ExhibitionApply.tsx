@@ -14,12 +14,16 @@ import { TabPanel, TabView } from 'boot-cell/source/Content/TabView';
 import { Step } from 'boot-cell/source/Navigator/Stepper';
 import { Button } from 'boot-cell/source/Form/Button';
 import { FormField } from 'boot-cell/source/Form/FormField';
+import { FileInput } from 'boot-cell/source/Form/FileInput';
 
-import { activity, organization, project, session } from '../model';
-
-export interface ExhibitionApplyProps {
-    aid: number;
-}
+import {
+    NewData,
+    Project,
+    session,
+    activity,
+    organization,
+    project
+} from '../model';
 
 interface ExhibitionApplyState {
     step: number;
@@ -32,7 +36,7 @@ interface ExhibitionApplyState {
     renderTarget: 'children'
 })
 export class ExhibitionApply extends mixin<
-    ExhibitionApplyProps,
+    { aid: number },
     ExhibitionApplyState
 >() {
     @attribute
@@ -50,7 +54,7 @@ export class ExhibitionApply extends mixin<
     handleBack = (event: Event) => {
         event.stopPropagation();
 
-        return this.setState({ step: 0 });
+        return this.setState({ step: 0, organization: 0 });
     };
 
     searchOrganization = debounce(
@@ -69,13 +73,14 @@ export class ExhibitionApply extends mixin<
         event.preventDefault(), event.stopPropagation();
 
         const { type, target } = event;
-        const form =
-            type === 'submit'
-                ? (target as HTMLFormElement)
-                : (target as HTMLButtonElement).form;
 
-        const { id, name } = await organization.update(formToJSON(form));
-
+        const { id, name } = await organization.update(
+            formToJSON(
+                type === 'submit'
+                    ? (target as HTMLFormElement)
+                    : (target as HTMLButtonElement).form
+            )
+        );
         if (type !== 'submit') return this.setState({ step: 2 });
 
         await activity.createProgram({
@@ -93,12 +98,12 @@ export class ExhibitionApply extends mixin<
     renderOrganization() {
         const {
             list,
-            current: { id = 0, slogan, summary, link, message_link }
+            current: { id, slogan, summary, logo, link, message_link }
         } = organization;
 
         return (
             <form onSubmit={this.saveOrganization} onReset={this.handleBack}>
-                <input type="hidden" name="id" value={id} />
+                <input type="hidden" name="id" value={id ?? 0} />
                 <FormField
                     type="search"
                     name="name"
@@ -115,7 +120,6 @@ export class ExhibitionApply extends mixin<
                         <option value={name} />
                     ))}
                 </datalist>
-
                 <FormField name="slogan" label="标语" value={slogan ?? ''} />
                 <FormField
                     is="textarea"
@@ -123,6 +127,9 @@ export class ExhibitionApply extends mixin<
                     label="简介"
                     value={summary ?? ''}
                 />
+                <FormField label="标识">
+                    <FileInput name="logo" value={logo?.url} />
+                </FormField>
                 <FormField
                     type="url"
                     name="link"
@@ -168,15 +175,27 @@ export class ExhibitionApply extends mixin<
     saveProject = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
 
-        const { id, name } = await project.update(
-            formToJSON(event.target as HTMLFormElement)
+        const { id: uid } = session.user,
+            members = project.current.members?.map(({ id }) => id),
+            { organization } = this.state;
+
+        const { end_date, ...data } = formToJSON<NewData<Project>>(
+            event.target as HTMLFormElement
         );
+        const { id, name } = await project.update({
+            end_date: end_date || undefined,
+            members:
+                members &&
+                (members.includes(uid) ? members : [...members, uid]),
+            organization: organization || undefined,
+            ...data
+        });
         await activity.createProgram({
             activity: this.aid,
             project: id,
             type: 'exhibition',
             title: name,
-            mentors: [session.user.id]
+            mentors: [uid]
         });
         self.alert(`展示项目 ${name} 的展位申请已提交`);
 
@@ -186,7 +205,7 @@ export class ExhibitionApply extends mixin<
     renderProject() {
         const {
             list,
-            current: { id = 0, summary, link }
+            current: { id = 0, summary, logo, link }
         } = project;
 
         return (
@@ -208,13 +227,22 @@ export class ExhibitionApply extends mixin<
                         <option value={name} />
                     ))}
                 </datalist>
-
                 <FormField
                     is="textarea"
                     name="summary"
                     label="简介"
                     value={summary ?? ''}
                 />
+                <FormField
+                    type="date"
+                    name="start_date"
+                    required
+                    label="发起日期"
+                />
+                <FormField type="date" name="end_date" label="结束日期" />
+                <FormField label="标识">
+                    <FileInput name="logo" value={logo?.url} />
+                </FormField>
                 <FormField
                     type="url"
                     name="link"
@@ -233,7 +261,7 @@ export class ExhibitionApply extends mixin<
         );
     }
 
-    render({ aid }: ExhibitionApplyProps, { step }: ExhibitionApplyState) {
+    render(_, { step }: ExhibitionApplyState) {
         return (
             <>
                 <h2 className="mt-5 mb-4">开源市集 展位申请</h2>

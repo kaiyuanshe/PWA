@@ -1,6 +1,6 @@
 import { HTTPClient, HTTPError } from 'koajax';
 
-import { BaseData } from './Base';
+import { BaseData, MediaData } from './Base';
 import { Organization } from './Organization';
 
 const { localStorage, location } = self;
@@ -23,11 +23,16 @@ export const service = new HTTPClient({
     return next();
 });
 
+export const github = new HTTPClient({
+    baseURI: 'https://api.github.com/',
+    responseType: 'json'
+});
+
 export type APIError = HTTPError<{
     statusCode: number;
     error: string;
     message: string;
-    data?: { errors: Record<string, string[]> };
+    data?: { messages: Record<string, string>[] }[];
 }>;
 
 export interface User extends BaseData {
@@ -41,24 +46,6 @@ export interface User extends BaseData {
     organizations: Organization[];
     avatar?: MediaData;
     summary: string;
-}
-
-export interface MediaData extends BaseData {
-    name: string;
-    alternativeText: string;
-    caption: string;
-    width: number;
-    height: number;
-    formats: [];
-    hash: string;
-    ext: string;
-    mime: string;
-    size: number;
-    url: string;
-    previewUrl: string;
-    provider: string;
-    provider_metadata: [];
-    related: string;
 }
 
 export interface Category extends BaseData {

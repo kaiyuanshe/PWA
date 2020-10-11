@@ -8,7 +8,8 @@ export class ProgramModel extends BaseModel<
     Program,
     'id' | 'title' | 'mentors'
 > {
-    scope = 'programs';
+    name = 'program';
+    basePath = 'programs';
 
     @observable
     evaluations: Evaluation[] = [];
