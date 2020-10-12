@@ -13,7 +13,7 @@ export const activity = new ActivityModel();
 export const organization = new OrganizationModel();
 export const program = new ProgramModel();
 export const project = new ProjectModel();
-export const evaluation = new EvaluationModel();
+export const evaluation = new EvaluationModel(session);
 export * from './service';
 export * from './Base';
 export * from './Session';

@@ -1,10 +1,10 @@
 import { observable } from 'mobx';
-import { BaseModel } from './Base';
+import { CollectionModel } from './Base';
 import { service } from './service';
 import { Program } from './Activity';
 import { Evaluation } from './Evaluation';
 
-export class ProgramModel extends BaseModel<
+export class ProgramModel extends CollectionModel<
     Program,
     'id' | 'title' | 'mentors'
 > {
@@ -14,10 +14,11 @@ export class ProgramModel extends BaseModel<
     @observable
     evaluations: Evaluation[] = [];
 
-    async getSameCategory(pid: number, cid: number) {
+    async getSameCategory(cid: number, pid = this.current.id) {
         this.loading = true;
+
         const { body } = await service.get<Program[]>(
-            'programs?category=' + cid + '&id_ne=' + pid
+            `programs?category=${cid}&id_ne=${pid}`
         );
         this.loading = false;
         return (this.list = body);

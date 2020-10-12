@@ -3,7 +3,7 @@ import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
 
 import { User, Category, Place, service } from './service';
-import { BaseData, MediaData, BaseModel, NewData } from './Base';
+import { BaseData, MediaData, CollectionModel, NewData } from './Base';
 import { Project } from './Project';
 import { Organization } from './Organization';
 
@@ -56,7 +56,7 @@ export interface Partnership extends BaseData {
     verified: boolean;
 }
 
-export class ActivityModel extends BaseModel<Activity> {
+export class ActivityModel extends CollectionModel<Activity> {
     name = 'activity';
     basePath = 'activities';
 
@@ -82,7 +82,7 @@ export class ActivityModel extends BaseModel<Activity> {
         return days;
     }
 
-    async getOne(id: number) {
+    async getOne(id: Activity['id']) {
         this.loading = true;
 
         const { body } = await service.get<Partnership[]>(

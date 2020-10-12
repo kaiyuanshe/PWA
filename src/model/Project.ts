@@ -1,4 +1,4 @@
-import { BaseData, MediaData, BaseModel } from './Base';
+import { BaseData, MediaData, CollectionModel } from './Base';
 import { Organization } from './Organization';
 import { User } from './service';
 
@@ -13,7 +13,7 @@ export interface Project extends BaseData {
     organization?: Organization;
 }
 
-export class ProjectModel extends BaseModel<Project, 'name' | 'summary'> {
+export class ProjectModel extends CollectionModel<Project, 'name' | 'summary'> {
     name = 'project';
     basePath = 'projects';
 }

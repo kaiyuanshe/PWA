@@ -7,15 +7,15 @@ import {
     Fragment
 } from 'web-cell';
 import { observer } from 'mobx-web-cell';
-import { formatDate } from 'web-utility/source/date';
 import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Image } from 'boot-cell/source/Media/Image';
-import { NavLink } from 'boot-cell/source/Navigator/Nav';
+import { ListGroup, ListItem } from 'boot-cell/source/Content/ListGroup';
 
+import { TimeRange } from '../component/TimeRange';
+import { Evaluation } from '../component/Evaluation';
+import { ProgramMap } from './constants';
 import style from './MainShowRoom.module.less';
 import { program, User } from '../model';
-import { ProgramMap } from './Common';
-import { Evaluation } from '../component/Evaluation';
 
 @observer
 @component({
@@ -27,13 +27,11 @@ export class AgendaDetail extends mixin() {
     @watch
     pid = 0;
 
-    @attribute
-    @watch
-    cid = 0;
-
     connectedCallback() {
-        program.getById(this.pid);
-        program.getSameCategory(this.pid, this.cid);
+        program
+            .getOne(this.pid)
+            .then(({ category: { id } }) => program.getSameCategory(id));
+
         super.connectedCallback();
     }
 
@@ -60,7 +58,8 @@ export class AgendaDetail extends mixin() {
                 summary,
                 place,
                 mentors,
-                category
+                category,
+                id
             },
             list
         } = program;
@@ -69,67 +68,64 @@ export class AgendaDetail extends mixin() {
             <SpinnerBox className={style.ground} cover={loading}>
                 <div className="container overflow-auto">
                     <h1 className="mt-5 text-center">{title}</h1>
-                    <div class="row mt-3">
-                        <div class="col-4 text-left">
-                            {start_time?.split('T')[0]}
-                            <span class="mx-2" />
-                            {formatDate(start_time, 'HH:mm')} ~{' '}
-                            {formatDate(end_time, 'HH:mm')}
+                    <div className="row mt-3">
+                        <TimeRange
+                            className="col-4"
+                            start={start_time}
+                            end={end_time}
+                        />
+                        <div className="col-4 text-center">
+                            {ProgramMap[type]}
                         </div>
-                        <div class="col-4 text-center">{ProgramMap[type]}</div>
-                        <div class="col-4 text-right">{place}</div>
+                        <address className="col-4 text-right">
+                            {place?.location}
+                        </address>
                     </div>
                     {summary && (
                         <>
-                            <h2 class="text-center mt-5">议题简介</h2>
+                            <h2 className="text-center mt-5">议题简介</h2>
                             <div
-                                class="row mt-4 mb-5 px-3 py-4"
+                                className="row mt-4 mb-5 px-3 py-4"
                                 style={{ backgroundColor: '#745491' }}
                             >
                                 {summary}
                             </div>
                         </>
                     )}
-                    <h2 class="text-center mt-5">演讲者</h2>
+                    <h2 className="text-center mt-5">演讲者</h2>
                     <section className="mt-4 mb-5">
                         {mentors?.map(this.renderMentor)}
                     </section>
 
-                    <h2 class="text-center">专场主题</h2>
-                    <div
-                        class="row mt-4 mb-5"
+                    <h2 className="text-center">专场主题</h2>
+                    <section
+                        className="mt-4 mb-5"
                         style={{ backgroundColor: '#745491' }}
                     >
-                        <h5 class="text-center my-2 col-12">
-                            {category?.name}
-                        </h5>
-                        <p class="mb-3 px-3">{category?.summary}</p>
+                        <h5 className="text-center my-2">{category?.name}</h5>
+                        <p className="mb-3 px-3">{category?.summary}</p>
                         {list.length > 0 ? (
                             <div
-                                class="col-12 text-center py-2"
+                                className="py-2"
                                 style={{
                                     backgroundColor: '#bf91c2',
                                     color: 'black'
                                 }}
                             >
-                                <h5 class="pt-2">主题相关议题</h5>
-                                {list.map(p => (
-                                    <NavLink
-                                        style={{ color: 'black' }}
-                                        href={
-                                            'program?pid=' +
-                                            p.id +
-                                            '&cid=' +
-                                            p.category.id
-                                        }
-                                    >
-                                        - {p.title}
-                                    </NavLink>
-                                ))}
+                                <h5 className="pt-2 text-center">
+                                    主题相关议题
+                                </h5>
+                                <ListGroup>
+                                    {list.map(({ id, title }) => (
+                                        <ListItem href={'program?pid=' + id}>
+                                            {title}
+                                        </ListItem>
+                                    ))}
+                                </ListGroup>
                             </div>
                         ) : null}
-                    </div>
-                    <Evaluation />
+                    </section>
+                    <Evaluation program={id} />
                 </div>
             </SpinnerBox>
         );

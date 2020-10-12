@@ -72,6 +72,8 @@ export class ExhibitionApply extends mixin<
     saveOrganization = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
 
+        if (organization.loading) return;
+
         const { type, target } = event;
 
         const { id, name } = await organization.update(
@@ -98,7 +100,8 @@ export class ExhibitionApply extends mixin<
     renderOrganization() {
         const {
             list,
-            current: { id, slogan, summary, logo, link, message_link }
+            current: { id, slogan, summary, logo, link, message_link },
+            loading
         } = organization;
 
         return (
@@ -144,16 +147,27 @@ export class ExhibitionApply extends mixin<
                     value={message_link ?? ''}
                 />
                 <div className="text-center">
-                    <Button className="px-4 mr-3" type="submit" color="success">
+                    <Button
+                        className="px-4 mr-3"
+                        type="submit"
+                        color="success"
+                        disabled={loading}
+                    >
                         提交组织
                     </Button>
                     <Button
                         className="px-4 mr-3"
+                        disabled={loading}
                         onClick={this.saveOrganization}
                     >
                         展示项目
                     </Button>
-                    <Button className="px-4" type="reset" color="danger">
+                    <Button
+                        className="px-4"
+                        type="reset"
+                        color="danger"
+                        disabled={loading}
+                    >
                         返回
                     </Button>
                 </div>
@@ -174,6 +188,8 @@ export class ExhibitionApply extends mixin<
 
     saveProject = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
+
+        if (project.loading) return;
 
         const { id: uid } = session.user,
             members = project.current.members?.map(({ id }) => id),
@@ -205,7 +221,8 @@ export class ExhibitionApply extends mixin<
     renderProject() {
         const {
             list,
-            current: { id = 0, summary, logo, link }
+            current: { id = 0, summary, logo, link },
+            loading
         } = project;
 
         return (
@@ -250,10 +267,20 @@ export class ExhibitionApply extends mixin<
                     value={link ?? ''}
                 />
                 <div className="text-center">
-                    <Button className="px-4 mr-3" type="submit" color="success">
+                    <Button
+                        className="px-4 mr-3"
+                        type="submit"
+                        color="success"
+                        disabled={loading}
+                    >
                         提交项目
                     </Button>
-                    <Button className="px-4" type="reset" color="danger">
+                    <Button
+                        className="px-4"
+                        type="reset"
+                        color="danger"
+                        disabled={loading}
+                    >
                         返回
                     </Button>
                 </div>

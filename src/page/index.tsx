@@ -44,6 +44,7 @@ export const PageFrame = observer(() => (
                 <Button href={service.baseURI + 'connect/github/'}>登录</Button>
             ) : (
                 <DropMenu caption={session.user.username}>
+                    <DropMenuItem href="profile">基本信息</DropMenuItem>
                     <DropMenuItem onClick={() => session.signOut()}>
                         退出
                     </DropMenuItem>

@@ -1,4 +1,5 @@
 import { observable } from 'mobx';
+import { buildURLData } from 'web-utility';
 
 import { service } from './service';
 
@@ -43,12 +44,46 @@ export type FileKeys<T> = {
     [K in keyof T]: T[K] extends MediaData ? K : never;
 }[keyof T];
 
-export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
-    abstract name: string;
-    abstract basePath: string;
+export type Query<D extends BaseData> = Omit<NewData<D>, FileKeys<D>> & {
+    _sort?: string;
+    _start?: number;
+    _limit?: number;
+    _publicationState?: 'live' | 'preview';
+};
 
+export abstract class BaseModel {
     @observable
     loading = false;
+
+    static async upload(
+        model: string,
+        id: number,
+        key: string,
+        files: Blob[],
+        module?: string
+    ) {
+        const data = new FormData();
+
+        data.append('ref', model);
+        data.append('refId', id + '');
+        data.append('field', key);
+
+        if (module) data.append('source', module);
+
+        for (const file of files) data.append('files', file);
+
+        const { body } = await service.post<MediaData>('upload', data);
+
+        return body;
+    }
+}
+
+export abstract class CollectionModel<
+    D extends BaseData,
+    K extends keyof D = null
+> extends BaseModel {
+    abstract name: string;
+    abstract basePath: string;
 
     @observable
     current = {} as D;
@@ -56,10 +91,39 @@ export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
     @observable
     list: D[] = [];
 
+    @observable
+    allItems: D[] = [];
+
+    async getOne(id: D['id']) {
+        this.loading = true;
+
+        const { body } = await service.get<D>(`${this.basePath}/${id}`);
+
+        this.loading = false;
+        return (this.current = body);
+    }
+
+    async getAll({ _sort, ...query }: Query<D> = {} as Query<D>) {
+        const { body: count } = await service.get<number>(
+            `${this.basePath}/count?${buildURLData(query)}`
+        );
+        const { body } = await service.get<D[]>(
+            `${this.basePath}?${buildURLData({
+                ...query,
+                _sort,
+                _limit: count
+            })}`
+        );
+        return (this.allItems = body);
+    }
+
     async searchBy(key: K, keyword: string) {
+        this.loading = true;
+
         const { body } = await service.get<D[]>(
             `${this.basePath}?${key}_contains=${keyword}`
         );
+        this.loading = false;
         return (this.list = body);
     }
 
@@ -70,6 +134,8 @@ export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
     }
 
     async update({ id, ...data }: NewData<D>) {
+        this.loading = true;
+
         const [fields, files] = Object.entries(data).reduce(
             ([fields, files], [key, value]) => {
                 if (value instanceof Blob) files[key] = value;
@@ -88,34 +154,23 @@ export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
 
         for (const file in files) await this.upload(body.id, files);
 
+        this.loading = false;
         return (this.current = body);
     }
 
-    async getById(id: D[keyof D]) {
-        const { body } = await service.get<D>(`${this.basePath}/${id}`);
-
-        return (this.current = body);
-    }
-    async upload(id: number, files: Pick<NewData<D>, FileKeys<D>>) {
+    async upload(id: D['id'], files: Pick<NewData<D>, FileKeys<D>>) {
         const map = {} as Pick<D, FileKeys<D>>;
 
-        for (const key in files) {
-            const data = new FormData();
+        this.loading = true;
 
-            data.append('ref', this.name);
-            data.append('refId', id + '');
-            data.append('field', key);
-
-            files[key] =
-                files[key] instanceof Array ? files[key] : [files[key]];
-
-            for (const file of files[key]) data.append('files', file);
-
-            const { body } = await service.post<MediaData>('upload', data);
-
-            map[key] = body;
-        }
-
+        for (const key in files)
+            map[key] = await CollectionModel.upload(
+                this.name,
+                id,
+                key,
+                files[key] instanceof Array ? files[key] : [files[key]]
+            );
+        this.loading = false;
         return map;
     }
 }

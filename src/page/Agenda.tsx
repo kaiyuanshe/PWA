@@ -20,7 +20,7 @@ import { Badge } from 'boot-cell/source/Reminder/Badge';
 import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
 
 import { activity, Program, session } from '../model';
-import { ProgramMap } from './Common';
+import { ProgramMap } from './constants';
 const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
 interface AgendaPageState {
@@ -139,7 +139,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         >
             <Card
                 className="h-100"
-                title={title}
+                title={<a href={'program?pid=' + id}>{title}</a>}
                 header={
                     <div className="d-flex justify-content-around">
                         <Badge color={BadgeColors[cid % BadgeColors.length]}>
@@ -177,7 +177,9 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     {place && (
                         <>
                             <dt>场地</dt>
-                            <dd>{place.location}</dd>
+                            <dd>
+                                <address>{place.location}</address>
+                            </dd>
                         </>
                     )}
                 </dl>
@@ -194,7 +196,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
             <Card
                 title={project ? project.name : organization?.name}
                 image={project ? project.logo?.url : organization?.logo?.url}
-                footer={place?.location}
+                footer={place && <address>{place.location}</address>}
             >
                 {project ? project.summary : organization?.summary}
             </Card>

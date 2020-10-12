@@ -1,11 +1,11 @@
 import { component, mixin, watch, attribute, createCell } from 'web-cell';
 import { observer } from 'mobx-web-cell';
-import { formatDate } from 'web-utility/source/date';
 import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
 import { encodeQRC } from 'boot-cell/source/utility/QRCode';
 
+import { TimeRange } from '../component/TimeRange';
 import style from './MainShowRoom.module.less';
 import { Program, organization, User } from '../model';
 
@@ -38,13 +38,8 @@ export class PartnerDetail extends mixin() {
                 style={{ borderRight: '1px dashed white' }}
             >
                 <p>{title}</p>
-                <p>
-                    {start_time.split('T')[0]}&nbsp;&nbsp;
-                    {formatDate(start_time, 'HH:mm') +
-                        ' ~ ' +
-                        formatDate(end_time, 'HH:mm')}
-                </p>
-                <p>{place}</p>
+                <TimeRange start={start_time} end={end_time} />
+                <address>{place?.location}</address>
             </div>
             <div className="col-7 my-4">{summary}</div>
         </div>

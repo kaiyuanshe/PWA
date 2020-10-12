@@ -22,16 +22,18 @@ export class ProfilePage extends mixin() {
     handleSubmit = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
 
+        if (session.loading) return;
+
         await session.updateProfile(
             formToJSON(event.target as HTMLFormElement)
         );
-        history.push('');
+        return history.push('');
     };
 
     render() {
-        const { id, name, username, email, summary, avatar } =
-                session.user || {},
-            { name: nickname, bio, avatar_url } = session.userGithub || {};
+        const { user, userGithub, loading } = session;
+        const { id, name, username, email, summary, avatar } = user || {},
+            { name: nickname, bio, avatar_url } = userGithub || {};
 
         return (
             <form className="container my-5" onSubmit={this.handleSubmit}>
@@ -78,10 +80,20 @@ export class ProfilePage extends mixin() {
                         />
                     </FormField>
                 </div>
-                <Button className="mr-3" size="lg" onClick={this.handleSync}>
+                <Button
+                    className="mr-3"
+                    size="lg"
+                    disabled={loading}
+                    onClick={this.handleSync}
+                >
                     同步 GitHub
                 </Button>
-                <Button type="submit" color="success" size="lg">
+                <Button
+                    type="submit"
+                    color="success"
+                    size="lg"
+                    disabled={loading}
+                >
                     保存
                 </Button>
             </form>
