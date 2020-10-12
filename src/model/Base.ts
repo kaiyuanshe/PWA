@@ -91,6 +91,11 @@ export abstract class BaseModel<D extends BaseData, K extends keyof D = null> {
         return (this.current = body);
     }
 
+    async getById(id: D[keyof D]) {
+        const { body } = await service.get<D>(`${this.basePath}/${id}`);
+
+        return (this.current = body);
+    }
     async upload(id: number, files: Pick<NewData<D>, FileKeys<D>>) {
         const map = {} as Pick<D, FileKeys<D>>;
 

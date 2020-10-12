@@ -13,6 +13,7 @@ import { AgendaPage } from './Agenda';
 import { ExhibitionApply } from './ExhibitionApply';
 import { MainShowRoom } from './MainShowRoom';
 import { PartnerDetail } from './PartnerDetail';
+import { AgendaDetail } from './AgendaDetail';
 
 const menu = [
     {
@@ -58,7 +59,8 @@ export const PageFrame = observer(() => (
                 { paths: ['profile'], component: ProfilePage },
                 { paths: ['exhibition/apply'], component: ExhibitionApply },
                 { paths: ['showroom'], component: MainShowRoom },
-                { paths: ['organization'], component: PartnerDetail }
+                { paths: ['organization'], component: PartnerDetail },
+                { paths: ['program'], component: AgendaDetail }
             ]}
         />
         <footer className="text-center bg-light py-5">
