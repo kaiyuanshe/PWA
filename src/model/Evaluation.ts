@@ -1,6 +1,6 @@
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 
-import { BaseData, CollectionModel } from './Base';
+import { BaseData, CollectionModel, NewData, Query } from './Base';
 import { User } from './service';
 import { Program } from './Activity';
 import { SessionModel } from './Session';
@@ -34,10 +34,27 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
         );
     }
 
-    @computed
-    get userEvaluation() {
+    @observable
+    userSubmitted = false;
+
+    async getAll(query: Query<Evaluation> = {}) {
+        await super.getAll(query);
+
         const { id: uid } = this.session.user || {};
 
-        return this.allItems.find(({ creator: { id } }) => id === uid);
+        const item = this.allItems.find(({ creator: { id } }) => id === uid);
+
+        if (item) {
+            this.current = item;
+            this.userSubmitted = true;
+        }
+        return this.allItems;
+    }
+
+    async update(data: NewData<Evaluation>) {
+        await super.update(data);
+        await this.getAll();
+
+        return this.current;
     }
 }

@@ -6,10 +6,11 @@ import {
     createCell,
     Fragment
 } from 'web-cell';
-import { formToJSON } from 'web-utility/source/DOM';
+import { observer } from 'mobx-web-cell';
 import { InputGroup } from 'boot-cell/source/Form/InputGroup';
 import { Button } from 'boot-cell/source/Form/Button';
 import { FormField } from 'boot-cell/source/Form/FormField';
+import { Field } from 'boot-cell/source/Form/Field';
 
 import { evaluation, session } from '../model';
 
@@ -18,6 +19,7 @@ export interface EvaluationProps {
     contribution?: number;
 }
 
+@observer
 @component({
     tagName: 'evaluation-form',
     renderTarget: 'children'
@@ -40,17 +42,24 @@ export class Evaluation extends mixin<EvaluationProps>() {
     saveEvaluation = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
 
-        const { creator } = await evaluation.update({
+        const { score, detail } = evaluation.current;
+
+        return evaluation.update({
             creator: session.user.id,
             program: this.program,
             contribution: this.contribution,
-            ...formToJSON(event.target as HTMLFormElement)
+            score,
+            detail
         });
-        self.alert(`${creator.username} 的评价已提交`);
     };
 
     render() {
-        const { averageScore, userEvaluation } = evaluation;
+        const {
+            userSubmitted,
+            averageScore,
+            current: { score, detail }
+        } = evaluation;
+        const showAll = !session.user || userSubmitted;
 
         return (
             <form onSubmit={this.saveEvaluation}>
@@ -64,32 +73,41 @@ export class Evaluation extends mixin<EvaluationProps>() {
                     size="lg"
                     color="warning"
                     label="评分"
-                    defaultValue={
-                        !session.user || userEvaluation
-                            ? averageScore + ''
-                            : '0'
+                    value={(showAll ? averageScore : score) + ''}
+                    disabled={showAll}
+                    onChange={({ target }) =>
+                        evaluation.setCurrent({
+                            score: +(target as HTMLInputElement).value
+                        })
                     }
-                    disabled={!session.user}
                 />
                 {!session.user ? (
                     <p className="text-muted">登录即可评论</p>
-                ) : !userEvaluation ? (
+                ) : userSubmitted ? (
+                    <FormField label="您的评语">
+                        <Field
+                            is="output"
+                            className="text-white"
+                            value={detail}
+                        />
+                    </FormField>
+                ) : (
                     <>
                         <InputGroup
                             is="textarea"
                             name="detail"
                             prepend="我来说两句"
+                            value={detail}
+                            onChange={({ target }) =>
+                                evaluation.setCurrent({
+                                    detail: (target as HTMLInputElement).value
+                                })
+                            }
                         />
                         <Button className="mt-3" type="submit">
                             提交
                         </Button>
                     </>
-                ) : (
-                    <FormField
-                        is="output"
-                        label="您的评语"
-                        value={userEvaluation.detail}
-                    />
                 )}
             </form>
         );

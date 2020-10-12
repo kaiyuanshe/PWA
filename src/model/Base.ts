@@ -94,6 +94,10 @@ export abstract class CollectionModel<
     @observable
     allItems: D[] = [];
 
+    setCurrent(data: Partial<D>) {
+        Object.assign(this.current, data);
+    }
+
     async getOne(id: D['id']) {
         this.loading = true;
 
