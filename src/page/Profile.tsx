@@ -5,7 +5,7 @@ import { FormField } from 'boot-cell/source/Form/FormField';
 import { FileInput } from 'boot-cell/source/Form/FileInput';
 import { Button } from 'boot-cell/source/Form/Button';
 
-import { history, session } from '../model';
+import { NewData, User, session, history } from '../model';
 
 @observer
 @component({
@@ -24,15 +24,18 @@ export class ProfilePage extends mixin() {
 
         if (session.loading) return;
 
-        await session.updateProfile(
-            formToJSON(event.target as HTMLFormElement)
+        const { telphone, ...user } = formToJSON<NewData<User>>(
+            event.target as HTMLFormElement
         );
+        await session.updateProfile({ telphone: telphone + '', ...user });
+
         return history.push('');
     };
 
     render() {
         const { user, userGithub, loading } = session;
-        const { id, name, username, email, summary, avatar } = user || {},
+        const { id, name, username, email, telphone, summary, avatar } =
+                user || {},
             { name: nickname, bio, avatar_url } = userGithub || {};
 
         return (
@@ -43,28 +46,33 @@ export class ProfilePage extends mixin() {
 
                 <div className="row mt-4">
                     <FormField
-                        className="col-12 col-sm-4"
+                        className="col-12 col-sm-6 col-md-3"
                         name="name"
                         required
                         label="昵称"
                         value={nickname || name}
                     />
                     <FormField
-                        className="col-12 col-sm-4"
+                        className="col-12 col-sm-6 col-md-3"
                         is="output"
                         name="username"
                         label="用户名"
                         value={username}
                     />
                     <FormField
-                        className="col-12 col-sm-4"
+                        className="col-12 col-sm-6 col-md-3"
                         is="output"
                         name="email"
                         label="电邮地址"
                         value={email}
                     />
-                </div>
-                <div className="row">
+                    <FormField
+                        className="col-12 col-sm-6 col-md-3"
+                        type="tel"
+                        name="telphone"
+                        label="电话号码"
+                        value={telphone}
+                    />
                     <FormField
                         className="col-12 col-sm-8"
                         is="textarea"

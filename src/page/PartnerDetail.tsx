@@ -68,7 +68,7 @@ export class PartnerDetail extends mixin() {
 
         return (
             <SpinnerBox className={style.ground} cover={loading}>
-                <div className="container overflow-auto">
+                <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{name}</h1>
                     <p className="h4 my-4 text-center">{slogan}</p>
                     {video && (

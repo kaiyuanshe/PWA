@@ -46,6 +46,7 @@ export interface User extends BaseData {
     organizations: Organization[];
     avatar?: MediaData;
     summary: string;
+    telphone?: string;
 }
 
 export interface Category extends BaseData {

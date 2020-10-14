@@ -8,13 +8,10 @@ import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
 
 import style from './MainShowRoom.module.less';
-import { PartnershipTypes, Partnership, activity } from '../model';
+import { PartnerMap } from './constants';
+import { Partnership, activity } from '../model';
 
-const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'],
-    PartnerMap = {
-        [PartnershipTypes.community]: '社区合作伙伴',
-        [PartnershipTypes.media]: '直播媒体合作伙伴'
-    };
+const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
 
 @observer
 @component({
@@ -72,7 +69,7 @@ export class MainShowRoom extends mixin() {
 
         return (
             <SpinnerBox className={style.ground} cover={loading}>
-                <div className="container overflow-auto">
+                <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{name}</h1>
                     <p className="h4 my-4 text-center">{slogan}</p>
                     <Embed

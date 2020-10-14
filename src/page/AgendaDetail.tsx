@@ -66,7 +66,7 @@ export class AgendaDetail extends mixin() {
 
         return (
             <SpinnerBox className={style.ground} cover={loading}>
-                <div className="container overflow-auto">
+                <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{title}</h1>
                     <div className="row mt-3">
                         <TimeRange

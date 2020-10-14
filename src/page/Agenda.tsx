@@ -1,3 +1,4 @@
+import 'array-unique-proposal';
 import {
     component,
     mixin,
@@ -19,8 +20,10 @@ import { Card } from 'boot-cell/source/Content/Card';
 import { Badge } from 'boot-cell/source/Reminder/Badge';
 import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
 
-import { activity, Program, session } from '../model';
+import { TimeRange } from '../component/TimeRange';
 import { ProgramMap } from './constants';
+import { activity, Program, session } from '../model';
+
 const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
 interface AgendaPageState {
@@ -91,7 +94,8 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     value={date}
                     onChange={({ target }) =>
                         this.setState({
-                            date: (target as HTMLSelectElement).value
+                            date: (target as HTMLSelectElement).value,
+                            category: 0
                         })
                     }
                 >
@@ -109,9 +113,11 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     }
                 >
                     <option value={0}>全部类别</option>
-                    {programsOfToday.map(({ category: { id, name } }) => (
-                        <option value={id}>{name}</option>
-                    ))}
+                    {programsOfToday
+                        .uniqueBy(({ category: { id } }) => id)
+                        .map(({ category: { id, name } }) => (
+                            <option value={id}>{name}</option>
+                        ))}
                 </FormField>
                 <div className="col-12 col-sm-4">
                     <Button block color="success" onClick={this.showCurrent}>
@@ -151,17 +157,17 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     </div>
                 }
                 footer={
-                    <div className="text-center">
-                        {formatDate(start_time, 'M-D H:mm') +
-                            ' ~ ' +
-                            formatDate(end_time, 'M-D H:mm')}
-                    </div>
+                    <TimeRange
+                        className="text-center"
+                        start={start_time}
+                        end={end_time}
+                    />
                 }
             >
                 <dl>
                     <dt>讲师</dt>
-                    <dd className="d-flex py-2">
-                        {mentors.map(({ avatar, username }) => (
+                    <dd className="d-flex flex-wrap justify-content-between py-2">
+                        {mentors.map(({ avatar, name, username }) => (
                             <div>
                                 {avatar && (
                                     <Image
@@ -170,7 +176,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                                         src={avatar.url}
                                     />
                                 )}
-                                {username}
+                                {name || username}
                             </div>
                         ))}
                     </dd>

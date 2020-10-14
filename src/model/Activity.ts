@@ -1,6 +1,7 @@
 import { computed, observable } from 'mobx';
 import { Day, formatDate } from 'web-utility/source/date';
 import { buildURLData } from 'web-utility/source/URL';
+import marked from 'marked';
 
 import { User, Category, Place, service } from './service';
 import { BaseData, MediaData, CollectionModel, NewData } from './Base';
@@ -97,8 +98,10 @@ export class ActivityModel extends CollectionModel<Activity> {
             activity = (await service.get<Activity>('activities?id=' + id))
                 .body;
 
+        const { description, ...data } = activity;
+
         this.loading = false;
-        return (this.current = activity);
+        return (this.current = { description: marked(description), ...data });
     }
 
     async getPrograms(aid = this.current.id, verified = true) {

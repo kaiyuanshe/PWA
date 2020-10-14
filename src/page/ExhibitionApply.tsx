@@ -48,6 +48,8 @@ export class ExhibitionApply extends mixin<
     connectedCallback() {
         this.classList.add('d-block', 'container');
 
+        if (this.aid !== activity.current.id) activity.getOne(this.aid);
+
         super.connectedCallback();
     }
 
@@ -289,6 +291,8 @@ export class ExhibitionApply extends mixin<
     }
 
     render(_, { step }: ExhibitionApplyState) {
+        const { description } = activity.current;
+
         return (
             <>
                 <h2 className="mt-5 mb-4">开源市集 展位申请</h2>
@@ -297,7 +301,7 @@ export class ExhibitionApply extends mixin<
                     <Step icon={1}>参展单位</Step>
                     <TabPanel className="text-center">
                         <Button
-                            className="px-5 mr-3"
+                            className="px-5 m-3"
                             color="warning"
                             size="lg"
                             onClick={() => this.setState({ step: 2 })}
@@ -311,6 +315,10 @@ export class ExhibitionApply extends mixin<
                         >
                             组织
                         </Button>
+                        <article
+                            className="text-left"
+                            innerHTML={description}
+                        />
                     </TabPanel>
 
                     <Step icon={2}>组织信息</Step>

@@ -18,6 +18,7 @@
     "main": "src/index.html",
     "dependencies": {
         "@nuintun/qrcode": "^3.0.1",
+        "array-unique-proposal": "^0.3.1",
         "boot-cell": "^1.2.1",
         "bootstrap-icons": "^1.0.0",
         "browser-unhandled-rejection": "^1.0.2",
@@ -25,6 +26,7 @@
         "classnames": "^2.2.6",
         "koajax": "^0.6.2",
         "lodash.debounce": "^4.0.8",
+        "marked": "^1.2.0",
         "mobx": "^5.15.7",
         "mobx-web-cell": "^0.3.2",
         "web-cell": "^2.2.0",
@@ -34,6 +36,7 @@
         "@octokit/types": "^5.5.0",
         "@types/classnames": "^2.2.10",
         "@types/lodash.debounce": "^4.0.6",
+        "@types/marked": "^1.1.0",
         "@typescript-eslint/parser": "^4.4.0",
         "autoprefixer": "^9.8.6",
         "eslint": "^7.11.0",
