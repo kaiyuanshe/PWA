@@ -1,5 +1,5 @@
 import { observable } from 'mobx';
-import { CollectionModel } from './Base';
+import { CollectionModel, pending } from './Base';
 import { service } from './service';
 import { Program } from './Activity';
 import { Evaluation } from './Evaluation';
@@ -14,22 +14,19 @@ export class ProgramModel extends CollectionModel<
     @observable
     evaluations: Evaluation[] = [];
 
+    @pending
     async getSameCategory(cid: number, pid = this.current.id) {
-        this.loading = true;
-
         const { body } = await service.get<Program[]>(
             `programs?category=${cid}&id_ne=${pid}`
         );
-        this.loading = false;
         return (this.list = body);
     }
 
+    @pending
     async getEvaluation(pid: number) {
-        this.loading = true;
         const { body } = await service.get<Evaluation[]>(
             'evaluations?program=' + pid
         );
-        this.loading = false;
         return (this.evaluations = body);
     }
 }

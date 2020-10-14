@@ -1,4 +1,4 @@
-import { PartnershipTypes } from '../model';
+import { PartnershipTypes } from '../../model';
 
 export const ProgramMap = {
     lecture: '演讲',

@@ -23,7 +23,7 @@ import {
     activity,
     organization,
     project
-} from '../model';
+} from '../../model';
 
 interface ExhibitionApplyState {
     step: number;

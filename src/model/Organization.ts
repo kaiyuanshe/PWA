@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 
 import { service } from './service';
-import { BaseData, MediaData, CollectionModel } from './Base';
+import { BaseData, MediaData, CollectionModel, pending } from './Base';
 import { Program } from './Activity';
 
 export interface Organization extends BaseData {
@@ -24,21 +24,17 @@ export class OrganizationModel extends CollectionModel<
     @observable
     programs: Program[] = [];
 
+    @pending
     async getOne(id: Organization['id']) {
-        this.loading = true;
-
         const { body: list } = await service.get<Program[]>(
             'programs/?organization=' + id
         );
         this.programs = list;
 
-        if (list[0]) {
-            this.loading = false;
-            return (this.current = list[0].organization);
-        }
+        if (list[0]) return (this.current = list[0].organization);
+
         const { body } = await service.get<Organization>('organizations/' + id);
 
-        this.loading = false;
         return (this.current = body);
     }
 }

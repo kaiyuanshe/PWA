@@ -1,13 +1,20 @@
-import { component, mixin, watch, attribute, createCell } from 'web-cell';
+import {
+    component,
+    mixin,
+    watch,
+    attribute,
+    createCell,
+    Fragment
+} from 'web-cell';
 import { observer } from 'mobx-web-cell';
 import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
 import { encodeQRC } from 'boot-cell/source/utility/QRCode';
 
-import { TimeRange } from '../component/TimeRange';
-import style from './MainShowRoom.module.less';
-import { Program, organization, User } from '../model';
+import { TimeRange } from '../../component/TimeRange';
+import style from './ShowRoom.module.less';
+import { Program, organization, User } from '../../model';
 
 @observer
 @component({
@@ -32,7 +39,7 @@ export class PartnerDetail extends mixin() {
         place,
         summary
     }: Program) => (
-        <div className="row mb-5 px-2" style={{ backgroundColor: '#745491' }}>
+        <div className={`row mb-5 px-2 ${style.card}`}>
             <div
                 className="col-5 my-4"
                 style={{ borderRight: '1px dashed white' }}
@@ -46,7 +53,7 @@ export class PartnerDetail extends mixin() {
     );
 
     renderMentor = ({ avatar, name, summary }: User) => (
-        <div className="row px-2" style={{ backgroundColor: '#745491' }}>
+        <div className={`row px-2 ${style.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
@@ -80,10 +87,7 @@ export class PartnerDetail extends mixin() {
                             allowfullscreen="true"
                         />
                     )}
-                    <header
-                        className="row mt-5 mb-5 px-2"
-                        style={{ backgroundColor: '#745491' }}
-                    >
+                    <header className={`row mt-5 mb-5 px-2 ${style.card}`}>
                         <div className="col-2 my-4 text-center">
                             <Image thumbnail src={logo?.url} />
                             {message_link && (
@@ -96,16 +100,22 @@ export class PartnerDetail extends mixin() {
                         </div>
                         <div className="col-10 my-4">{summary}</div>
                     </header>
-
-                    <h2 className="text-center">精彩内容</h2>
-                    <section className="my-5">
-                        {programs.map(this.renderProgram)}
-                    </section>
-
-                    <h2 className="text-center">参会大咖</h2>
-                    <section className="my-5">
-                        {mentors.map(this.renderMentor)}
-                    </section>
+                    {programs.length > 0 ? (
+                        <>
+                            <h2 className="text-center">精彩内容</h2>
+                            <section className="my-5">
+                                {programs.map(this.renderProgram)}
+                            </section>
+                        </>
+                    ) : null}
+                    {mentors.length > 0 ? (
+                        <>
+                            <h2 className="text-center">参会大咖</h2>
+                            <section className="my-5">
+                                {mentors.map(this.renderMentor)}
+                            </section>
+                        </>
+                    ) : null}
                 </div>
             </SpinnerBox>
         );

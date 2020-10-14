@@ -78,6 +78,19 @@ export abstract class BaseModel {
     }
 }
 
+export function pending(target: any, key: string, meta: PropertyDescriptor) {
+    const origin: (...data: any[]) => Promise<any> = meta.value;
+
+    meta.value = async function (this: BaseModel) {
+        this.loading = true;
+        try {
+            return await origin.apply(this, arguments);
+        } finally {
+            this.loading = false;
+        }
+    };
+}
+
 export abstract class CollectionModel<
     D extends BaseData,
     K extends keyof D = null
@@ -98,15 +111,14 @@ export abstract class CollectionModel<
         Object.assign(this.current, data);
     }
 
+    @pending
     async getOne(id: D['id']) {
-        this.loading = true;
-
         const { body } = await service.get<D>(`${this.basePath}/${id}`);
 
-        this.loading = false;
         return (this.current = body);
     }
 
+    @pending
     async getAll({ _sort, ...query }: Query<D> = {} as Query<D>) {
         const { body: count } = await service.get<number>(
             `${this.basePath}/count?${buildURLData(query)}`
@@ -121,13 +133,11 @@ export abstract class CollectionModel<
         return (this.allItems = body);
     }
 
+    @pending
     async searchBy(key: K, keyword: string) {
-        this.loading = true;
-
         const { body } = await service.get<D[]>(
             `${this.basePath}?${key}_contains=${keyword}`
         );
-        this.loading = false;
         return (this.list = body);
     }
 
@@ -137,9 +147,8 @@ export abstract class CollectionModel<
         return (this.current = item ?? ({} as D));
     }
 
+    @pending
     async update({ id, ...data }: NewData<D>) {
-        this.loading = true;
-
         const [fields, files] = Object.entries(data).reduce(
             ([fields, files], [key, value]) => {
                 if (value instanceof Blob) files[key] = value;
@@ -158,14 +167,12 @@ export abstract class CollectionModel<
 
         for (const file in files) await this.upload(body.id, files);
 
-        this.loading = false;
         return (this.current = body);
     }
 
+    @pending
     async upload(id: D['id'], files: Pick<NewData<D>, FileKeys<D>>) {
         const map = {} as Pick<D, FileKeys<D>>;
-
-        this.loading = true;
 
         for (const key in files)
             map[key] = await CollectionModel.upload(
@@ -174,7 +181,6 @@ export abstract class CollectionModel<
                 key,
                 files[key] instanceof Array ? files[key] : [files[key]]
             );
-        this.loading = false;
         return map;
     }
 }

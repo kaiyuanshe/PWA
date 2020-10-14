@@ -20,9 +20,9 @@ import { Card } from 'boot-cell/source/Content/Card';
 import { Badge } from 'boot-cell/source/Reminder/Badge';
 import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
 
-import { TimeRange } from '../component/TimeRange';
+import { TimeRange } from '../../component/TimeRange';
 import { ProgramMap } from './constants';
-import { activity, Program, session } from '../model';
+import { activity, Program, session } from '../../model';
 
 const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
@@ -145,7 +145,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         >
             <Card
                 className="h-100"
-                title={<a href={'program?pid=' + id}>{title}</a>}
+                title={<a href={'activity/agenda?pid=' + id}>{title}</a>}
                 header={
                     <div className="d-flex justify-content-around">
                         <Badge color={BadgeColors[cid % BadgeColors.length]}>
@@ -194,19 +194,16 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
     );
 
     renderExhibition = ({ id, organization, project, place }: Program) => (
-        <div
-            className="col-12 col-sm-6 col-md-4 mb-4"
+        <Card
+            className="mt-2 shadow-sm"
             id={'program-' + id}
             key={'program-' + id}
+            title={project ? project.name : organization?.name}
+            image={project ? project.logo?.url : organization?.logo?.url}
+            footer={place && <address>{place.location}</address>}
         >
-            <Card
-                title={project ? project.name : organization?.name}
-                image={project ? project.logo?.url : organization?.logo?.url}
-                footer={place && <address>{place.location}</address>}
-            >
-                {project ? project.summary : organization?.summary}
-            </Card>
-        </div>
+            {project ? project.summary : organization?.summary}
+        </Card>
     );
 
     render(_, { date, category }: AgendaPageState) {
@@ -227,7 +224,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         const applyButton = (
             <Button
                 className="mt-3"
-                href={'exhibition/apply?aid=' + id}
+                href={'activity/exhibition/apply?aid=' + id}
                 disabled={!session.user}
             >
                 立即申请
@@ -263,13 +260,13 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                             </TooltipBox>
                         )}
                     </p>
-                    <section className="row">
+                    <section className="card-columns">
                         {currentExhibitions.map(this.renderExhibition)}
                     </section>
                 </main>
 
                 <footer className="my-5 text-center">
-                    <Button size="lg" href={'showroom?aid=' + id}>
+                    <Button size="lg" href={'activity/showroom?aid=' + id}>
                         合作伙伴
                     </Button>
                 </footer>

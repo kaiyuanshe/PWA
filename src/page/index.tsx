@@ -9,11 +9,11 @@ import { DropMenu, DropMenuItem } from 'boot-cell/source/Navigator/DropMenu';
 
 import { history, service, session } from '../model';
 import { ProfilePage } from './Profile';
-import { AgendaPage } from './Agenda';
-import { ExhibitionApply } from './ExhibitionApply';
-import { MainShowRoom } from './MainShowRoom';
-import { PartnerDetail } from './PartnerDetail';
-import { AgendaDetail } from './AgendaDetail';
+import { AgendaPage } from './Activity';
+import { ExhibitionApply } from './Activity/ExhibitionApply';
+import { ShowRoom } from './Activity/ShowRoom';
+import { PartnerDetail } from './Activity/PartnerDetail';
+import { AgendaDetail } from './Activity/AgendaDetail';
 
 const menu = [
     {
@@ -58,10 +58,13 @@ export const PageFrame = observer(() => (
             routes={[
                 { paths: [''], component: AgendaPage },
                 { paths: ['profile'], component: ProfilePage },
-                { paths: ['exhibition/apply'], component: ExhibitionApply },
-                { paths: ['showroom'], component: MainShowRoom },
-                { paths: ['organization'], component: PartnerDetail },
-                { paths: ['program'], component: AgendaDetail }
+                {
+                    paths: ['activity/exhibition/apply'],
+                    component: ExhibitionApply
+                },
+                { paths: ['activity/showroom'], component: ShowRoom },
+                { paths: ['activity/partner'], component: PartnerDetail },
+                { paths: ['activity/agenda'], component: AgendaDetail }
             ]}
         />
         <footer className="text-center bg-light py-5">

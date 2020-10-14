@@ -11,11 +11,11 @@ import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Image } from 'boot-cell/source/Media/Image';
 import { ListGroup, ListItem } from 'boot-cell/source/Content/ListGroup';
 
-import { TimeRange } from '../component/TimeRange';
-import { Evaluation } from '../component/Evaluation';
+import { TimeRange } from '../../component/TimeRange';
+import { Evaluation } from '../../component/Evaluation';
 import { ProgramMap } from './constants';
-import style from './MainShowRoom.module.less';
-import { program, User } from '../model';
+import style from './ShowRoom.module.less';
+import { program, User } from '../../model';
 
 @observer
 @component({
@@ -36,7 +36,7 @@ export class AgendaDetail extends mixin() {
     }
 
     renderMentor = ({ avatar, name, summary }: User) => (
-        <div className="row px-2" style={{ backgroundColor: '#745491' }}>
+        <div className={`row px-2 ${style.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
@@ -85,8 +85,7 @@ export class AgendaDetail extends mixin() {
                         <>
                             <h2 className="text-center mt-5">议题简介</h2>
                             <div
-                                className="row mt-4 mb-5 px-3 py-4"
-                                style={{ backgroundColor: '#745491' }}
+                                className={`row mt-4 mb-5 px-3 py-4 ${style.card}`}
                             >
                                 {summary}
                             </div>
@@ -98,10 +97,7 @@ export class AgendaDetail extends mixin() {
                     </section>
 
                     <h2 className="text-center">专场主题</h2>
-                    <section
-                        className="mt-4 mb-5"
-                        style={{ backgroundColor: '#745491' }}
-                    >
+                    <section className={`mt-4 mb-5 ${style.card}`}>
                         <h5 className="text-center my-2">{category?.name}</h5>
                         <p className="mb-3 px-3">{category?.summary}</p>
                         {list.length > 0 ? (
@@ -117,7 +113,9 @@ export class AgendaDetail extends mixin() {
                                 </h5>
                                 <ListGroup>
                                     {list.map(({ id, title }) => (
-                                        <ListItem href={'program?pid=' + id}>
+                                        <ListItem
+                                            href={'activity/agenda?pid=' + id}
+                                        >
                                             {title}
                                         </ListItem>
                                     ))}

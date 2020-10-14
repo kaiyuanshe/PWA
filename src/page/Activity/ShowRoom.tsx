@@ -7,9 +7,9 @@ import { Button } from 'boot-cell/source/Form/Button';
 import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
 
-import style from './MainShowRoom.module.less';
+import style from './ShowRoom.module.less';
 import { PartnerMap } from './constants';
-import { Partnership, activity } from '../model';
+import { Partnership, activity } from '../../model';
 
 const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
 
@@ -18,7 +18,7 @@ const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社�
     tagName: 'main-playroom',
     renderTarget: 'children'
 })
-export class MainShowRoom extends mixin() {
+export class ShowRoom extends mixin() {
     @attribute
     @watch
     aid = 0;
@@ -43,7 +43,7 @@ export class MainShowRoom extends mixin() {
                         'text-decoration-none',
                         'text-white'
                     )}
-                    href={'organization?oid=' + id}
+                    href={'activity/partner?oid=' + id}
                 >
                     <div className={style.tag}>{PartnerMap[type]}</div>
                     {slogan ? (

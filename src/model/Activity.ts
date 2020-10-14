@@ -4,7 +4,7 @@ import { buildURLData } from 'web-utility/source/URL';
 import marked from 'marked';
 
 import { User, Category, Place, service } from './service';
-import { BaseData, MediaData, CollectionModel, NewData } from './Base';
+import { BaseData, MediaData, CollectionModel, NewData, pending } from './Base';
 import { Project } from './Project';
 import { Organization } from './Organization';
 
@@ -83,9 +83,8 @@ export class ActivityModel extends CollectionModel<Activity> {
         return days;
     }
 
+    @pending
     async getOne(id: Activity['id']) {
-        this.loading = true;
-
         const { body } = await service.get<Partnership[]>(
             'partner-ships?_sort=level:DESC&activity=' + id
         );
@@ -100,13 +99,11 @@ export class ActivityModel extends CollectionModel<Activity> {
 
         const { description, ...data } = activity;
 
-        this.loading = false;
         return (this.current = { description: marked(description), ...data });
     }
 
+    @pending
     async getPrograms(aid = this.current.id, verified = true) {
-        this.loading = true;
-
         const { body } = await service.get<Program[]>(
             'programs?' +
                 buildURLData({
@@ -122,12 +119,12 @@ export class ActivityModel extends CollectionModel<Activity> {
             if (program.type !== 'exhibition') agenda.push(program);
             else exhibitions.push(program);
 
-        this.loading = false;
         this.currentAgenda = agenda;
         this.currentExhibitions = exhibitions;
         return body;
     }
 
+    @pending
     async createProgram({
         type,
         start_time,
