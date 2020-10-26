@@ -2,7 +2,7 @@ import { observable } from 'mobx';
 
 import { service } from './service';
 import { BaseData, MediaData, CollectionModel, pending } from './Base';
-import { Program } from './Activity';
+import { Program } from './Program';
 
 export interface Organization extends BaseData {
     name: string;

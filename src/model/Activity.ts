@@ -1,11 +1,9 @@
-import { computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import { Day, formatDate } from 'web-utility/source/date';
-import { buildURLData } from 'web-utility/source/URL';
 import marked from 'marked';
 
-import { User, Category, Place, service } from './service';
-import { BaseData, MediaData, CollectionModel, NewData, pending } from './Base';
-import { Project } from './Project';
+import { service } from './service';
+import { BaseData, MediaData, CollectionModel, pending } from './Base';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -17,24 +15,6 @@ export interface Activity extends BaseData {
     start_time: string;
     end_time: string;
     location: string;
-}
-
-export interface Program extends BaseData {
-    title: string;
-    start_time: string;
-    end_time: string;
-    summary?: string;
-    mentors: User[];
-    activity: Activity;
-    type: 'lecture' | 'workshop' | 'exhibition';
-    place?: Place;
-    evaluations: any[];
-    accounts: any[];
-    documents: MediaData[];
-    verified: boolean;
-    category: Category;
-    project?: Project;
-    organization?: Organization;
 }
 
 export enum PartnershipTypes {
@@ -60,12 +40,6 @@ export interface Partnership extends BaseData {
 export class ActivityModel extends CollectionModel<Activity> {
     name = 'activity';
     basePath = 'activities';
-
-    @observable
-    currentAgenda: Program[] = [];
-
-    @observable
-    currentExhibitions: Program[] = [];
 
     @computed
     get currentDays() {
@@ -100,51 +74,5 @@ export class ActivityModel extends CollectionModel<Activity> {
         const { description, ...data } = activity;
 
         return (this.current = { description: marked(description), ...data });
-    }
-
-    @pending
-    async getPrograms(aid = this.current.id, verified = true) {
-        const { body } = await service.get<Program[]>(
-            'programs?' +
-                buildURLData({
-                    activity: aid,
-                    verified,
-                    _sort: 'start_time:ASC'
-                })
-        );
-        const agenda: Program[] = [],
-            exhibitions: Program[] = [];
-
-        for (const program of body)
-            if (program.type !== 'exhibition') agenda.push(program);
-            else exhibitions.push(program);
-
-        this.currentAgenda = agenda;
-        this.currentExhibitions = exhibitions;
-        return body;
-    }
-
-    @pending
-    async createProgram({
-        type,
-        start_time,
-        end_time,
-        activity,
-        ...data
-    }: NewData<Program>) {
-        if (type === 'exhibition') {
-            if (!(start_time && end_time) && activity !== this.current.id)
-                await this.getOne(activity);
-
-            ({ start_time, end_time } = this.current);
-        }
-        const { body } = await service.post<Program>('programs', {
-            type,
-            start_time,
-            end_time,
-            activity,
-            ...data
-        });
-        return body;
     }
 }

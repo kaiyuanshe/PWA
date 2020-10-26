@@ -22,7 +22,8 @@ import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
 
 import { TimeRange } from '../../component/TimeRange';
 import { ProgramMap } from './constants';
-import { activity, Program, session } from '../../model';
+import style from './index.module.less';
+import { activity, program, Program, session } from '../../model';
 
 const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
@@ -56,7 +57,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                 date: currentDays.find(day => day === today) || currentDays[0]
             });
         });
-        activity.getPrograms(this.aid);
+        program.getAll({ activity: this.aid });
 
         super.connectedCallback();
     }
@@ -67,7 +68,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
         const now = Date.now(),
             today = AgendaPage.toady,
             { date } = this.state,
-            { currentAgenda } = activity;
+            { currentAgenda } = program;
 
         if (date !== today) await this.setState({ date: today, category: 0 });
 
@@ -80,7 +81,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
     };
 
     renderFilter(programsOfToday: Program[]) {
-        const { date } = this.state,
+        const { date, category } = this.state,
             { currentDays } = activity;
 
         return (
@@ -106,6 +107,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                 <FormField
                     is="select"
                     className="col-6 col-sm-4"
+                    value={category + ''}
                     onChange={({ target }) =>
                         this.setState({
                             category: +(target as HTMLSelectElement).value
@@ -195,10 +197,18 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
 
     renderExhibition = ({ id, organization, project, place }: Program) => (
         <Card
-            className="mt-2 shadow-sm"
+            className={`mt-2 shadow-sm ${style.exhibition}`}
             id={'program-' + id}
             key={'program-' + id}
-            title={project ? project.name : organization?.name}
+            title={
+                <a
+                    className="stretched-link"
+                    target="_blank"
+                    href={project ? project.link : organization?.link}
+                >
+                    {project ? project.name : organization?.name}
+                </a>
+            }
             image={project ? project.logo?.url : organization?.logo?.url}
             footer={place && <address>{place.location}</address>}
         >
@@ -208,11 +218,10 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
 
     render(_, { date, category }: AgendaPageState) {
         const {
-            loading,
-            current: { banner, id },
-            currentAgenda,
-            currentExhibitions
-        } = activity;
+                loading,
+                current: { banner, id }
+            } = activity,
+            { currentAgenda, currentExhibitions } = program;
 
         const programsOfToday = currentAgenda.filter(({ start_time }) =>
             start_time.startsWith(date)

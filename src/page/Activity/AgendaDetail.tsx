@@ -28,9 +28,7 @@ export class AgendaDetail extends mixin() {
     pid = 0;
 
     connectedCallback() {
-        program
-            .getOne(this.pid)
-            .then(({ category: { id } }) => program.getSameCategory(id));
+        program.getOne(this.pid).then(() => program.getSameCategory());
 
         super.connectedCallback();
     }

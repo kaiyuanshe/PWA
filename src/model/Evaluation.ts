@@ -2,7 +2,7 @@ import { computed, observable } from 'mobx';
 
 import { BaseData, CollectionModel, NewData, Query } from './Base';
 import { User } from './service';
-import { Program } from './Activity';
+import { Program } from './Program';
 import { SessionModel } from './Session';
 
 export interface Evaluation extends BaseData {

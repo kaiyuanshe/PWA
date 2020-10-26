@@ -22,7 +22,8 @@ import {
     session,
     activity,
     organization,
-    project
+    project,
+    program
 } from '../../model';
 
 interface ExhibitionApplyState {
@@ -87,7 +88,7 @@ export class ExhibitionApply extends mixin<
         );
         if (type !== 'submit') return this.setState({ step: 2 });
 
-        await activity.createProgram({
+        await program.update({
             activity: this.aid,
             organization: id,
             type: 'exhibition',
@@ -208,7 +209,7 @@ export class ExhibitionApply extends mixin<
             organization: organization || undefined,
             ...data
         });
-        await activity.createProgram({
+        await program.update({
             activity: this.aid,
             project: id,
             type: 'exhibition',
