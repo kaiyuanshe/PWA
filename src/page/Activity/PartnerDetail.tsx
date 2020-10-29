@@ -80,11 +80,11 @@ export class PartnerDetail extends mixin() {
                     <p className="h4 my-4 text-center">{slogan}</p>
                     {video && (
                         <Embed
-                            is="iframe"
+                            is="video"
                             className={style['main-video']}
                             src={video.url}
-                            framespacing="0"
-                            allowfullscreen="true"
+                            controls
+                            autoplay
                         />
                     )}
                     <header className={`row mt-5 mb-5 px-2 ${style.card}`}>

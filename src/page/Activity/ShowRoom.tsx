@@ -46,14 +46,12 @@ export class ShowRoom extends mixin() {
                     href={'activity/partner?oid=' + id}
                 >
                     <div className={style.tag}>{PartnerMap[type]}</div>
-                    {slogan ? (
+                    {slogan && (
                         <h5 style={{ fontSize: '16px', fontWeight: 'bold' }}>
                             {slogan}
                         </h5>
-                    ) : (
-                        <div />
                     )}
-                    {video && <Embed is="iframe" src={video.url} />}
+                    {video && <Embed is="video" hoverPlay src={video.url} />}
                     <p style={{ fontSize: '13px' }}>{summary}</p>
                     <Image className={style.logoTag} thumbnail src={logo.url} />
                 </a>
@@ -75,7 +73,7 @@ export class ShowRoom extends mixin() {
                     <Embed
                         is="iframe"
                         className={style['main-video']}
-                        src="//player.bilibili.com/player.html?aid=754280090&amp;bvid=BV1Dk4y117oW&amp;cid=226560058&amp;page=1"
+                        src="//player.bilibili.com/player.html?aid=838735500&amp;bvid=BV1Sg4y1v7EX&amp;cid=207306433&amp;page=1"
                         framespacing="0"
                         allowfullscreen="true"
                     />
