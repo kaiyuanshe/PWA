@@ -1,10 +1,11 @@
 import 'regenerator-runtime/runtime';
 import { auto } from 'browser-unhandled-rejection';
+import { APIError } from 'mobx-strapi';
 import { serviceWorkerUpdate } from 'web-utility';
 import { documentReady, render, createCell } from 'web-cell';
 
 import { PageFrame } from './page';
-import { APIError, session } from './model';
+import { session } from './model';
 
 auto();
 
@@ -12,8 +13,6 @@ self.addEventListener('unhandledrejection', event => {
     const { message, body } = event.reason as APIError;
 
     if (!message) return;
-
-    event.preventDefault();
 
     const text =
         body &&

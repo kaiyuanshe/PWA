@@ -7,6 +7,7 @@ import {
     Fragment
 } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import { NewData } from 'mobx-strapi';
 import { formToJSON } from 'web-utility/source/DOM';
 import debounce from 'lodash.debounce';
 
@@ -17,7 +18,6 @@ import { FormField } from 'boot-cell/source/Form/FormField';
 import { FileInput } from 'boot-cell/source/Form/FileInput';
 
 import {
-    NewData,
     Project,
     session,
     activity,
@@ -28,7 +28,7 @@ import {
 
 interface ExhibitionApplyState {
     step: number;
-    organization: number;
+    organization: string;
 }
 
 @observer
@@ -42,9 +42,9 @@ export class ExhibitionApply extends mixin<
 >() {
     @attribute
     @watch
-    aid = 0;
+    aid = '';
 
-    state = { step: 0, organization: 0 };
+    state = { step: 0, organization: '' };
 
     connectedCallback() {
         this.classList.add('d-block', 'container');
@@ -57,7 +57,7 @@ export class ExhibitionApply extends mixin<
     handleBack = (event: Event) => {
         event.stopPropagation();
 
-        return this.setState({ step: 0, organization: 0 });
+        return this.setState({ step: 0, organization: '' });
     };
 
     searchOrganization = debounce(

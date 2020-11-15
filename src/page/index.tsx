@@ -1,13 +1,14 @@
 import { createCell, Fragment } from 'web-cell';
 import { CellRouter } from 'cell-router/source';
 import { observer } from 'mobx-web-cell';
+import { service } from 'mobx-strapi';
 
 import { NavBar } from 'boot-cell/source/Navigator/NavBar';
 import { NavLink } from 'boot-cell/source/Navigator/Nav';
 import { Button } from 'boot-cell/source/Form/Button';
 import { DropMenu, DropMenuItem } from 'boot-cell/source/Navigator/DropMenu';
 
-import { history, service, session } from '../model';
+import { history, session } from '../model';
 import { ProfilePage } from './Profile';
 import { AgendaPage } from './Activity';
 import { ExhibitionApply } from './Activity/ExhibitionApply';

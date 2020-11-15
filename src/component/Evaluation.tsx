@@ -15,8 +15,8 @@ import { Field } from 'boot-cell/source/Form/Field';
 import { evaluation, session } from '../model';
 
 export interface EvaluationProps {
-    program?: number;
-    contribution?: number;
+    program?: string;
+    contribution?: string;
 }
 
 @observer
@@ -27,11 +27,11 @@ export interface EvaluationProps {
 export class Evaluation extends mixin<EvaluationProps>() {
     @attribute
     @watch
-    program?: number;
+    program?: string;
 
     @attribute
     @watch
-    contribution?: number;
+    contribution?: string;
 
     connectedCallback() {
         evaluation.getAll();

@@ -1,11 +1,12 @@
 import { component, mixin, createCell } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import { NewData } from 'mobx-strapi';
 import { formToJSON } from 'web-utility/source/DOM';
 import { FormField } from 'boot-cell/source/Form/FormField';
 import { FileInput } from 'boot-cell/source/Form/FileInput';
 import { Button } from 'boot-cell/source/Form/Button';
 
-import { NewData, User, session, history } from '../model';
+import { User, session, history } from '../model';
 
 @observer
 @component({

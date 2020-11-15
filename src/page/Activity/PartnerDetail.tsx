@@ -24,7 +24,7 @@ import { Program, organization, User } from '../../model';
 export class PartnerDetail extends mixin() {
     @attribute
     @watch
-    oid = 0;
+    oid = '';
 
     connectedCallback() {
         organization.getOne(this.oid);

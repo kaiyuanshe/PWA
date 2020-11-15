@@ -1,6 +1,7 @@
-import { BaseData, MediaData, CollectionModel } from './Base';
-import { Organization } from './Organization';
+import { BaseData, MediaData, CollectionModel } from 'mobx-strapi';
+
 import { User } from './service';
+import { Organization } from './Organization';
 
 export interface Project extends BaseData {
     name: string;

@@ -21,7 +21,7 @@ const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社�
 export class ShowRoom extends mixin() {
     @attribute
     @watch
-    aid = 0;
+    aid = '';
 
     connectedCallback() {
         if (this.aid !== activity.current.id) activity.getOne(this.aid);

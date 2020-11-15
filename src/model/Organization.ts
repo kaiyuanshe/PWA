@@ -1,7 +1,12 @@
 import { observable } from 'mobx';
+import {
+    BaseData,
+    MediaData,
+    CollectionModel,
+    service,
+    loading
+} from 'mobx-strapi';
 
-import { service } from './service';
-import { BaseData, MediaData, CollectionModel, pending } from './Base';
 import { Program } from './Program';
 
 export interface Organization extends BaseData {
@@ -24,7 +29,7 @@ export class OrganizationModel extends CollectionModel<
     @observable
     programs: Program[] = [];
 
-    @pending
+    @loading
     async getOne(id: Organization['id']) {
         const { body: list } = await service.get<Program[]>(
             'programs/?organization=' + id

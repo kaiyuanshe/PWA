@@ -1,9 +1,9 @@
 import { computed, observable } from 'mobx';
+import { BaseData, NewData, Query, CollectionModel } from 'mobx-strapi';
 
-import { BaseData, CollectionModel, NewData, Query } from './Base';
 import { User } from './service';
+import { UserSessionModel } from './Session';
 import { Program } from './Program';
-import { SessionModel } from './Session';
 
 export interface Evaluation extends BaseData {
     score: number;
@@ -17,9 +17,9 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
     name = 'evaluation';
     basePath = 'evaluations';
 
-    session: SessionModel;
+    session: UserSessionModel;
 
-    constructor(session: SessionModel) {
+    constructor(session: UserSessionModel) {
         super();
         this.session = session;
     }

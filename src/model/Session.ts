@@ -1,70 +1,23 @@
-import { observable } from 'mobx';
-import { UsersGetByUsernameResponseData } from '@octokit/types';
+import { SessionModel, NewData, loading } from 'mobx-strapi';
 
-import { User, APIError, service, setToken, github } from './service';
-import { BaseModel, NewData, pending } from './Base';
+import { User } from './service';
 
-export class SessionModel extends BaseModel {
-    @observable
-    user?: User;
-
-    @observable
-    userGithub?: UsersGetByUsernameResponseData;
-
-    @pending
-    async signIn(token: string, provider = 'github') {
-        const {
-            body: {
-                jwt,
-                user: { id }
-            }
-        } = await service.get<{ jwt: string; user: User }>(
-            `auth/${provider}/callback?access_token=${token}`
-        );
-        setToken(jwt);
-
-        return this.getProfile((self.localStorage.userID = id));
-    }
-
-    signOut() {
-        self.localStorage.clear();
-        self.location.replace('');
-    }
-
-    @pending
-    async getProfile(id = this.user?.id || self.localStorage.userID) {
-        try {
-            const { body } = await service.get<User>(`users/${id || 'me'}`);
-
-            return (this.user = body);
-        } catch (error) {
-            if ((error as APIError).status !== 400) throw error;
-        }
-    }
-
-    @pending
-    async getGithubProfile(name: string) {
-        const { body } = await github.get<UsersGetByUsernameResponseData>(
-            'users/' + name
-        );
-        return (this.userGithub = body);
-    }
-
-    @pending
+export class UserSessionModel extends SessionModel<User> {
+    @loading
     async updateProfile({
         id = this.user?.id,
         avatar,
         ...data
     }: NewData<User>) {
-        const { body } = await service.put<User>('users/' + id, data);
+        const user = await super.updateProfile({ id, ...data });
 
-        await SessionModel.upload(
+        await UserSessionModel.upload(
             'user',
-            body.id,
+            user.id,
             'avatar',
             [avatar],
             'users-permissions'
         );
-        return (this.user = body);
+        return user;
     }
 }

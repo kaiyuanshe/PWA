@@ -29,7 +29,7 @@ const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
 interface AgendaPageState {
     date: string;
-    category: number;
+    category: string;
 }
 
 @observer
@@ -37,12 +37,12 @@ interface AgendaPageState {
     tagName: 'agenda-page',
     renderTarget: 'children'
 })
-export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
+export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
     @attribute
     @watch
-    aid = 1;
+    aid = '1';
 
-    state = { date: '', category: 0 };
+    state = { date: '', category: '' };
 
     static get toady() {
         return formatDate(Date.now(), 'YYYY-MM-DD');
@@ -70,7 +70,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
             { date } = this.state,
             { currentAgenda } = program;
 
-        if (date !== today) await this.setState({ date: today, category: 0 });
+        if (date !== today) await this.setState({ date: today, category: '' });
 
         const { id } =
             currentAgenda.find(
@@ -96,7 +96,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     onChange={({ target }) =>
                         this.setState({
                             date: (target as HTMLSelectElement).value,
-                            category: 0
+                            category: ''
                         })
                     }
                 >
@@ -110,7 +110,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                     value={category + ''}
                     onChange={({ target }) =>
                         this.setState({
-                            category: +(target as HTMLSelectElement).value
+                            category: (target as HTMLSelectElement).value
                         })
                     }
                 >
@@ -150,7 +150,7 @@ export class AgendaPage extends mixin<{ aid: number }, AgendaPageState>() {
                 title={<a href={'activity/agenda?pid=' + id}>{title}</a>}
                 header={
                     <div className="d-flex justify-content-around">
-                        <Badge color={BadgeColors[cid % BadgeColors.length]}>
+                        <Badge color={BadgeColors[+cid % BadgeColors.length]}>
                             {name}
                         </Badge>
                         <Badge color={type === 'lecture' ? 'info' : 'warning'}>

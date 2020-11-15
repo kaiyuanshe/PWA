@@ -5,9 +5,11 @@ import {
     Query,
     MediaData,
     CollectionModel,
-    pending
-} from './Base';
-import { Category, Place, service, User } from './service';
+    service,
+    loading
+} from 'mobx-strapi';
+
+import { Category, Place, User } from './service';
 import { Evaluation } from './Evaluation';
 import { Activity, ActivityModel } from './Activity';
 import { Project } from './Project';
@@ -78,7 +80,7 @@ export class ProgramModel extends CollectionModel<
         return this.allItems;
     }
 
-    @pending
+    @loading
     async getSameCategory(
         {
             id,
@@ -96,7 +98,7 @@ export class ProgramModel extends CollectionModel<
         return (this.list = body);
     }
 
-    @pending
+    @loading
     async getEvaluation(pid: number) {
         const { body } = await service.get<Evaluation[]>(
             'evaluations?program=' + pid
@@ -104,7 +106,7 @@ export class ProgramModel extends CollectionModel<
         return (this.evaluations = body);
     }
 
-    @pending
+    @loading
     async update({
         type,
         start_time,

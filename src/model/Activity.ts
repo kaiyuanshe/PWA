@@ -1,9 +1,14 @@
 import { computed } from 'mobx';
+import {
+    BaseData,
+    MediaData,
+    CollectionModel,
+    service,
+    loading
+} from 'mobx-strapi';
 import { Day, formatDate } from 'web-utility/source/date';
 import marked from 'marked';
 
-import { service } from './service';
-import { BaseData, MediaData, CollectionModel, pending } from './Base';
 import { Organization } from './Organization';
 
 export interface Activity extends BaseData {
@@ -57,7 +62,7 @@ export class ActivityModel extends CollectionModel<Activity> {
         return days;
     }
 
-    @pending
+    @loading
     async getOne(id: Activity['id']) {
         const { body } = await service.get<Partnership[]>(
             'partner-ships?_sort=level:DESC&activity=' + id

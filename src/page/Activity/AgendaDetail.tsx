@@ -25,7 +25,7 @@ import { program, User } from '../../model';
 export class AgendaDetail extends mixin() {
     @attribute
     @watch
-    pid = 0;
+    pid = '';
 
     connectedCallback() {
         program.getOne(this.pid).then(() => program.getSameCategory());

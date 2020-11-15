@@ -1,47 +1,11 @@
-import { HTTPClient, HTTPError } from 'koajax';
+import { BaseUser, BaseData, MediaData, service } from 'mobx-strapi';
 
-import { BaseData, MediaData } from './Base';
 import { Organization } from './Organization';
 
-const { localStorage, location } = self;
+if (self.location.hostname !== 'localhost')
+    service.baseURI = 'https://data.kaiyuanshe.cn/';
 
-var token: string = localStorage.token || '';
-
-export const setToken = (raw: string) => (token = localStorage.token = raw);
-
-export const service = new HTTPClient({
-    baseURI:
-        location.hostname === 'localhost'
-            ? 'http://localhost:1337/'
-            : 'https://data.kaiyuanshe.cn/',
-    responseType: 'json'
-}).use(({ request }, next) => {
-    if (token)
-        (request.headers = request.headers || {})['Authorization'] =
-            'Bearer ' + token;
-
-    return next();
-});
-
-export const github = new HTTPClient({
-    baseURI: 'https://api.github.com/',
-    responseType: 'json'
-});
-
-export type APIError = HTTPError<{
-    statusCode: number;
-    error: string;
-    message: string;
-    data?: { messages: Record<string, string>[] }[];
-}>;
-
-export interface User extends BaseData {
-    username: string;
-    email: string;
-    provider?: string;
-    confirmed: boolean;
-    blocked: boolean;
-    role: any;
+export interface User extends BaseUser {
     name?: string;
     organizations: Organization[];
     avatar?: MediaData;
