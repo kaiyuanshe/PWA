@@ -1,5 +1,11 @@
 import { computed, observable } from 'mobx';
-import { BaseData, NewData, Query, CollectionModel } from 'mobx-strapi';
+import {
+    BaseData,
+    NestedData,
+    NewData,
+    Query,
+    CollectionModel
+} from 'mobx-strapi';
 
 import { User } from './service';
 import { UserSessionModel } from './Session';
@@ -9,8 +15,8 @@ export interface Evaluation extends BaseData {
     score: number;
     detail: string;
     contribution?: BaseData; // To implement
-    program?: Program;
-    creator: User;
+    program?: NestedData<Program>;
+    creator: NestedData<User>;
 }
 
 export class EvaluationModel extends CollectionModel<Evaluation> {

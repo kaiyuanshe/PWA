@@ -1,4 +1,5 @@
 import {
+    WebCellProps,
     component,
     mixin,
     watch,
@@ -6,15 +7,19 @@ import {
     createCell,
     Fragment
 } from 'web-cell';
+import { formToJSON } from 'web-utility/source/DOM';
 import { observer } from 'mobx-web-cell';
+import { NewData } from 'mobx-strapi';
+
 import { InputGroup } from 'boot-cell/source/Form/InputGroup';
 import { Button } from 'boot-cell/source/Form/Button';
 import { FormField } from 'boot-cell/source/Form/FormField';
+import { ScoreRange } from 'boot-cell/source/Form/ScoreRange';
 import { Field } from 'boot-cell/source/Form/Field';
 
-import { evaluation, session } from '../model';
+import { Evaluation, evaluation, session } from '../model';
 
-export interface EvaluationProps {
+export interface EvaluationProps extends WebCellProps {
     program?: string;
     contribution?: string;
 }
@@ -24,7 +29,7 @@ export interface EvaluationProps {
     tagName: 'evaluation-form',
     renderTarget: 'children'
 })
-export class Evaluation extends mixin<EvaluationProps>() {
+export class EvaluationForm extends mixin<EvaluationProps>() {
     @attribute
     @watch
     program?: string;
@@ -39,17 +44,14 @@ export class Evaluation extends mixin<EvaluationProps>() {
         super.connectedCallback();
     }
 
-    saveEvaluation = async (event: Event) => {
+    saveEvaluation = (event: Event) => {
         event.preventDefault(), event.stopPropagation();
-
-        const { score, detail } = evaluation.current;
 
         return evaluation.update({
             creator: session.user.id,
             program: this.program,
             contribution: this.contribution,
-            score,
-            detail
+            ...formToJSON<NewData<Evaluation>>(event.target as HTMLFormElement)
         });
     };
 
@@ -63,24 +65,15 @@ export class Evaluation extends mixin<EvaluationProps>() {
 
         return (
             <form onSubmit={this.saveEvaluation}>
-                <FormField
-                    type="range"
-                    name="score"
-                    required
-                    max={5}
-                    emptyIcon="☆"
-                    fullIcon="★"
-                    size="lg"
-                    color="warning"
-                    label="评分"
-                    value={(showAll ? averageScore : score) + ''}
-                    disabled={showAll}
-                    onChange={({ target }) =>
-                        evaluation.setCurrent({
-                            score: +(target as HTMLInputElement).value
-                        })
-                    }
-                />
+                <FormField label="评分">
+                    <ScoreRange
+                        className="text-warning"
+                        name="score"
+                        required
+                        value={(showAll ? averageScore : score) + ''}
+                        disabled={showAll}
+                    />
+                </FormField>
                 {!session.user ? (
                     <p className="text-muted">登录即可评论</p>
                 ) : userSubmitted ? (
@@ -93,18 +86,11 @@ export class Evaluation extends mixin<EvaluationProps>() {
                     </FormField>
                 ) : (
                     <>
-                        <InputGroup
-                            is="textarea"
-                            name="detail"
-                            prepend="我来说两句"
-                            value={detail}
-                            onChange={({ target }) =>
-                                evaluation.setCurrent({
-                                    detail: (target as HTMLInputElement).value
-                                })
-                            }
-                        />
-                        <Button className="mt-3" type="submit">
+                        <InputGroup>
+                            我来说两句
+                            <Field is="textarea" name="detail" value={detail} />
+                        </InputGroup>
+                        <Button className="mt-3" type="submit" color="primary">
                             提交
                         </Button>
                     </>

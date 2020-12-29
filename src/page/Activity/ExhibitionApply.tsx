@@ -1,9 +1,9 @@
 import {
-    attribute,
     component,
-    createCell,
     mixin,
     watch,
+    attribute,
+    createCell,
     Fragment
 } from 'web-cell';
 import { observer } from 'mobx-web-cell';
@@ -160,6 +160,7 @@ export class ExhibitionApply extends mixin<
                     </Button>
                     <Button
                         className="px-4 mr-3"
+                        color="primary"
                         disabled={loading}
                         onClick={this.saveOrganization}
                     >
@@ -311,6 +312,7 @@ export class ExhibitionApply extends mixin<
                         </Button>
                         <Button
                             className="px-5"
+                            color="primary"
                             size="lg"
                             onClick={() => this.setState({ step: 1 })}
                         >

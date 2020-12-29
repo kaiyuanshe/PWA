@@ -16,7 +16,7 @@ import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Image } from 'boot-cell/source/Media/Image';
 import { FormField } from 'boot-cell/source/Form/FormField';
 import { Button } from 'boot-cell/source/Form/Button';
-import { Card } from 'boot-cell/source/Content/Card';
+import { Card, CardHeader, CardFooter } from 'boot-cell/source/Content/Card';
 import { Badge } from 'boot-cell/source/Reminder/Badge';
 import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
 
@@ -141,31 +141,22 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
         place
     }: Program) => (
         <div
-            className="col-12 col-sm-6 col-md-4 mb-4"
+            className="col-12 col-sm-6 col-md-4 mb-4 d-flex"
             id={'program-' + id}
             key={'program-' + id}
         >
             <Card
-                className="h-100"
+                style={{ flex: '1' }}
                 title={<a href={'activity/agenda?pid=' + id}>{title}</a>}
-                header={
-                    <div className="d-flex justify-content-around">
-                        <Badge color={BadgeColors[+cid % BadgeColors.length]}>
-                            {name}
-                        </Badge>
-                        <Badge color={type === 'lecture' ? 'info' : 'warning'}>
-                            {ProgramMap[type]}
-                        </Badge>
-                    </div>
-                }
-                footer={
-                    <TimeRange
-                        className="text-center"
-                        start={start_time}
-                        end={end_time}
-                    />
-                }
             >
+                <CardHeader className="d-flex justify-content-around">
+                    <Badge color={BadgeColors[+cid % BadgeColors.length]}>
+                        {name}
+                    </Badge>
+                    <Badge color={type === 'lecture' ? 'info' : 'warning'}>
+                        {ProgramMap[type]}
+                    </Badge>
+                </CardHeader>
                 <dl>
                     <dt>讲师</dt>
                     <dd className="d-flex flex-wrap justify-content-between py-2">
@@ -191,6 +182,13 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
                         </>
                     )}
                 </dl>
+                <CardFooter>
+                    <TimeRange
+                        className="text-center"
+                        start={start_time}
+                        end={end_time}
+                    />
+                </CardFooter>
             </Card>
         </div>
     );
@@ -221,18 +219,19 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
                 loading,
                 current: { banner, id }
             } = activity,
-            { currentAgenda, currentExhibitions } = program;
+            { currentAgenda, currentExhibitions, loading: pending } = program;
 
         const programsOfToday = currentAgenda.filter(({ start_time }) =>
             start_time.startsWith(date)
         );
-        const programs = !category
+        const programs = !+category
             ? programsOfToday
-            : programsOfToday.filter(({ category: { id } }) => category === id);
+            : programsOfToday.filter(({ category: { id } }) => category == id);
 
         const applyButton = (
             <Button
                 className="mt-3"
+                color="primary"
                 href={'activity/exhibition/apply?aid=' + id}
                 disabled={!session.user}
             >
@@ -248,13 +247,13 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
                     <h2 className="mt-5 text-center">大会议程</h2>
                     <section>
                         {this.renderFilter(programsOfToday)}
-                        <div className="row">
+                        <SpinnerBox className="row" cover={pending}>
                             {programs[0] ? (
                                 programs.map(this.renderAgenda)
                             ) : (
                                 <p className="m-auto">没有议程</p>
                             )}
-                        </div>
+                        </SpinnerBox>
                     </section>
 
                     <h2 className="mt-5 text-center">开源市集</h2>
@@ -269,13 +268,17 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
                             </TooltipBox>
                         )}
                     </p>
-                    <section className="card-columns">
+                    <SpinnerBox className="card-columns" cover={pending}>
                         {currentExhibitions.map(this.renderExhibition)}
-                    </section>
+                    </SpinnerBox>
                 </main>
 
                 <footer className="my-5 text-center">
-                    <Button size="lg" href={'activity/showroom?aid=' + id}>
+                    <Button
+                        color="primary"
+                        size="lg"
+                        href={'activity/showroom?aid=' + id}
+                    >
                         合作伙伴
                     </Button>
                 </footer>

@@ -7,6 +7,8 @@ import {
     Fragment
 } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import { NestedData } from 'mobx-strapi';
+
 import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Embed } from 'boot-cell/source/Media/Embed';
 import { Image } from 'boot-cell/source/Media/Image';
@@ -52,7 +54,7 @@ export class PartnerDetail extends mixin() {
         </div>
     );
 
-    renderMentor = ({ avatar, name, summary }: User) => (
+    renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
         <div className={`row px-2 ${style.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}

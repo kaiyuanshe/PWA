@@ -2,6 +2,7 @@ import { computed } from 'mobx';
 import {
     BaseData,
     MediaData,
+    NestedData,
     CollectionModel,
     service,
     loading
@@ -16,7 +17,7 @@ export interface Activity extends BaseData {
     slogan: string;
     banner: MediaData;
     description: string;
-    partner_ships: Partnership[];
+    partner_ships: NestedData<Partnership>[];
     start_time: string;
     end_time: string;
     location: string;
@@ -34,9 +35,9 @@ export enum PartnershipTypes {
 
 export interface Partnership extends BaseData {
     title: string;
-    activity: Activity;
+    activity: NestedData<Activity>;
     level: number;
-    organization: Organization;
+    organization: NestedData<Organization>;
     type: PartnershipTypes;
     accounts: any[];
     verified: boolean;
@@ -70,7 +71,7 @@ export class ActivityModel extends CollectionModel<Activity> {
         var activity: Activity;
 
         if (body[0]) {
-            activity = { ...body[0].activity };
+            activity = { ...body[0].activity } as Activity;
             activity.partner_ships = body;
         } else
             activity = (await service.get<Activity>('activities?id=' + id))

@@ -17,7 +17,7 @@
 -   Language: [TypeScript v4][5]
 -   Component engine: [WebCell v2][6]
 -   Component suite: [BootStrap v4][7]
--   PWA framework: [Workbox v4][8]
+-   PWA framework: [Workbox v6][8]
 -   Package bundler: [Parcel v1][9]
 -   CI / CD: GitHub [Actions][10] + [Pages][11]
 

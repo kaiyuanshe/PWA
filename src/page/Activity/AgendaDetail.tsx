@@ -7,12 +7,14 @@ import {
     Fragment
 } from 'web-cell';
 import { observer } from 'mobx-web-cell';
+import { NestedData } from 'mobx-strapi';
+
 import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
 import { Image } from 'boot-cell/source/Media/Image';
 import { ListGroup, ListItem } from 'boot-cell/source/Content/ListGroup';
 
 import { TimeRange } from '../../component/TimeRange';
-import { Evaluation } from '../../component/Evaluation';
+import { EvaluationForm } from '../../component/Evaluation';
 import { ProgramMap } from './constants';
 import style from './ShowRoom.module.less';
 import { program, User } from '../../model';
@@ -33,7 +35,7 @@ export class AgendaDetail extends mixin() {
         super.connectedCallback();
     }
 
-    renderMentor = ({ avatar, name, summary }: User) => (
+    renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
         <div className={`row px-2 ${style.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
@@ -121,7 +123,7 @@ export class AgendaDetail extends mixin() {
                             </div>
                         ) : null}
                     </section>
-                    <Evaluation program={id} />
+                    <EvaluationForm program={id} />
                 </div>
             </SpinnerBox>
         );

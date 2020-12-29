@@ -4,6 +4,7 @@ import {
     NewData,
     Query,
     MediaData,
+    NestedData,
     CollectionModel,
     service,
     loading
@@ -20,17 +21,17 @@ export interface Program extends BaseData {
     start_time: string;
     end_time: string;
     summary?: string;
-    mentors: User[];
-    activity: Activity;
+    mentors: NestedData<User>[];
+    activity: NestedData<Activity>;
     type: 'lecture' | 'workshop' | 'exhibition';
-    place?: Place;
+    place?: NestedData<Place>;
     evaluations: any[];
     accounts: any[];
     documents: MediaData[];
     verified: boolean;
-    category: Category;
-    project?: Project;
-    organization?: Organization;
+    category: NestedData<Category>;
+    project?: NestedData<Project>;
+    organization?: NestedData<Organization>;
 }
 
 export class ProgramModel extends CollectionModel<

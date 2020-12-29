@@ -17,11 +17,22 @@ import { PartnerDetail } from './Activity/PartnerDetail';
 import { AgendaDetail } from './Activity/AgendaDetail';
 
 const menu = [
-    {
-        title: '开放源码',
-        href: 'https://github.com/kaiyuanshe/PWA'
-    }
-];
+        {
+            title: '开放源码',
+            href: 'https://github.com/kaiyuanshe/PWA'
+        }
+    ],
+    routes = [
+        { paths: [''], component: AgendaPage },
+        { paths: ['profile'], component: ProfilePage },
+        {
+            paths: ['activity/exhibition/apply'],
+            component: ExhibitionApply
+        },
+        { paths: ['activity/showroom'], component: ShowRoom },
+        { paths: ['activity/partner'], component: PartnerDetail },
+        { paths: ['activity/agenda'], component: AgendaDetail }
+    ];
 
 export const PageFrame = observer(() => (
     <div>
@@ -42,9 +53,14 @@ export const PageFrame = observer(() => (
                 <NavLink {...props}>{title}</NavLink>
             ))}
             {!session.user ? (
-                <Button href={service.baseURI + 'connect/github/'}>登录</Button>
+                <Button
+                    color="primary"
+                    href={service.baseURI + 'connect/github/'}
+                >
+                    登录
+                </Button>
             ) : (
-                <DropMenu caption={session.user.username}>
+                <DropMenu buttonColor="primary" caption={session.user.username}>
                     <DropMenuItem href="profile">基本信息</DropMenuItem>
                     <DropMenuItem onClick={() => session.signOut()}>
                         退出
@@ -56,17 +72,7 @@ export const PageFrame = observer(() => (
         <CellRouter
             style={{ minHeight: '60vh' }}
             history={history}
-            routes={[
-                { paths: [''], component: AgendaPage },
-                { paths: ['profile'], component: ProfilePage },
-                {
-                    paths: ['activity/exhibition/apply'],
-                    component: ExhibitionApply
-                },
-                { paths: ['activity/showroom'], component: ShowRoom },
-                { paths: ['activity/partner'], component: PartnerDetail },
-                { paths: ['activity/agenda'], component: AgendaDetail }
-            ]}
+            routes={routes}
         />
         <footer className="text-center bg-light py-5">
             Proudly developed with

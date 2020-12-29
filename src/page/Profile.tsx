@@ -91,6 +91,7 @@ export class ProfilePage extends mixin() {
                 </div>
                 <Button
                     className="mr-3"
+                    color="primary"
                     size="lg"
                     disabled={loading}
                     onClick={this.handleSync}
