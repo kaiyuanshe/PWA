@@ -53,7 +53,11 @@ export class ShowRoom extends mixin() {
                     )}
                     {video && <Embed is="video" hoverPlay src={video.url} />}
                     <p style={{ fontSize: '13px' }}>{summary}</p>
-                    <Image className={style.logoTag} thumbnail src={logo.url} />
+                    <Image
+                        className={style.logoTag}
+                        thumbnail
+                        src={logo?.url}
+                    />
                 </a>
             </div>
         );
@@ -74,8 +78,7 @@ export class ShowRoom extends mixin() {
                         is="iframe"
                         className={style['main-video']}
                         src="//player.bilibili.com/player.html?aid=838735500&amp;bvid=BV1Sg4y1v7EX&amp;cid=207306433&amp;page=1"
-                        framespacing="0"
-                        allowfullscreen="true"
+                        allowFullscreen
                     />
                     <div className={style.buttonsTray}>
                         <ButtonGroup>

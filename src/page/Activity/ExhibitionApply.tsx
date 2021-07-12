@@ -1,4 +1,5 @@
 import {
+    WebCellProps,
     component,
     mixin,
     watch,
@@ -31,13 +32,17 @@ interface ExhibitionApplyState {
     organization: string;
 }
 
+export interface ExhibitionApplyProps extends WebCellProps {
+    aid: number;
+}
+
 @observer
 @component({
     tagName: 'exhibition-apply',
     renderTarget: 'children'
 })
 export class ExhibitionApply extends mixin<
-    { aid: number },
+    ExhibitionApplyProps,
     ExhibitionApplyState
 >() {
     @attribute
@@ -109,7 +114,7 @@ export class ExhibitionApply extends mixin<
 
         return (
             <form onSubmit={this.saveOrganization} onReset={this.handleBack}>
-                <input type="hidden" name="id" value={id ?? 0} />
+                <input type="hidden" name="id" value={(id ?? 0) + ''} />
                 <FormField
                     type="search"
                     name="name"
@@ -231,7 +236,7 @@ export class ExhibitionApply extends mixin<
 
         return (
             <form onSubmit={this.saveProject} onReset={this.handleBack}>
-                <input type="hidden" name="id" value={id} />
+                <input type="hidden" name="id" value={id + ''} />
                 <FormField
                     type="search"
                     name="name"

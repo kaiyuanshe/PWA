@@ -38,6 +38,10 @@ export const PageFrame = observer(() => (
     <div>
         <NavBar
             narrow
+            expand="md"
+            fixed="top"
+            theme="dark"
+            background="dark"
             brand={
                 <>
                     <img

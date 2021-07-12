@@ -19,16 +19,16 @@ export function TimeRange({
 
     return (
         <div {...rest}>
-            <time datetime={startDate}>{startDate}</time>{' '}
-            <time datetime={startTime}>{startTime}</time> ~{' '}
+            <time dateTime={startDate}>{startDate}</time>{' '}
+            <time dateTime={startTime}>{startTime}</time> ~{' '}
             {end && (
                 <>
                     {startDate !== endDate ? (
                         <>
-                            <time datetime={endDate}>{endDate}</time>{' '}
+                            <time dateTime={endDate}>{endDate}</time>{' '}
                         </>
                     ) : null}
-                    <time datetime={endTime}>{endTime}</time>
+                    <time dateTime={endTime}>{endTime}</time>
                 </>
             )}
         </div>

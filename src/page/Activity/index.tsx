@@ -1,5 +1,6 @@
 import 'array-unique-proposal';
 import {
+    WebCellProps,
     component,
     mixin,
     watch,
@@ -32,12 +33,16 @@ interface AgendaPageState {
     category: string;
 }
 
+export interface AgendaPageProps extends WebCellProps {
+    aid: string;
+}
+
 @observer
 @component({
     tagName: 'agenda-page',
     renderTarget: 'children'
 })
-export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
+export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
     @attribute
     @watch
     aid = '1';
@@ -114,7 +119,7 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
                         })
                     }
                 >
-                    <option value={0}>全部类别</option>
+                    <option value="0">全部类别</option>
                     {programsOfToday
                         .uniqueBy(({ category: { id } }) => id)
                         .map(({ category: { id, name } }) => (
@@ -208,9 +213,13 @@ export class AgendaPage extends mixin<{ aid: string }, AgendaPageState>() {
                 </a>
             }
             image={project ? project.logo?.url : organization?.logo?.url}
-            footer={place && <address>{place.location}</address>}
         >
             {project ? project.summary : organization?.summary}
+            {place && (
+                <CardFooter>
+                    <address>{place.location}</address>
+                </CardFooter>
+            )}
         </Card>
     );
 

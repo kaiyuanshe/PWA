@@ -36,7 +36,8 @@ export class OrganizationModel extends CollectionModel<
         );
         this.programs = list;
 
-        if (list[0]) return (this.current = list[0].organization);
+        if (list[0])
+            return (this.current = list[0].organization as Organization);
 
         const { body } = await service.get<Organization>('organizations/' + id);
 

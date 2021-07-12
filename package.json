@@ -19,35 +19,35 @@
     "dependencies": {
         "@nuintun/qrcode": "^3.0.1",
         "array-unique-proposal": "^0.3.1",
-        "boot-cell": "^1.9.1",
+        "boot-cell": "^1.9.5",
         "browser-unhandled-rejection": "^1.0.2",
-        "cell-router": "^2.0.3",
-        "classnames": "^2.2.6",
+        "cell-router": "^2.0.4",
+        "classnames": "^2.3.1",
         "lodash.debounce": "^4.0.8",
-        "marked": "^1.2.7",
+        "marked": "^2.1.3",
         "mobx": "^5.15.7",
         "mobx-strapi": "^0.2.3",
-        "mobx-web-cell": "^0.3.4",
-        "web-cell": "^2.3.0-beta.4",
-        "web-utility": "^2.2.2"
+        "mobx-web-cell": "^0.3.5",
+        "web-cell": "^2.3.0",
+        "web-utility": "^2.6.0"
     },
     "devDependencies": {
-        "@types/classnames": "^2.2.11",
+        "@types/classnames": "^2.3.1",
         "@types/lodash.debounce": "^4.0.6",
-        "@types/marked": "^1.2.1",
-        "@typescript-eslint/parser": "^4.11.0",
+        "@types/marked": "^2.0.4",
+        "@typescript-eslint/parser": "^4.28.3",
         "autoprefixer": "^9.8.6",
-        "eslint": "^7.16.0",
-        "eslint-config-prettier": "^7.1.0",
-        "eslint-plugin-prettier": "^3.3.0",
-        "husky": "^4.3.6",
-        "less": "^4.0.0",
-        "lint-staged": "^10.5.3",
-        "parcel-bundler": "^1.12.4",
+        "eslint": "^7.30.0",
+        "eslint-config-prettier": "^7.2.0",
+        "eslint-plugin-prettier": "^3.4.0",
+        "husky": "^7.0.1",
+        "less": "^4.1.1",
+        "lint-staged": "^11.0.0",
+        "parcel-bundler": "^1.12.5",
         "postcss-modules": "^3.2.2",
-        "prettier": "^2.2.1",
-        "typescript": "^4.1.3",
-        "workbox-cli": "^6.0.2"
+        "prettier": "^2.3.2",
+        "typescript": "^4.3.5",
+        "workbox-cli": "^6.1.5"
     },
     "prettier": {
         "singleQuote": true,
@@ -71,16 +71,11 @@
         }
     },
     "scripts": {
+        "prepare": "husky install",
         "test": "lint-staged",
         "start": "parcel src/index.html --open",
         "pack-dist": "parcel build src/index.html --public-url .",
         "pack-sw": "rm -f dist/sw.js.map  &&  workbox generateSW",
         "build": "rm -rf dist/  &&  npm run pack-dist  &&  npm run pack-sw"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm test",
-            "pre-push": "npm run build"
-        }
     }
 }
