@@ -32,17 +32,13 @@ export interface EvaluationProps extends WebCellProps {
 export class EvaluationForm extends mixin<EvaluationProps>() {
     @attribute
     @watch
-    program?: string;
+    set program(program: string) {
+        this.setProps({ program }).then(() => evaluation.getAll({ program }));
+    }
 
     @attribute
     @watch
     contribution?: string;
-
-    connectedCallback() {
-        evaluation.getAll();
-
-        super.connectedCallback();
-    }
 
     saveEvaluation = (event: Event) => {
         event.preventDefault(), event.stopPropagation();

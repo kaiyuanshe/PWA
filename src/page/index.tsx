@@ -11,6 +11,7 @@ import { DropMenu, DropMenuItem } from 'boot-cell/source/Navigator/DropMenu';
 import { history, session } from '../model';
 import { ProfilePage } from './Profile';
 import { AgendaPage } from './Activity';
+import { SpeechEditPage } from './Activity/SpeechEdit';
 import { ExhibitionApply } from './Activity/ExhibitionApply';
 import { ShowRoom } from './Activity/ShowRoom';
 import { PartnerDetail } from './Activity/PartnerDetail';
@@ -25,6 +26,10 @@ const menu = [
     routes = [
         { paths: [''], component: AgendaPage },
         { paths: ['profile'], component: ProfilePage },
+        {
+            paths: ['activity/speech/edit'],
+            component: SpeechEditPage
+        },
         {
             paths: ['activity/exhibition/apply'],
             component: ExhibitionApply

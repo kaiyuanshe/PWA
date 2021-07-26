@@ -17,15 +17,9 @@ self.addEventListener('unhandledrejection', event => {
     const text =
         body &&
         [
-            message,
-            body.data
-                ?.map(({ messages }) =>
-                    messages.map(message =>
-                        Object.entries(message).map(
-                            ([key, value]) => `${key}: ${value}`
-                        )
-                    )
-                )
+            body.message,
+            Object.entries(body.data.errors)
+                .map(([key, value]) => `${key}: ${value}`)
                 .flat()
                 .join('\n')
         ]

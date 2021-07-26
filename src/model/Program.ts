@@ -10,7 +10,8 @@ import {
     loading
 } from 'mobx-strapi';
 
-import { Category, Place, User } from './service';
+import { Place, User } from './service';
+import { Category } from './Category';
 import { Evaluation } from './Evaluation';
 import { Activity, ActivityModel } from './Activity';
 import { Project } from './Project';
