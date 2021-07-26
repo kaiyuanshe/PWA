@@ -11,8 +11,17 @@
             "jsx": true
         }
     },
-    "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+    "plugins": ["@typescript-eslint"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier"
+    ],
     "rules": {
-        "no-unused-vars": "warn"
+        "no-var": "off",
+        "no-unused-vars": "warn",
+        "prefer-const": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/ban-ts-comment": "off"
     }
 }
