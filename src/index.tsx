@@ -18,10 +18,11 @@ self.addEventListener('unhandledrejection', event => {
         body &&
         [
             body.message,
-            Object.entries(body.data.errors)
-                .map(([key, value]) => `${key}: ${value}`)
-                .flat()
-                .join('\n')
+            body.data?.errors &&
+                Object.entries(body.data.errors)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .flat()
+                    .join('\n')
         ]
             .filter(Boolean)
             .join('\n\n');

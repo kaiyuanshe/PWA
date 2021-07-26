@@ -74,8 +74,7 @@ export class ActivityModel extends CollectionModel<Activity> {
             activity = { ...body[0].activity } as Activity;
             activity.partner_ships = body;
         } else
-            activity = (await service.get<Activity>('activities?id=' + id))
-                .body;
+            activity = (await service.get<Activity>('activities/' + id)).body;
 
         const { description, ...data } = activity;
 

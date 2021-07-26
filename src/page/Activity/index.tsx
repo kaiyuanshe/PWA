@@ -45,7 +45,7 @@ export interface AgendaPageProps extends WebCellProps {
 export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
     @attribute
     @watch
-    aid = '1';
+    aid = '2';
 
     state = { date: '', category: '' };
 
