@@ -13,11 +13,6 @@ export interface User extends BaseUser {
     telphone?: string;
 }
 
-export interface Category extends BaseData {
-    name: string;
-    summary?: string;
-}
-
 export interface Place extends BaseData {
     name: string;
     location: string;

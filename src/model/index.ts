@@ -1,6 +1,7 @@
 import { History } from 'cell-router/source';
 
 import { UserSessionModel } from './Session';
+import { CategoryModel } from './Category';
 import { ActivityModel } from './Activity';
 import { OrganizationModel } from './Organization';
 import { ProgramModel } from './Program';
@@ -9,6 +10,7 @@ import { EvaluationModel } from './Evaluation';
 
 export const history = new History();
 export const session = new UserSessionModel();
+export const category = new CategoryModel();
 export const activity = new ActivityModel();
 export const organization = new OrganizationModel();
 export const program = new ProgramModel(activity);
@@ -16,6 +18,7 @@ export const project = new ProjectModel();
 export const evaluation = new EvaluationModel(session);
 export * from './service';
 export * from './Session';
+export * from './Category';
 export * from './Evaluation';
 export * from './Program';
 export * from './Activity';
