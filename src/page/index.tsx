@@ -66,11 +66,14 @@ export const PageFrame = observer(() => (
                     color="primary"
                     href={service.baseURI + 'connect/github/'}
                 >
-                    登录
+                    登录个人信息
                 </Button>
             ) : (
                 <DropMenu buttonColor="primary" caption={session.user.username}>
                     <DropMenuItem href="profile">基本信息</DropMenuItem>
+                    <DropMenuItem onClick={() => console.log('个人信息查看')}>
+                        个人信息查看
+                    </DropMenuItem>
                     <DropMenuItem onClick={() => session.signOut()}>
                         退出
                     </DropMenuItem>
