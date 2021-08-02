@@ -66,7 +66,7 @@ export const PageFrame = observer(() => (
                     color="primary"
                     href={service.baseURI + 'connect/github/'}
                 >
-                    登录个人信息
+                    登录
                 </Button>
             ) : (
                 <DropMenu buttonColor="primary" caption={session.user.username}>
