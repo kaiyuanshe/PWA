@@ -1,0 +1,37 @@
+.user_container {
+    height: ~'calc(100vh - 155px)';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    &_left {
+        margin-right: 80px;
+        width: 200px;
+        height: 300px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        border: 1px solid rgb(222, 226, 230);
+        padding: 20px;
+    }
+
+    &_avatar {
+        width: 40px;
+        height: 40px;
+        margin-right: 15px;
+    }
+}
+
+.table_container {
+    margin-top: 50px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.table_td {
+    max-width: 300px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
