@@ -278,8 +278,7 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
 
                     <h2 className="mt-5 text-center">开源市集</h2>
                     <p className="mt-4 text-center text-muted">
-                        本届大会的开源市集设置于
-                        <strong>成都分会场</strong>
+                        本届大会的开源市集设置于<strong>成都分会场</strong>
                         <br />
                         {this.renderApply(
                             'activity/exhibition/apply?aid=' + id
