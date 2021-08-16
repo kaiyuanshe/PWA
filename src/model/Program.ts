@@ -87,9 +87,8 @@ export class ProgramModel extends CollectionModel<
 
     async getMentors(mentorId) {
         const { body } = await service.get<Program[]>(
-            'programs?mentors=' + mentorId
+            `programs?mentors=${mentorId}&verified=false`
         );
-
         return (this.activityInfoList = body);
     }
 

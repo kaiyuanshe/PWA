@@ -1,103 +1,99 @@
 import { Button } from 'boot-cell/source/Form/Button';
-import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
+import { Card } from 'boot-cell/source/Content/Card';
 import { observer } from 'mobx-web-cell';
-import { createCell, component, mixin } from 'web-cell';
-import { Table, TableRow } from 'boot-cell/source/Content/Table';
+import {
+    createCell,
+    component,
+    mixin,
+    WebCellProps,
+    watch,
+    attribute
+} from 'web-cell';
+import { TabView, TabPanel } from 'boot-cell/source/Content/TabView';
+import { NavLink } from 'boot-cell/source/Navigator/Nav';
 
-import { activity, program } from '../../model';
+import { session, program } from '../../model';
 import { Program } from '../../model/Program';
 
 import style from './index.module.less';
 
-let lastId = '';
+const formatTime = (time = +new Date()) => {
+    const date = new Date(time + 8 * 60 * 60 * 1000);
+    return date.toJSON().substr(0, 19).replace('T', ' ').replace(/-/g, '.');
+};
+
+const formatActivityTime = (startTime: string, endTime: string) => {
+    return `${formatTime(+new Date(startTime))} / ${formatTime(
+        +new Date(endTime)
+    )}`;
+};
+interface IUserPage extends WebCellProps {
+    uid: string;
+}
 @observer
 @component({
     tagName: 'user-page',
     renderTarget: 'children'
 })
-export default class UserPage extends mixin() {
-    state = { id: '' };
+export default class UserPage extends mixin<IUserPage>() {
+    @attribute
+    @watch
+    uid: string;
 
-    updatedCallback() {
-        if (lastId !== this.state.id) {
-            program.getMentors(this.state.id);
-            lastId = this.state.id;
-        }
+    connectedCallback() {
+        program.getMentors(this.uid);
+        // program.getAll({ mentors: [this.uid], verified: false });
+
+        super.connectedCallback();
     }
 
     render() {
-        const {
-            current: { id }
-        } = activity;
-
-        if (id !== this.state.id) {
-            lastId = id;
-            this.setState({ id });
-        }
+        const avatarUrl: any =
+            session?.user?.avatar ||
+            'https://kaiyuanshe.cn/image/KaiYuanShe-logo.png';
         return (
             <div className={`${style.user_container}`}>
-                {/* <div className={`${style.user_container_left}`}>
+                <Card
+                    className={`${style.user_card}`}
+                    // image={session.user.avatar || "https://kaiyuanshe.cn/image/KaiYuanShe-logo.png"}
+                >
                     <img
-                        alt="WebCell scaffold"
-                        src="https://kaiyuanshe.cn/image/KaiYuanShe-logo.png"
-                        className={`${style.user_container_avatar}`}
+                        src={avatarUrl}
+                        alt="用户头像"
+                        className={style.avatar}
                     />
-                    <TooltipBox text="lichunyinggggggggggg" position={'top'}>
-                        lichunying
-                    </TooltipBox>
-                </div> */}
-                <h1>活动列表</h1>
-                <div className={`${style.table_container}`}>
-                    <Table border>
-                        <TableRow type="head">
-                            <th scope="col">#</th>
-                            <th scope="col">标题</th>
-                            <th scope="col">活动地址</th>
-                            <th scope="col">开始时间</th>
-                            <th scope="col">结束时间</th>
-                            <th scope="col">更新时间</th>
-                            <th scope="col">活动简介</th>
-                        </TableRow>
-                        {program?.activityInfoList?.map(
-                            (item: Program, index: number) => {
-                                const {
-                                    title,
-                                    summary,
-                                    end_time,
-                                    start_time,
-                                    place,
-                                    updated_at
-                                } = item;
+                    <h3>{session.user.username}</h3>
+                    <div>{session.user.summary}</div>
+                    <div className={`${style.btn_container}`}>
+                        <Button color="primary" href={'profile'}>
+                            编辑用户资料
+                        </Button>
+                    </div>
+                </Card>
+                <div className={`${style.activity_container}`}>
+                    <TabView mode="masthead">
+                        <NavLink>报名列表</NavLink>
+                        <TabPanel className={`${style.activity_panel}`}>
+                            {program.activityInfoList.map((item: Program) => {
                                 return (
-                                    <TableRow>
-                                        <th scope="row">{index + 1}</th>
-                                        <TooltipBox
-                                            text={title}
-                                            position={'bottom'}
-                                        >
-                                            <td className={style.table_td}>
-                                                {title}
-                                            </td>
-                                        </TooltipBox>
-
-                                        <td>{place}</td>
-                                        <td>{start_time}</td>
-                                        <td>{end_time}</td>
-                                        <td>{updated_at}</td>
-
-                                        <TooltipBox
-                                            text={summary}
-                                            position={'bottom'}
-                                        >
-                                            <td className={style.table_td}>
-                                                {summary}
-                                            </td>
-                                        </TooltipBox>
-                                    </TableRow>
+                                    <Card
+                                        className={`${style.activity_item}`}
+                                        title={item.title}
+                                    >
+                                        <div>
+                                            时间：
+                                            {formatActivityTime(
+                                                item.start_time,
+                                                item.end_time
+                                            )}
+                                        </div>
+                                        <div>地址：{item.place}</div>
+                                        <div>简介：{item.summary}</div>
+                                    </Card>
                                 );
-                            }
-                        )}
-                    </Table>
+                            })}
+                        </TabPanel>
+                    </TabView>
                 </div>
             </div>
         );
