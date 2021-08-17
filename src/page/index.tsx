@@ -74,7 +74,7 @@ export const PageFrame = observer(() => (
                 <DropMenu buttonColor="primary" caption={session.user.username}>
                     <DropMenuItem href="profile">基本信息</DropMenuItem>
                     <DropMenuItem href={`userPage?uid=${session.user.id}`}>
-                        报名信息查看
+                        个人主页
                     </DropMenuItem>
                     <DropMenuItem onClick={() => session.signOut()}>
                         退出

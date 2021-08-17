@@ -1,5 +1,7 @@
 import { Button } from 'boot-cell/source/Form/Button';
 import { Card } from 'boot-cell/source/Content/Card';
+import { TabView, TabPanel } from 'boot-cell/source/Content/TabView';
+import { NavLink } from 'boot-cell/source/Navigator/Nav';
 import { observer } from 'mobx-web-cell';
 import {
     createCell,
@@ -9,23 +11,15 @@ import {
     watch,
     attribute
 } from 'web-cell';
-import { TabView, TabPanel } from 'boot-cell/source/Content/TabView';
-import { NavLink } from 'boot-cell/source/Navigator/Nav';
+import { formatDate } from 'web-utility/source/date';
 
 import { session, program } from '../../model';
 import { Program } from '../../model/Program';
 
 import style from './index.module.less';
 
-const formatTime = (time = +new Date()) => {
-    const date = new Date(time + 8 * 60 * 60 * 1000);
-    return date.toJSON().substr(0, 19).replace('T', ' ').replace(/-/g, '.');
-};
-
 const formatActivityTime = (startTime: string, endTime: string) => {
-    return `${formatTime(+new Date(startTime))} / ${formatTime(
-        +new Date(endTime)
-    )}`;
+    return `${formatDate(startTime)} / ${formatDate(endTime)}`;
 };
 interface IUserPage extends WebCellProps {
     uid: string;
@@ -72,20 +66,28 @@ export default class UserPage extends mixin<IUserPage>() {
                         <NavLink>报名列表</NavLink>
                         <TabPanel className={style.activity_panel}>
                             {program.activityInfoList.map((item: Program) => {
+                                const {
+                                    start_time,
+                                    end_time,
+                                    place,
+                                    summary,
+                                    title
+                                } = item;
+
                                 return (
                                     <Card
                                         className={style.activity_item}
-                                        title={item.title}
+                                        title={title}
                                     >
                                         <div>
                                             时间：
                                             {formatActivityTime(
-                                                item.start_time,
-                                                item.end_time
+                                                start_time,
+                                                end_time
                                             )}
                                         </div>
-                                        <div>地址：{item.place}</div>
-                                        <div>简介：{item.summary}</div>
+                                        <div>地址：{place}</div>
+                                        <div>简介：{summary}</div>
                                     </Card>
                                 );
                             })}
