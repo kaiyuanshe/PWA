@@ -51,6 +51,7 @@ export default class UserPage extends mixin<IUserPage>() {
         const avatarUrl: any =
             session?.user?.avatar ||
             'https://kaiyuanshe.cn/image/KaiYuanShe-logo.png';
+
         return (
             <div className={`${style.user_container}`}>
                 <Card
