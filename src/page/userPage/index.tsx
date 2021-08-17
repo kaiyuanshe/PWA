@@ -42,22 +42,18 @@ export default class UserPage extends mixin<IUserPage>() {
 
     connectedCallback() {
         program.getMentors(this.uid);
-        // program.getAll({ mentors: [this.uid], verified: false });
 
         super.connectedCallback();
     }
 
     render() {
-        const avatarUrl: any =
-            session?.user?.avatar ||
+        const avatarUrl: string =
+            session?.user?.avatar?.url ||
             'https://kaiyuanshe.cn/image/KaiYuanShe-logo.png';
 
         return (
-            <div className={`${style.user_container}`}>
-                <Card
-                    className={`${style.user_card}`}
-                    // image={session.user.avatar || "https://kaiyuanshe.cn/image/KaiYuanShe-logo.png"}
-                >
+            <div className={style.user_container}>
+                <Card className={style.user_card}>
                     <img
                         src={avatarUrl}
                         alt="用户头像"
@@ -65,20 +61,20 @@ export default class UserPage extends mixin<IUserPage>() {
                     />
                     <h3>{session.user.username}</h3>
                     <div>{session.user.summary}</div>
-                    <div className={`${style.btn_container}`}>
-                        <Button color="primary" href={'profile'}>
+                    <div className={style.btn_container}>
+                        <Button color="primary" href="profile">
                             编辑用户资料
                         </Button>
                     </div>
                 </Card>
-                <div className={`${style.activity_container}`}>
+                <div className={style.activity_container}>
                     <TabView mode="masthead">
                         <NavLink>报名列表</NavLink>
-                        <TabPanel className={`${style.activity_panel}`}>
+                        <TabPanel className={style.activity_panel}>
                             {program.activityInfoList.map((item: Program) => {
                                 return (
                                     <Card
-                                        className={`${style.activity_item}`}
+                                        className={style.activity_item}
                                         title={item.title}
                                     >
                                         <div>
