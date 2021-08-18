@@ -14,8 +14,6 @@ import {
 import { formatDate } from 'web-utility/source/date';
 
 import { session, program } from '../../model';
-import { Program } from '../../model/Program';
-
 import style from './index.module.less';
 
 const formatActivityTime = (startTime: string, endTime: string) => {
@@ -26,10 +24,10 @@ interface IUserPage extends WebCellProps {
 }
 @observer
 @component({
-    tagName: 'user-page',
+    tagName: 'user-info',
     renderTarget: 'children'
 })
-export default class UserPage extends mixin<IUserPage>() {
+export default class UserInfo extends mixin<IUserPage>() {
     @attribute
     @watch
     uid: string;
@@ -65,16 +63,14 @@ export default class UserPage extends mixin<IUserPage>() {
                     <TabView mode="masthead">
                         <NavLink>报名列表</NavLink>
                         <TabPanel className={style.activity_panel}>
-                            {program.activityInfoList.map((item: Program) => {
-                                const {
+                            {program.activityInfoList.map(
+                                ({
                                     start_time,
                                     end_time,
                                     place,
                                     summary,
                                     title
-                                } = item;
-
-                                return (
+                                }) => (
                                     <Card
                                         className={style.activity_item}
                                         title={title}
@@ -89,8 +85,8 @@ export default class UserPage extends mixin<IUserPage>() {
                                         <div>地址：{place}</div>
                                         <div>简介：{summary}</div>
                                     </Card>
-                                );
-                            })}
+                                )
+                            )}
                         </TabPanel>
                     </TabView>
                 </div>

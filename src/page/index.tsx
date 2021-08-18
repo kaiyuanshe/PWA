@@ -16,7 +16,7 @@ import { ExhibitionApply } from './Activity/ExhibitionApply';
 import { ShowRoom } from './Activity/ShowRoom';
 import { PartnerDetail } from './Activity/PartnerDetail';
 import { AgendaDetail } from './Activity/AgendaDetail';
-import UserPage from './userPage';
+import UserInfo from './userInfo';
 
 const menu = [
         {
@@ -38,7 +38,7 @@ const menu = [
         { paths: ['activity/showroom'], component: ShowRoom },
         { paths: ['activity/partner'], component: PartnerDetail },
         { paths: ['activity/agenda'], component: AgendaDetail },
-        { paths: ['userPage'], component: UserPage }
+        { paths: ['userInfo'], component: UserInfo }
     ];
 
 export const PageFrame = observer(() => (
@@ -73,7 +73,7 @@ export const PageFrame = observer(() => (
             ) : (
                 <DropMenu buttonColor="primary" caption={session.user.username}>
                     <DropMenuItem href="profile">基本信息</DropMenuItem>
-                    <DropMenuItem href={`userPage?uid=${session.user.id}`}>
+                    <DropMenuItem href={`userInfo?uid=${session.user.id}`}>
                         个人主页
                     </DropMenuItem>
                     <DropMenuItem onClick={() => session.signOut()}>
