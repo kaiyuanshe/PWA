@@ -51,6 +51,9 @@ export class ProgramModel extends CollectionModel<
     @observable
     evaluations: Evaluation[] = [];
 
+    @observable
+    activityInfoList: Program[] = [];
+
     activity: ActivityModel;
 
     constructor(activity: ActivityModel) {
@@ -80,6 +83,13 @@ export class ProgramModel extends CollectionModel<
         this.currentAgenda = agenda;
         this.currentExhibitions = exhibitions;
         return this.allItems;
+    }
+
+    async getMentors(mentorId) {
+        const { body } = await service.get<Program[]>(
+            `programs?mentors=${mentorId}&verified=false`
+        );
+        return (this.activityInfoList = body);
     }
 
     @loading
