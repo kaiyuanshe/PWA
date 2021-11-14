@@ -11,7 +11,7 @@ import style from './ShowRoom.module.less';
 import { PartnerMap } from './constants';
 import { Partnership, activity } from '../../model';
 
-const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
+// const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
 
 @observer
 @component({
@@ -77,11 +77,11 @@ export class ShowRoom extends mixin() {
                     <Embed
                         is="iframe"
                         className={style['main-video']}
-                        src="//player.bilibili.com/player.html?aid=838735500&amp;bvid=BV1Sg4y1v7EX&amp;cid=207306433&amp;page=1"
+                        src="//player.bilibili.com/player.html?aid=676457093&bvid=BV1PU4y1g7Gd&cid=435097919&page=1"
                         allowFullscreen
                     />
                     <div className={style.buttonsTray}>
-                        <ButtonGroup>
+{/*                         <ButtonGroup>
                             {buttons.map(text => (
                                 <Button
                                     className={style.buttons}
@@ -90,7 +90,7 @@ export class ShowRoom extends mixin() {
                                     {text}
                                 </Button>
                             ))}
-                        </ButtonGroup>
+                        </ButtonGroup> */}
                     </div>
 
                     <section className="row mt-5">
