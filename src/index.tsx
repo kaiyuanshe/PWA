@@ -1,11 +1,10 @@
-import 'regenerator-runtime/runtime';
 import { auto } from 'browser-unhandled-rejection';
 import { APIError } from 'mobx-strapi';
+import { createCell, documentReady, render } from 'web-cell';
 import { serviceWorkerUpdate } from 'web-utility';
-import { documentReady, render, createCell } from 'web-cell';
 
-import { PageFrame } from './page';
 import { session } from './model';
+import { PageFrame } from './page';
 
 auto();
 

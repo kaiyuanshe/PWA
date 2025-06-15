@@ -4,14 +4,12 @@
         "module": "es6",
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "experimentalDecorators": true,
+        "useDefineForClassFields": true,
         "allowJs": true,
         "sourceMap": true,
-        "jsx": "react",
-        "jsxFactory": "createCell",
-        "jsxFragmentFactory": "Fragment",
-        "lib": ["ES2020", "DOM"],
-        "rootDir": "src"
+        "jsx": "react-jsx",
+        "jsxImportSource": "dom-renderer",
+        "lib": ["ES2020", "DOM"]
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "*.js", "*.ts"]
 }

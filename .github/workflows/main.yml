@@ -2,25 +2,45 @@ name: CI & CD
 on:
     push:
         branches:
-            - master
+            - '**'
 jobs:
     Build-and-Deploy:
         runs-on: ubuntu-latest
+        env:
+            VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+            VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+            VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Use Node.js
-              uses: actions/setup-node@v2
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
               with:
-                  node-version: '14'
-            - name: Install & build
-              run: |
-                  npm install
-                  npm run build
-            - name: Deploy
-              uses: peaceiris/actions-gh-pages@v3
+                  version: 10
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: pnpm
+            - name: Install Dependencies
+              run: pnpm i --frozen-lockfile
+
+            - name: Build Production
+              run: pnpm build
+
+            - name: Deploy to GitHub pages
+              uses: peaceiris/actions-gh-pages@v4
               with:
                   publish_dir: ./dist
                   cname: coscon.kaiyuanshe.cn
                   personal_token: ${{ secrets.GITHUB_TOKEN }}
                   force_orphan: true
+
+            - name: Deploy to Vercel
+              uses: amondnet/vercel-action@v25
+              if: ${{ env.VERCEL_TOKEN && env.VERCEL_ORG_ID && env.VERCEL_PROJECT_ID }}
+              with:
+                  vercel-token: ${{ secrets.VERCEL_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+                  vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+                  working-directory: ./
+                  vercel-args: ${{ github.ref == 'refs/heads/main' && ' --prod' || '' }}
