@@ -40,6 +40,9 @@ export class ProgramModel extends CollectionModel<Program> {
     @observable
     evaluations: Evaluation[] = [];
 
+    @observable
+    activityInfoList: Program[] = [];
+
     constructor(public activity: ActivityModel) {
         super();
     }
@@ -67,6 +70,14 @@ export class ProgramModel extends CollectionModel<Program> {
         this.currentExhibitions = exhibitions;
 
         return this.allItems;
+    }
+
+    @toggle('downloading')
+    async getMentors(mentorId: number) {
+        const { body } = await this.client.get<Program[]>(
+            `programs?mentors=${mentorId}&verified=false`
+        );
+        return (this.activityInfoList = body);
     }
 
     @toggle('downloading')

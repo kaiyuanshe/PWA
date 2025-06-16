@@ -10,6 +10,7 @@ import { PartnerDetail } from './Activity/PartnerDetail';
 import { ShowRoom } from './Activity/ShowRoom';
 import { SpeechEditPage } from './Activity/SpeechEdit';
 import { ProfilePage } from './Profile';
+import UserInfo from './userInfo';
 
 const menu = [
         {
@@ -30,7 +31,8 @@ const menu = [
         },
         { path: 'activity/showroom', component: ShowRoom },
         { path: 'activity/partner', component: PartnerDetail },
-        { path: 'activity/agenda', component: AgendaDetail }
+        { path: 'activity/agenda', component: AgendaDetail },
+        { path: 'userInfo', component: UserInfo }
     ];
 
 export const PageFrame = observer(() => (
@@ -65,6 +67,9 @@ export const PageFrame = observer(() => (
             ) : (
                 <DropMenu buttonColor="primary" caption={session.user.username}>
                     <DropMenuItem href="profile">基本信息</DropMenuItem>
+                    <DropMenuItem href={`userInfo?uid=${session.user.id}`}>
+                        个人主页
+                    </DropMenuItem>
                     <DropMenuItem onClick={() => session.signOut()}>
                         退出
                     </DropMenuItem>

@@ -8,6 +8,6 @@ export const ProgramMap = {
 
 export const PartnerMap = {
     [PartnershipTypes.community]: '社区伙伴',
-    [PartnershipTypes.media]: '直播媒体伙伴',
+    [PartnershipTypes.media]: '媒体合作伙伴',
     [PartnershipTypes.sponsor]: '赞助伙伴'
 };
