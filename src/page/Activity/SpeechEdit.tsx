@@ -1,27 +1,21 @@
+import { Button, Field, FormField, ToggleField } from 'boot-cell';
+import { observable } from 'mobx';
 import {
-    WebCellProps,
-    component,
-    mixin,
-    watch,
     attribute,
-    createCell
+    component,
+    observer,
+    WebCell,
+    WebCellProps
 } from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { Minute } from 'web-utility/source/date';
-import { formToJSON } from 'web-utility/source/DOM';
+import { formToJSON, Minute } from 'web-utility';
 
-import { Button } from 'boot-cell/source/Form/Button';
-import { Field } from 'boot-cell/source/Form/Field';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { ToggleField } from 'boot-cell/source/Form/ToggleField';
 import {
-    session,
+    activity,
     category,
-    project,
     organization,
     program,
-    activity,
-    history
+    project,
+    session
 } from '../../model';
 
 export interface SpeechEditPageProps extends WebCellProps {
@@ -29,48 +23,48 @@ export interface SpeechEditPageProps extends WebCellProps {
     pid?: string;
 }
 
+export interface SpeechEditPage extends WebCell<SpeechEditPageProps> {}
+
+@component({ tagName: 'speech-edit-page' })
 @observer
-@component({
-    tagName: 'speech-edit-page',
-    renderTarget: 'children'
-})
-export class SpeechEditPage extends mixin<SpeechEditPageProps>() {
+export class SpeechEditPage
+    extends HTMLElement
+    implements WebCell<SpeechEditPageProps>
+{
     @attribute
-    @watch
-    aid: string;
+    @observable
+    accessor aid = '';
 
     @attribute
-    @watch
-    pid?: string;
+    @observable
+    accessor pid = '';
 
     connectedCallback() {
         const { aid } = this;
 
-        if (aid !== activity.current.id) activity.getOne(aid);
+        if (aid !== activity.currentOne.id) activity.getOne(aid);
 
         category.getAll();
         project.getAll();
         organization.getAll();
-
-        super.connectedCallback();
     }
 
     async save(event: Event) {
         event.preventDefault();
         event.stopPropagation();
 
-        const { title } = await program.update(
+        const { title } = await program.updateOne(
             formToJSON(event.target as HTMLFormElement)
         );
         self.alert(`您的《${title}》讲题已提交，请静候组织者审核~`);
 
-        history.replace('');
+        location.hash = '';
     }
 
     render() {
         const { aid } = this,
             { user } = session,
-            { start_time } = activity.current;
+            { start_time } = activity.currentOne;
         const end_time = new Date(+new Date(start_time) + 40 * Minute).toJSON();
 
         return (
@@ -131,7 +125,6 @@ export class SpeechEditPage extends mixin<SpeechEditPageProps>() {
                         type="file"
                         name="documents"
                         multiple
-                        // @ts-ignore
                         accept=".doc,.docx,.ppt,.pptx,.pdf,.odt,.odp"
                         label="Word 文档、PPT、PDF、开放文档格式"
                         fileButton="选择"
@@ -170,7 +163,7 @@ export class SpeechEditPage extends mixin<SpeechEditPageProps>() {
                     <Button
                         type="reset"
                         color="danger"
-                        onClick={() => history.replace('')}
+                        onClick={() => (location.hash = '')}
                     >
                         放弃
                     </Button>

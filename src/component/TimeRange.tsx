@@ -1,5 +1,5 @@
-import { WebCellProps, createCell, Fragment } from 'web-cell';
-import { TimeData, formatDate } from 'web-utility/source/date';
+import { WebCellProps } from 'web-cell';
+import { formatDate, TimeData } from 'web-utility';
 
 export interface TimeRangeProps extends WebCellProps {
     start: TimeData;

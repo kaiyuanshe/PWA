@@ -1,42 +1,30 @@
-import {
-    component,
-    mixin,
-    watch,
-    attribute,
-    createCell,
-    Fragment
-} from 'web-cell';
-import { observer } from 'mobx-web-cell';
+import { Image, ListGroup, ListItem, SpinnerBox } from 'boot-cell';
+import { observable } from 'mobx';
 import { NestedData } from 'mobx-strapi';
+import { attribute, component } from 'web-cell';
+import { observer } from 'web-cell';
 
-import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
-import { Image } from 'boot-cell/source/Media/Image';
-import { ListGroup, ListItem } from 'boot-cell/source/Content/ListGroup';
-
-import { TimeRange } from '../../component/TimeRange';
 import { EvaluationForm } from '../../component/Evaluation';
-import { ProgramMap } from './constants';
-import style from './ShowRoom.module.less';
+import { TimeRange } from '../../component/TimeRange';
 import { program, User } from '../../model';
+import { ProgramMap } from './constants';
+import * as styles from './ShowRoom.module.less';
 
+@component({ tagName: 'agenda-detail' })
 @observer
-@component({
-    tagName: 'agenda-detail',
-    renderTarget: 'children'
-})
-export class AgendaDetail extends mixin() {
+export class AgendaDetail extends HTMLElement {
     @attribute
-    @watch
-    pid = '';
+    @observable
+    accessor pid = '';
 
-    connectedCallback() {
-        program.getOne(this.pid).then(() => program.getSameCategory());
+    async connectedCallback() {
+        await program.getOne(this.pid);
 
-        super.connectedCallback();
+        program.getSameCategory();
     }
 
     renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
-        <div className={`row px-2 ${style.card}`}>
+        <div className={`row px-2 ${styles.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
@@ -48,24 +36,21 @@ export class AgendaDetail extends mixin() {
     );
 
     render() {
+        const { downloading, currentOne, currentPage } = program;
         const {
-            loading,
-            current: {
-                title,
-                start_time,
-                end_time,
-                type,
-                summary,
-                place,
-                mentors,
-                category,
-                id
-            },
-            list
-        } = program;
+            title,
+            start_time,
+            end_time,
+            type,
+            summary,
+            place,
+            mentors,
+            category,
+            id
+        } = currentOne;
 
         return (
-            <SpinnerBox className={style.ground} cover={loading}>
+            <SpinnerBox className={styles.ground} cover={downloading > 0}>
                 <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{title}</h1>
                     <div className="row mt-3">
@@ -85,7 +70,7 @@ export class AgendaDetail extends mixin() {
                         <>
                             <h2 className="text-center mt-5">议题简介</h2>
                             <div
-                                className={`row mt-4 mb-5 px-3 py-4 ${style.card}`}
+                                className={`row mt-4 mb-5 px-3 py-4 ${styles.card}`}
                             >
                                 {summary}
                             </div>
@@ -97,10 +82,10 @@ export class AgendaDetail extends mixin() {
                     </section>
 
                     <h2 className="text-center">专场主题</h2>
-                    <section className={`mt-4 mb-5 ${style.card}`}>
+                    <section className={`mt-4 mb-5 ${styles.card}`}>
                         <h5 className="text-center my-2">{category?.name}</h5>
                         <p className="mb-3 px-3">{category?.summary}</p>
-                        {list.length > 0 ? (
+                        {currentPage.length > 0 ? (
                             <div
                                 className="py-2"
                                 style={{
@@ -112,7 +97,7 @@ export class AgendaDetail extends mixin() {
                                     主题相关议题
                                 </h5>
                                 <ListGroup>
-                                    {list.map(({ id, title }) => (
+                                    {currentPage.map(({ id, title }) => (
                                         <ListItem
                                             href={'activity/agenda?pid=' + id}
                                         >

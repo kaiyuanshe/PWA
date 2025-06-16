@@ -1,21 +1,15 @@
-import { createCell, Fragment } from 'web-cell';
-import { CellRouter } from 'cell-router/source';
-import { observer } from 'mobx-web-cell';
-import { service } from 'mobx-strapi';
+import { Button, DropMenu, DropMenuItem, Navbar, NavLink } from 'boot-cell';
+import { CellRouter } from 'cell-router';
+import { observer } from 'web-cell';
 
-import { NavBar } from 'boot-cell/source/Navigator/NavBar';
-import { NavLink } from 'boot-cell/source/Navigator/Nav';
-import { Button } from 'boot-cell/source/Form/Button';
-import { DropMenu, DropMenuItem } from 'boot-cell/source/Navigator/DropMenu';
-
-import { history, session } from '../model';
-import { ProfilePage } from './Profile';
+import { service, session } from '../model';
 import { AgendaPage } from './Activity';
-import { SpeechEditPage } from './Activity/SpeechEdit';
-import { ExhibitionApply } from './Activity/ExhibitionApply';
-import { ShowRoom } from './Activity/ShowRoom';
-import { PartnerDetail } from './Activity/PartnerDetail';
 import { AgendaDetail } from './Activity/AgendaDetail';
+import { ExhibitionApply } from './Activity/ExhibitionApply';
+import { PartnerDetail } from './Activity/PartnerDetail';
+import { ShowRoom } from './Activity/ShowRoom';
+import { SpeechEditPage } from './Activity/SpeechEdit';
+import { ProfilePage } from './Profile';
 
 const menu = [
         {
@@ -24,24 +18,24 @@ const menu = [
         }
     ],
     routes = [
-        { paths: [''], component: AgendaPage },
-        { paths: ['profile'], component: ProfilePage },
+        { path: '', component: AgendaPage },
+        { path: 'profile', component: ProfilePage },
         {
-            paths: ['activity/speech/edit'],
+            path: 'activity/speech/edit',
             component: SpeechEditPage
         },
         {
-            paths: ['activity/exhibition/apply'],
+            path: 'activity/exhibition/apply',
             component: ExhibitionApply
         },
-        { paths: ['activity/showroom'], component: ShowRoom },
-        { paths: ['activity/partner'], component: PartnerDetail },
-        { paths: ['activity/agenda'], component: AgendaDetail }
+        { path: 'activity/showroom', component: ShowRoom },
+        { path: 'activity/partner', component: PartnerDetail },
+        { path: 'activity/agenda', component: AgendaDetail }
     ];
 
 export const PageFrame = observer(() => (
     <div>
-        <NavBar
+        <Navbar
             narrow
             expand="md"
             fixed="top"
@@ -76,25 +70,28 @@ export const PageFrame = observer(() => (
                     </DropMenuItem>
                 </DropMenu>
             )}
-        </NavBar>
+        </Navbar>
 
-        <CellRouter
-            style={{ minHeight: '60vh' }}
-            history={history}
-            routes={routes}
-        />
+        <CellRouter style={{ minHeight: '60vh' }} routes={routes} />
+
         <footer className="text-center bg-light py-5">
             Proudly developed with
-            <a className="mx-1" target="_blank" href="https://web-cell.dev/">
-                WebCell v2
+            <a
+                className="mx-1"
+                target="_blank"
+                href="https://web-cell.dev/"
+                rel="noreferrer"
+            >
+                WebCell v3
             </a>
             &amp;
             <a
                 className="mx-1"
                 target="_blank"
                 href="https://web-cell.dev/BootCell/"
+                rel="noreferrer"
             >
-                BootCell v1
+                BootCell v2
             </a>
         </footer>
     </div>

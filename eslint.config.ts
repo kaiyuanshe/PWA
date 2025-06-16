@@ -33,6 +33,7 @@ export default tsEslint.config(
             '**/node_modules/**',
             'dist/**',
             '.parcel-cache/**',
+            'workbox-config.js',
             '.github/**'
         ]
     },
@@ -62,6 +63,7 @@ export default tsEslint.config(
             'simple-import-sort/imports': 'error',
             // TypeScript
             '@typescript-eslint/no-unused-vars': 'warn',
+            '@typescript-eslint/no-unused-expressions': 'warn',
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-empty-object-type': 'off',
             '@typescript-eslint/no-unsafe-declaration-merging': 'warn',

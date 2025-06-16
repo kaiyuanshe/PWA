@@ -1,21 +1,15 @@
+import { Button, Field, FormField, InputGroup, ScoreRange } from 'boot-cell';
+import { observable } from 'mobx';
+import { NewData } from 'mobx-restful';
 import {
-    WebCellProps,
-    component,
-    mixin,
-    watch,
     attribute,
-    createCell,
-    Fragment
+    component,
+    observer,
+    reaction,
+    WebCell,
+    WebCellProps
 } from 'web-cell';
-import { formToJSON } from 'web-utility/source/DOM';
-import { observer } from 'mobx-web-cell';
-import { NewData } from 'mobx-strapi';
-
-import { InputGroup } from 'boot-cell/source/Form/InputGroup';
-import { Button } from 'boot-cell/source/Form/Button';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { ScoreRange } from 'boot-cell/source/Form/ScoreRange';
-import { Field } from 'boot-cell/source/Form/Field';
+import { formToJSON } from 'web-utility';
 
 import { Evaluation, evaluation, session } from '../model';
 
@@ -24,26 +18,32 @@ export interface EvaluationProps extends WebCellProps {
     contribution?: string;
 }
 
+export interface EvaluationForm extends WebCell<EvaluationProps> {}
+
+@component({ tagName: 'evaluation-form' })
 @observer
-@component({
-    tagName: 'evaluation-form',
-    renderTarget: 'children'
-})
-export class EvaluationForm extends mixin<EvaluationProps>() {
+export class EvaluationForm
+    extends HTMLElement
+    implements WebCell<EvaluationProps>
+{
     @attribute
-    @watch
-    set program(program: string) {
-        this.setProps({ program }).then(() => evaluation.getAll({ program }));
+    @observable
+    accessor program = '';
+
+    @reaction(({ program }) => program)
+    getEvaluation(program: string) {
+        evaluation.getAll({ program });
     }
 
     @attribute
-    @watch
-    contribution?: string;
+    @observable
+    accessor contribution = '';
 
     saveEvaluation = (event: Event) => {
-        event.preventDefault(), event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
 
-        return evaluation.update({
+        return evaluation.updateOne({
             creator: session.user.id,
             program: this.program,
             contribution: this.contribution,
@@ -52,12 +52,9 @@ export class EvaluationForm extends mixin<EvaluationProps>() {
     };
 
     render() {
-        const {
-            userSubmitted,
-            averageScore,
-            current: { score, detail }
-        } = evaluation;
-        const showAll = !session.user || userSubmitted;
+        const { userSubmitted, averageScore, currentOne } = evaluation;
+        const { score, detail } = currentOne,
+            showAll = !session.user || userSubmitted;
 
         return (
             <form onSubmit={this.saveEvaluation}>

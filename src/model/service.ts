@@ -1,9 +1,22 @@
-import { BaseUser, BaseData, MediaData, service } from 'mobx-strapi';
+import { HTTPClient } from 'koajax';
+import { DataObject, Filter } from 'mobx-restful';
+import { StrapiListModel } from 'mobx-strapi';
 
 import { Organization } from './Organization';
 
-if (self.location.hostname !== 'localhost')
-    service.baseURI = 'https://data.kaiyuanshe.cn/';
+export const service = new HTTPClient({
+    baseURI:
+        location.hostname === 'localhost'
+            ? 'http://localhost:1337/api/'
+            : 'https://data.kaiyuanshe.cn/'
+});
+
+export abstract class CollectionModel<
+    D extends DataObject,
+    F extends Filter<D> = Filter<D>
+> extends StrapiListModel<D, F> {
+    client = service;
+}
 
 export interface User extends BaseUser {
     name?: string;

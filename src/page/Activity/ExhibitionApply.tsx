@@ -1,68 +1,67 @@
 import {
-    WebCellProps,
-    component,
-    mixin,
-    watch,
-    attribute,
-    createCell,
-    Fragment
-} from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { NewData } from 'mobx-strapi';
-import { formToJSON } from 'web-utility/source/DOM';
+    Button,
+    FileInput,
+    FormField,
+    Step,
+    TabPanel,
+    TabView
+} from 'boot-cell';
 import debounce from 'lodash.debounce';
-
-import { TabPanel, TabView } from 'boot-cell/source/Content/TabView';
-import { Step } from 'boot-cell/source/Navigator/Stepper';
-import { Button } from 'boot-cell/source/Form/Button';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { FileInput } from 'boot-cell/source/Form/FileInput';
+import { observable } from 'mobx';
+import { NewData } from 'mobx-restful';
+import {
+    attribute,
+    component,
+    observer,
+    WebCell,
+    WebCellProps
+} from 'web-cell';
+import { formToJSON } from 'web-utility';
 
 import {
-    Project,
-    session,
     activity,
     organization,
+    program,
+    Project,
     project,
-    program
+    session
 } from '../../model';
-
-interface ExhibitionApplyState {
-    step: number;
-    organization: string;
-}
 
 export interface ExhibitionApplyProps extends WebCellProps {
     aid: number;
 }
 
-@observer
-@component({
-    tagName: 'exhibition-apply',
-    renderTarget: 'children'
-})
-export class ExhibitionApply extends mixin<
-    ExhibitionApplyProps,
-    ExhibitionApplyState
->() {
-    @attribute
-    @watch
-    aid = '';
+export interface ExhibitionApply extends WebCell<ExhibitionApplyProps> {}
 
-    state = { step: 0, organization: '' };
+@component({ tagName: 'exhibition-apply' })
+@observer
+export class ExhibitionApply
+    extends HTMLElement
+    implements WebCell<ExhibitionApplyProps>
+{
+    @attribute
+    @observable
+    accessor aid = '';
+
+    @attribute
+    @observable
+    accessor step = 0;
+
+    @attribute
+    @observable
+    accessor organization = '';
 
     connectedCallback() {
         this.classList.add('d-block', 'container');
 
-        if (this.aid !== activity.current.id) activity.getOne(this.aid);
-
-        super.connectedCallback();
+        if (this.aid !== activity.currentOne.id) activity.getOne(this.aid);
     }
 
     handleBack = (event: Event) => {
         event.stopPropagation();
 
-        return this.setState({ step: 0, organization: '' });
+        this.step = 0;
+        this.organization = '';
     };
 
     searchOrganization = debounce(
@@ -70,30 +69,30 @@ export class ExhibitionApply extends mixin<
         500
     );
 
-    selectOrganization = ({ target }: Event) => {
+    selectOrganization({ target }: Event) {
         const { value } = target as HTMLInputElement;
 
-        if (organization.current.name !== value)
+        if (organization.currentOne.name !== value)
             organization.select('name', value);
-    };
+    }
 
     saveOrganization = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
 
-        if (organization.loading) return;
+        if (organization.downloading > 0) return;
 
         const { type, target } = event;
 
-        const { id, name } = await organization.update(
+        const { id, name } = await organization.updateOne(
             formToJSON(
                 type === 'submit'
                     ? (target as HTMLFormElement)
                     : (target as HTMLButtonElement).form
             )
         );
-        if (type !== 'submit') return this.setState({ step: 2 });
+        if (type !== 'submit') return (this.step = 2);
 
-        await program.update({
+        await program.updateOne({
             activity: this.aid,
             organization: id,
             type: 'exhibition',
@@ -106,11 +105,9 @@ export class ExhibitionApply extends mixin<
     };
 
     renderOrganization() {
-        const {
-            list,
-            current: { id, slogan, summary, logo, link, message_link },
-            loading
-        } = organization;
+        const { currentPage, currentOne, downloading } = organization;
+        const loading = downloading > 0,
+            { id, slogan, summary, logo, link, message_link } = currentOne;
 
         return (
             <form onSubmit={this.saveOrganization} onReset={this.handleBack}>
@@ -127,7 +124,7 @@ export class ExhibitionApply extends mixin<
                     onBlur={this.selectOrganization}
                 />
                 <datalist id="organization-list">
-                    {list.map(({ name }) => (
+                    {currentPage.map(({ name }) => (
                         <option value={name} />
                     ))}
                 </datalist>
@@ -189,25 +186,25 @@ export class ExhibitionApply extends mixin<
         500
     );
 
-    selectProject = ({ target }: Event) => {
+    selectProject({ target }: Event) {
         const { value } = target as HTMLInputElement;
 
-        if (project.current.name !== value) project.select('name', value);
-    };
+        if (project.currentOne.name !== value) project.select('name', value);
+    }
 
     saveProject = async (event: Event) => {
         event.preventDefault(), event.stopPropagation();
 
-        if (project.loading) return;
+        if (project.downloading > 0) return;
 
         const { id: uid } = session.user,
-            members = project.current.members?.map(({ id }) => id),
-            { organization } = this.state;
+            members = project.currentOne.members?.map(({ id }) => id),
+            { organization } = this;
 
         const { end_date, ...data } = formToJSON<NewData<Project>>(
             event.target as HTMLFormElement
         );
-        const { id, name } = await project.update({
+        const { id, name } = await project.updateOne({
             end_date: end_date || undefined,
             members:
                 members &&
@@ -215,7 +212,7 @@ export class ExhibitionApply extends mixin<
             organization: organization || undefined,
             ...data
         });
-        await program.update({
+        await program.updateOne({
             activity: this.aid,
             project: id,
             type: 'exhibition',
@@ -228,11 +225,9 @@ export class ExhibitionApply extends mixin<
     };
 
     renderProject() {
-        const {
-            list,
-            current: { id = 0, summary, logo, link },
-            loading
-        } = project;
+        const { currentPage, currentOne, downloading } = project;
+        const loading = downloading > 0,
+            { id = 0, summary, logo, link } = currentOne;
 
         return (
             <form onSubmit={this.saveProject} onReset={this.handleBack}>
@@ -249,7 +244,7 @@ export class ExhibitionApply extends mixin<
                     onBlur={this.selectProject}
                 />
                 <datalist id="project-list">
-                    {list.map(({ name }) => (
+                    {currentPage.map(({ name }) => (
                         <option value={name} />
                     ))}
                 </datalist>
@@ -297,8 +292,9 @@ export class ExhibitionApply extends mixin<
         );
     }
 
-    render(_, { step }: ExhibitionApplyState) {
-        const { description } = activity.current;
+    render() {
+        const { step } = this,
+            { description } = activity.currentOne;
 
         return (
             <>
@@ -311,7 +307,7 @@ export class ExhibitionApply extends mixin<
                             className="px-5 m-3"
                             color="warning"
                             size="lg"
-                            onClick={() => this.setState({ step: 2 })}
+                            onClick={() => (this.step = 2)}
                         >
                             个人
                         </Button>
@@ -319,7 +315,7 @@ export class ExhibitionApply extends mixin<
                             className="px-5"
                             color="primary"
                             size="lg"
-                            onClick={() => this.setState({ step: 1 })}
+                            onClick={() => (this.step = 1)}
                         >
                             组织
                         </Button>

@@ -1,9 +1,9 @@
-import { SessionModel, NewData, loading } from 'mobx-strapi';
+import { BaseModel, NewData, toggle } from 'mobx-restful';
 
 import { User } from './service';
 
-export class UserSessionModel extends SessionModel<User> {
-    @loading
+export class UserSessionModel extends BaseModel {
+    @toggle('uploading')
     async updateProfile({
         id = this.user?.id,
         avatar,
@@ -18,6 +18,7 @@ export class UserSessionModel extends SessionModel<User> {
             [avatar],
             'users-permissions'
         );
+
         return user;
     }
 }

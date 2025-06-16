@@ -1,13 +1,13 @@
 declare module '*.module.css' {
     const map: { [key: string]: string };
 
-    export default map;
+    export = map;
 }
 
 declare module '*.module.less' {
     const map: { [key: string]: string };
 
-    export default map;
+    export = map;
 }
 
 declare module '*.gif' {

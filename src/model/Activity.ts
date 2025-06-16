@@ -1,16 +1,11 @@
+import { marked } from 'marked';
 import { computed } from 'mobx';
-import {
-    BaseData,
-    MediaData,
-    NestedData,
-    CollectionModel,
-    service,
-    loading
-} from 'mobx-strapi';
-import { Day, formatDate } from 'web-utility/source/date';
-import marked from 'marked';
+import { toggle } from 'mobx-restful';
+import { BaseData, MediaData, NestedData } from 'mobx-strapi';
+import { Day, formatDate } from 'web-utility';
 
 import { Organization } from './Organization';
+import { CollectionModel, service } from './service';
 
 export interface Activity extends BaseData {
     name: string;
@@ -45,17 +40,17 @@ export interface Partnership extends BaseData {
 
 export class ActivityModel extends CollectionModel<Activity> {
     name = 'activity';
-    basePath = 'activities';
+    baseURI = 'activities';
 
     @computed
     get currentDays() {
-        const { start_time, end_time } = this.current,
+        const { start_time, end_time } = this.currentOne,
             days: string[] = [];
 
         if (!start_time || !end_time) return [];
 
-        var start = new Date(start_time),
-            end = new Date(end_time);
+        let start = new Date(start_time);
+        const end = new Date(end_time);
         do {
             days.push(formatDate(start, 'YYYY-MM-DD'));
         } while (+(start = new Date(+start + Day)) <= +end);
@@ -63,12 +58,12 @@ export class ActivityModel extends CollectionModel<Activity> {
         return days;
     }
 
-    @loading
+    @toggle('downloading')
     async getOne(id: Activity['id']) {
         const { body } = await service.get<Partnership[]>(
             'partner-ships?_sort=level:DESC&activity=' + id
         );
-        var activity: Activity;
+        let activity: Activity;
 
         if (body[0]) {
             activity = { ...body[0].activity } as Activity;
@@ -78,6 +73,9 @@ export class ActivityModel extends CollectionModel<Activity> {
 
         const { description, ...data } = activity;
 
-        return (this.current = { description: marked(description), ...data });
+        return (this.currentOne = {
+            description: marked(description),
+            ...data
+        });
     }
 }

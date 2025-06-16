@@ -1,15 +1,10 @@
 import { computed, observable } from 'mobx';
-import {
-    BaseData,
-    NestedData,
-    NewData,
-    Query,
-    CollectionModel
-} from 'mobx-strapi';
+import { NewData } from 'mobx-restful';
+import { BaseData, NestedData, Query } from 'mobx-strapi';
 
-import { User } from './service';
-import { UserSessionModel } from './Session';
 import { Program } from './Program';
+import { CollectionModel, User } from './service';
+import { UserSessionModel } from './Session';
 
 export interface Evaluation extends BaseData {
     score: number;
@@ -21,7 +16,7 @@ export interface Evaluation extends BaseData {
 
 export class EvaluationModel extends CollectionModel<Evaluation> {
     name = 'evaluation';
-    basePath = 'evaluations';
+    baseURI = 'evaluations';
 
     session: UserSessionModel;
 
@@ -51,16 +46,17 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
         const item = this.allItems.find(({ creator: { id } }) => id === uid);
 
         if (item) {
-            this.current = item;
+            this.currentOne = item;
             this.userSubmitted = true;
         }
+
         return this.allItems;
     }
 
-    async update(data: NewData<Evaluation>) {
-        await super.update(data);
+    async updateOne(data: NewData<Evaluation>) {
+        await super.updateOne(data);
         await this.getAll();
 
-        return this.current;
+        return this.currentOne;
     }
 }

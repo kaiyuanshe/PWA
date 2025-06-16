@@ -1,19 +1,13 @@
-import { component, mixin, createCell } from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { NewData } from 'mobx-strapi';
-import { formToJSON } from 'web-utility/source/DOM';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { FileInput } from 'boot-cell/source/Form/FileInput';
-import { Button } from 'boot-cell/source/Form/Button';
+import { Button, FileInput, FormField } from 'boot-cell';
+import { NewData } from 'mobx-restful';
+import { component, observer } from 'web-cell';
+import { formToJSON } from 'web-utility';
 
-import { User, session, history } from '../model';
+import { session, User } from '../model';
 
+@component({ tagName: 'profile-page' })
 @observer
-@component({
-    tagName: 'profile-page',
-    renderTarget: 'children'
-})
-export class ProfilePage extends mixin() {
+export class ProfilePage extends HTMLElement {
     handleSync = (event: MouseEvent) => {
         event.preventDefault();
 
@@ -21,21 +15,23 @@ export class ProfilePage extends mixin() {
     };
 
     handleSubmit = async (event: Event) => {
-        event.preventDefault(), event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
 
-        if (session.loading) return;
+        if (session.downloading > 0) return;
 
         const { telphone, ...user } = formToJSON<NewData<User>>(
             event.target as HTMLFormElement
         );
         await session.updateProfile({ telphone: telphone + '', ...user });
 
-        return history.push('');
+        return (location.hash = '');
     };
 
     render() {
-        const { user, userGithub, loading } = session;
-        const { id, name, username, email, telphone, summary, avatar } =
+        const { user, userGithub, downloading } = session;
+        const loading = downloading > 0,
+            { id, name, username, email, telphone, summary, avatar } =
                 user || {},
             { name: nickname, bio, avatar_url } = userGithub || {};
 

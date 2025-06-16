@@ -1,37 +1,21 @@
-import {
-    component,
-    mixin,
-    watch,
-    attribute,
-    createCell,
-    Fragment
-} from 'web-cell';
-import { observer } from 'mobx-web-cell';
+import { Embed, encodeQRC, Image, SpinnerBox } from 'boot-cell';
+import { observable } from 'mobx';
 import { NestedData } from 'mobx-strapi';
-
-import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
-import { Embed } from 'boot-cell/source/Media/Embed';
-import { Image } from 'boot-cell/source/Media/Image';
-import { encodeQRC } from 'boot-cell/source/utility/QRCode';
+import { attribute, component, observer } from 'web-cell';
 
 import { TimeRange } from '../../component/TimeRange';
-import style from './ShowRoom.module.less';
-import { Program, organization, User } from '../../model';
+import { organization, Program, User } from '../../model';
+import * as styles from './ShowRoom.module.less';
 
+@component({ tagName: 'partner-detail' })
 @observer
-@component({
-    tagName: 'partner-detail',
-    renderTarget: 'children'
-})
-export class PartnerDetail extends mixin() {
+export class PartnerDetail extends HTMLElement {
     @attribute
-    @watch
-    oid = '';
+    @observable
+    accessor oid = '';
 
     connectedCallback() {
         organization.getOne(this.oid);
-
-        super.connectedCallback();
     }
 
     renderProgram = ({
@@ -41,7 +25,7 @@ export class PartnerDetail extends mixin() {
         place,
         summary
     }: Program) => (
-        <div className={`row mb-5 px-2 ${style.card}`}>
+        <div className={`row mb-5 px-2 ${styles.card}`}>
             <div
                 className="col-5 my-4"
                 style={{ borderRight: '1px dashed white' }}
@@ -55,7 +39,7 @@ export class PartnerDetail extends mixin() {
     );
 
     renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
-        <div className={`row px-2 ${style.card}`}>
+        <div className={`row px-2 ${styles.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
@@ -67,29 +51,26 @@ export class PartnerDetail extends mixin() {
     );
 
     render() {
-        const {
-            loading,
-            current: { name, slogan, video, logo, summary, message_link },
-            programs
-        } = organization;
+        const { downloading, currentOne, programs } = organization;
+        const { name, slogan, video, logo, summary, message_link } = currentOne;
 
         const mentors = programs.map(({ mentors }) => mentors).flat();
 
         return (
-            <SpinnerBox className={style.ground} cover={loading}>
+            <SpinnerBox className={styles.ground} cover={downloading > 0}>
                 <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{name}</h1>
                     <p className="h4 my-4 text-center">{slogan}</p>
                     {video && (
                         <Embed
                             is="video"
-                            className={style['main-video']}
+                            className={styles['main-video']}
                             src={video.url}
                             controls
                             autoplay
                         />
                     )}
-                    <header className={`row mt-5 mb-5 px-2 ${style.card}`}>
+                    <header className={`row mt-5 mb-5 px-2 ${styles.card}`}>
                         <div className="col-2 my-4 text-center">
                             <Image thumbnail src={logo?.url} />
                             {message_link && (

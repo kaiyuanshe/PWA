@@ -1,7 +1,7 @@
-import { BaseData, MediaData, NestedData, CollectionModel } from 'mobx-strapi';
+import { BaseData, MediaData, NestedData } from 'mobx-strapi';
 
-import { User } from './service';
 import { Organization } from './Organization';
+import { CollectionModel, User } from './service';
 
 export interface Project extends BaseData {
     name: string;
@@ -14,7 +14,7 @@ export interface Project extends BaseData {
     organization?: NestedData<Organization>;
 }
 
-export class ProjectModel extends CollectionModel<Project, 'name' | 'summary'> {
+export class ProjectModel extends CollectionModel<Project> {
     name = 'project';
-    basePath = 'projects';
+    baseURI = 'projects';
 }

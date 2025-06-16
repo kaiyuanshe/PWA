@@ -1,4 +1,4 @@
-import { BaseData, CollectionModel } from 'mobx-strapi';
+import { CollectionModel } from './service';
 
 export interface Category extends BaseData {
     name: string;
@@ -7,5 +7,5 @@ export interface Category extends BaseData {
 
 export class CategoryModel extends CollectionModel<Category> {
     name = 'category';
-    basePath = 'categories';
+    baseURI = 'categories';
 }

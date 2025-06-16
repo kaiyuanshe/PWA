@@ -1,21 +1,13 @@
 import { observable } from 'mobx';
-import {
-    BaseData,
-    NewData,
-    Query,
-    MediaData,
-    NestedData,
-    CollectionModel,
-    service,
-    loading
-} from 'mobx-strapi';
+import { NewData, toggle } from 'mobx-restful';
+import { BaseData, MediaData, NestedData, Query } from 'mobx-strapi';
 
-import { Place, User } from './service';
+import { Activity, ActivityModel } from './Activity';
 import { Category } from './Category';
 import { Evaluation } from './Evaluation';
-import { Activity, ActivityModel } from './Activity';
-import { Project } from './Project';
 import { Organization } from './Organization';
+import { Project } from './Project';
+import { CollectionModel, Place, User } from './service';
 
 export interface Program extends BaseData {
     title: string;
@@ -35,12 +27,9 @@ export interface Program extends BaseData {
     organization?: NestedData<Organization>;
 }
 
-export class ProgramModel extends CollectionModel<
-    Program,
-    'id' | 'title' | 'mentors'
-> {
+export class ProgramModel extends CollectionModel<Program> {
     name = 'program';
-    basePath = 'programs';
+    baseURI = 'programs';
 
     @observable
     currentAgenda: Program[] = [];
@@ -51,11 +40,8 @@ export class ProgramModel extends CollectionModel<
     @observable
     evaluations: Evaluation[] = [];
 
-    activity: ActivityModel;
-
-    constructor(activity: ActivityModel) {
+    constructor(public activity: ActivityModel) {
         super();
-        this.activity = activity;
     }
 
     async getAll({
@@ -79,37 +65,40 @@ export class ProgramModel extends CollectionModel<
 
         this.currentAgenda = agenda;
         this.currentExhibitions = exhibitions;
+
         return this.allItems;
     }
 
-    @loading
+    @toggle('downloading')
     async getSameCategory(
         {
             id,
             activity,
             category
         }: Pick<Query<Program>, 'id' | 'activity' | 'category'> = {
-            id: this.current.id,
-            activity: this.current.activity?.id,
-            category: this.current.category?.id
+            id: this.currentOne.id,
+            activity: this.currentOne.activity?.id,
+            category: this.currentOne.category?.id
         }
     ) {
-        const { body } = await service.get<Program[]>(
+        const { body } = await this.client.get<Program[]>(
             `programs?activity=${activity}&category=${category}&id_ne=${id}`
         );
+
         return (this.list = body);
     }
 
-    @loading
+    @toggle('downloading')
     async getEvaluation(pid: number) {
-        const { body } = await service.get<Evaluation[]>(
+        const { body } = await this.client.get<Evaluation[]>(
             'evaluations?program=' + pid
         );
+
         return (this.evaluations = body);
     }
 
-    @loading
-    async update({
+    @toggle('downloading')
+    async updateOne({
         type,
         start_time,
         end_time,
@@ -117,12 +106,13 @@ export class ProgramModel extends CollectionModel<
         ...data
     }: NewData<Program>) {
         if (type === 'exhibition') {
-            if (!(start_time && end_time) && activity !== this.current.id)
+            if (!(start_time && end_time) && activity !== this.currentOne.id)
                 await this.activity.getOne(activity);
 
-            ({ start_time, end_time } = this.activity.current);
+            ({ start_time, end_time } = this.activity.currentOne);
         }
-        return super.update({
+
+        return super.updateOne({
             type,
             start_time,
             end_time,
