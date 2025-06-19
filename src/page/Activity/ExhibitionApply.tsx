@@ -1,3 +1,4 @@
+import { Project } from '@kaiyuanshe/data-server';
 import {
     Button,
     FileInput,
@@ -18,14 +19,7 @@ import {
 } from 'web-cell';
 import { formToJSON } from 'web-utility';
 
-import {
-    activity,
-    organization,
-    program,
-    Project,
-    project,
-    session
-} from '../../model';
+import { activity, organization, program, project, session } from '../../model';
 
 export interface ExhibitionApplyProps extends WebCellProps {
     aid: number;
@@ -54,7 +48,7 @@ export class ExhibitionApply
     connectedCallback() {
         this.classList.add('d-block', 'container');
 
-        if (this.aid !== activity.currentOne.id) activity.getOne(this.aid);
+        if (this.aid !== activity.currentOne.id) activity.getOne(+this.aid);
     }
 
     handleBack = (event: Event) => {
@@ -107,7 +101,7 @@ export class ExhibitionApply
     renderOrganization() {
         const { currentPage, currentOne, downloading } = organization;
         const loading = downloading > 0,
-            { id, slogan, summary, logo, link, message_link } = currentOne;
+            { id, slogan, summary, logo, link, messageLink } = currentOne;
 
         return (
             <form onSubmit={this.saveOrganization} onReset={this.handleBack}>
@@ -149,7 +143,7 @@ export class ExhibitionApply
                     name="message_link"
                     label="即时通讯链接"
                     placeholder="加群二维码、公众平台账号等对应的链接"
-                    value={message_link ?? ''}
+                    value={messageLink ?? ''}
                 />
                 <div className="text-center">
                     <Button

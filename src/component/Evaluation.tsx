@@ -1,3 +1,4 @@
+import { Evaluation } from '@kaiyuanshe/data-server';
 import { Button, Field, FormField, InputGroup, ScoreRange } from 'boot-cell';
 import { observable } from 'mobx';
 import { NewData } from 'mobx-restful';
@@ -11,7 +12,7 @@ import {
 } from 'web-cell';
 import { formToJSON } from 'web-utility';
 
-import { Evaluation, evaluation, session } from '../model';
+import { evaluation, session } from '../model';
 
 export interface EvaluationProps extends WebCellProps {
     program?: string;

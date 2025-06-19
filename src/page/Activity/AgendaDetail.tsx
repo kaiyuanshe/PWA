@@ -108,7 +108,7 @@ export class AgendaDetail extends HTMLElement {
                             </div>
                         ) : null}
                     </section>
-                    <EvaluationForm program={id} />
+                    <EvaluationForm program={id + ''} />
                 </div>
             </SpinnerBox>
         );

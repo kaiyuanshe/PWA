@@ -1,8 +1,7 @@
+import { Partnership } from '@kaiyuanshe/data-server';
 import { HTTPClient } from 'koajax';
 import { DataObject, Filter } from 'mobx-restful';
 import { StrapiListModel } from 'mobx-strapi';
-
-import { Organization } from './Organization';
 
 export const service = new HTTPClient({
     baseURI:
@@ -18,22 +17,4 @@ export abstract class CollectionModel<
     client = service;
 }
 
-export interface User extends BaseUser {
-    name?: string;
-    organizations: Organization[];
-    avatar?: MediaData;
-    summary: string;
-    telphone?: string;
-}
-
-export interface Place extends BaseData {
-    name: string;
-    location: string;
-    capacity: number;
-    indoor: boolean;
-    available_times: any[];
-    contacts: User[];
-    owner: Organization;
-    equipments: any[];
-    films: MediaData[];
-}
+export type User = Required<Partnership>['creator'];

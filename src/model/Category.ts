@@ -1,9 +1,6 @@
-import { CollectionModel } from './service';
+import { Category } from '@kaiyuanshe/data-server';
 
-export interface Category extends BaseData {
-    name: string;
-    summary?: string;
-}
+import { CollectionModel } from './service';
 
 export class CategoryModel extends CollectionModel<Category> {
     name = 'category';

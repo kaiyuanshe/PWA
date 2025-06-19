@@ -1,30 +1,18 @@
+import {
+    Category,
+    Evaluation,
+    Place,
+    Program as _Program} from '@kaiyuanshe/data-server';
 import { observable } from 'mobx';
 import { NewData, toggle } from 'mobx-restful';
-import { BaseData, MediaData, NestedData, Query } from 'mobx-strapi';
+import { Query } from 'mobx-strapi';
 
-import { Activity, ActivityModel } from './Activity';
-import { Category } from './Category';
-import { Evaluation } from './Evaluation';
-import { Organization } from './Organization';
-import { Project } from './Project';
-import { CollectionModel, Place, User } from './service';
+import { ActivityModel } from './Activity';
+import { CollectionModel } from './service';
 
-export interface Program extends BaseData {
-    title: string;
-    start_time: string;
-    end_time: string;
-    summary?: string;
-    mentors: NestedData<User>[];
-    activity: NestedData<Activity>;
-    type: 'lecture' | 'workshop' | 'exhibition';
-    place?: NestedData<Place>;
-    evaluations: any[];
-    accounts: any[];
-    documents: MediaData[];
-    verified: boolean;
-    category: NestedData<Category>;
-    project?: NestedData<Project>;
-    organization?: NestedData<Organization>;
+export interface Program extends _Program {
+    category?: Category;
+    place?: Place;
 }
 
 export class ProgramModel extends CollectionModel<Program> {
@@ -77,6 +65,7 @@ export class ProgramModel extends CollectionModel<Program> {
         const { body } = await this.client.get<Program[]>(
             `programs?mentors=${mentorId}&verified=false`
         );
+
         return (this.activityInfoList = body);
     }
 
@@ -118,9 +107,10 @@ export class ProgramModel extends CollectionModel<Program> {
     }: NewData<Program>) {
         if (type === 'exhibition') {
             if (!(start_time && end_time) && activity !== this.currentOne.id)
-                await this.activity.getOne(activity);
+                await this.activity.getOne(activity as number);
 
-            ({ start_time, end_time } = this.activity.currentOne);
+            ({ startTime: start_time, endTime: end_time } =
+                this.activity.currentOne);
         }
 
         return super.updateOne({

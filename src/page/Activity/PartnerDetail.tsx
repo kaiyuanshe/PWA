@@ -15,7 +15,7 @@ export class PartnerDetail extends HTMLElement {
     accessor oid = '';
 
     connectedCallback() {
-        organization.getOne(this.oid);
+        organization.getOne(+this.oid);
     }
 
     renderProgram = ({
@@ -52,7 +52,7 @@ export class PartnerDetail extends HTMLElement {
 
     render() {
         const { downloading, currentOne, programs } = organization;
-        const { name, slogan, video, logo, summary, message_link } = currentOne;
+        const { name, slogan, video, logo, summary, messageLink } = currentOne;
 
         const mentors = programs.map(({ mentors }) => mentors).flat();
 
@@ -73,10 +73,10 @@ export class PartnerDetail extends HTMLElement {
                     <header className={`row mt-5 mb-5 px-2 ${styles.card}`}>
                         <div className="col-2 my-4 text-center">
                             <Image thumbnail src={logo?.url} />
-                            {message_link && (
+                            {messageLink && (
                                 <Image
                                     className="mt-3 mb-2"
-                                    src={encodeQRC(message_link)}
+                                    src={encodeQRC(messageLink)}
                                 />
                             )}
                             <p>联系方式</p>

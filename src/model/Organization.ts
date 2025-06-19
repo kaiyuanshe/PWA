@@ -1,19 +1,9 @@
+import { Organization } from '@kaiyuanshe/data-server';
 import { observable } from 'mobx';
 import { toggle } from 'mobx-restful';
-import { BaseData, MediaData } from 'mobx-strapi';
 
 import { Program } from './Program';
 import { CollectionModel } from './service';
-
-export interface Organization extends BaseData {
-    name: string;
-    slogan?: string;
-    logo?: MediaData;
-    link: string;
-    summary: string;
-    video?: MediaData;
-    message_link: string;
-}
 
 export class OrganizationModel extends CollectionModel<Organization> {
     name = 'organization';

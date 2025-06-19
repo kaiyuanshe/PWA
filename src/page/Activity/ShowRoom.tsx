@@ -17,7 +17,7 @@ export class ShowRoom extends HTMLElement {
     accessor aid = '';
 
     connectedCallback() {
-        if (this.aid !== activity.currentOne.id) activity.getOne(this.aid);
+        if (this.aid !== activity.currentOne.id) activity.getOne(+this.aid);
     }
 
     renderPartner = ({
@@ -46,7 +46,7 @@ export class ShowRoom extends HTMLElement {
 
     render() {
         const { downloading, currentOne } = activity;
-        const { name, slogan, partner_ships } = currentOne;
+        const { name, slogan, partnerships } = currentOne;
 
         return (
             <SpinnerBox className={styles.ground} cover={downloading > 0}>
@@ -60,7 +60,7 @@ export class ShowRoom extends HTMLElement {
                         allowFullscreen
                     />
                     <div className={styles.buttonsTray}>
-{/*                         <ButtonGroup>
+                        {/*                         <ButtonGroup>
 
                             {buttons.map(text => (
                                 <Button
@@ -74,7 +74,7 @@ export class ShowRoom extends HTMLElement {
                     </div>
 
                     <section className="row mt-5">
-                        {partner_ships?.map(this.renderPartner)}
+                        {partnerships?.map(this.renderPartner)}
                     </section>
                 </div>
             </SpinnerBox>

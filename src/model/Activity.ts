@@ -1,21 +1,19 @@
+import {
+    Activity as _Activity,
+    Organization,
+    Partnership as _Partnership
+} from '@kaiyuanshe/data-server';
 import { marked } from 'marked';
 import { computed } from 'mobx';
 import { toggle } from 'mobx-restful';
-import { BaseData, MediaData, NestedData } from 'mobx-strapi';
 import { Day, formatDate } from 'web-utility';
 
-import { Organization } from './Organization';
 import { CollectionModel, service } from './service';
 
-export interface Activity extends BaseData {
-    name: string;
-    slogan: string;
-    banner: MediaData;
-    description: string;
-    partner_ships: NestedData<Partnership>[];
-    start_time: string;
-    end_time: string;
-    location: string;
+// @ts-expect-error Enum compatibility bug
+export interface Activity extends _Activity {
+    organization?: Organization;
+    partnerships?: Partnership[];
 }
 
 export enum PartnershipTypes {
@@ -28,14 +26,8 @@ export enum PartnershipTypes {
     vendor = 'vendor'
 }
 
-export interface Partnership extends BaseData {
-    title: string;
-    activity: NestedData<Activity>;
-    level: number;
-    organization: NestedData<Organization>;
-    type: PartnershipTypes;
-    accounts: any[];
-    verified: boolean;
+export interface Partnership extends _Partnership {
+    organization?: Organization;
 }
 
 export class ActivityModel extends CollectionModel<Activity> {
@@ -44,13 +36,13 @@ export class ActivityModel extends CollectionModel<Activity> {
 
     @computed
     get currentDays() {
-        const { start_time, end_time } = this.currentOne,
+        const { startTime, endTime } = this.currentOne,
             days: string[] = [];
 
-        if (!start_time || !end_time) return [];
+        if (!startTime || !endTime) return [];
 
-        let start = new Date(start_time);
-        const end = new Date(end_time);
+        let start = new Date(startTime);
+        const end = new Date(endTime);
         do {
             days.push(formatDate(start, 'YYYY-MM-DD'));
         } while (+(start = new Date(+start + Day)) <= +end);
@@ -67,14 +59,14 @@ export class ActivityModel extends CollectionModel<Activity> {
 
         if (body[0]) {
             activity = { ...body[0].activity } as Activity;
-            activity.partner_ships = body;
+            activity.partnerships = body;
         } else
             activity = (await service.get<Activity>('activities/' + id)).body;
 
         const { description, ...data } = activity;
 
         return (this.currentOne = {
-            description: marked(description),
+            description: marked(description) as string,
             ...data
         });
     }

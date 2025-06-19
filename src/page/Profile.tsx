@@ -20,10 +20,10 @@ export class ProfilePage extends HTMLElement {
 
         if (session.downloading > 0) return;
 
-        const { telphone, ...user } = formToJSON<NewData<User>>(
+        const { mobilePhone, ...user } = formToJSON<NewData<User>>(
             event.target as HTMLFormElement
         );
-        await session.updateProfile({ telphone: telphone + '', ...user });
+        await session.updateProfile({ mobilePhone: mobilePhone + '', ...user });
 
         return (location.hash = '');
     };
@@ -31,7 +31,7 @@ export class ProfilePage extends HTMLElement {
     render() {
         const { user, userGithub, downloading } = session;
         const loading = downloading > 0,
-            { id, name, username, email, telphone, summary, avatar } =
+            { id, name, username, email, mobilePhone, summary, avatar } =
                 user || {},
             { name: nickname, bio, avatar_url } = userGithub || {};
 
@@ -66,9 +66,9 @@ export class ProfilePage extends HTMLElement {
                     <FormField
                         className="col-12 col-sm-6 col-md-3"
                         type="tel"
-                        name="telphone"
-                        label="电话号码"
-                        value={telphone}
+                        name="mobilePhone"
+                        label="手机号码"
+                        value={mobilePhone}
                     />
                     <FormField
                         className="col-12 col-sm-8"

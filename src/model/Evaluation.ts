@@ -1,18 +1,10 @@
+import { Evaluation } from '@kaiyuanshe/data-server';
 import { computed, observable } from 'mobx';
 import { NewData } from 'mobx-restful';
-import { BaseData, NestedData, Query } from 'mobx-strapi';
+import { Query } from 'mobx-strapi';
 
-import { Program } from './Program';
-import { CollectionModel, User } from './service';
+import { CollectionModel } from './service';
 import { UserSessionModel } from './Session';
-
-export interface Evaluation extends BaseData {
-    score: number;
-    detail: string;
-    contribution?: BaseData; // To implement
-    program?: NestedData<Program>;
-    creator: NestedData<User>;
-}
 
 export class EvaluationModel extends CollectionModel<Evaluation> {
     name = 'evaluation';
