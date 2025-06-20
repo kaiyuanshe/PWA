@@ -1,11 +1,11 @@
-import { Image, ListGroup, ListItem, SpinnerBox } from 'boot-cell';
+import { Image, ListGroup, ListGroupItem, SpinnerBox } from 'boot-cell';
 import { observable } from 'mobx';
-import { NestedData } from 'mobx-strapi';
 import { attribute, component } from 'web-cell';
 import { observer } from 'web-cell';
 
 import { EvaluationForm } from '../../component/Evaluation';
 import { TimeRange } from '../../component/TimeRange';
+import { t } from '../../i18n';
 import { program, User } from '../../model';
 import { ProgramMap } from './constants';
 import * as styles from './ShowRoom.module.less';
@@ -23,13 +23,13 @@ export class AgendaDetail extends HTMLElement {
         program.getSameCategory();
     }
 
-    renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
+    renderMentor = ({ avatar, username, summary }: User) => (
         <div className={`row px-2 ${styles.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
             <div className="col-10 my-4">
-                <h5>{name}</h5>
+                <h5>{username}</h5>
                 <p>{summary}</p>
             </div>
         </div>
@@ -68,7 +68,9 @@ export class AgendaDetail extends HTMLElement {
                     </div>
                     {summary && (
                         <>
-                            <h2 className="text-center mt-5">议题简介</h2>
+                            <h2 className="text-center mt-5">
+                                {t('agendaIntro')}
+                            </h2>
                             <div
                                 className={`row mt-4 mb-5 px-3 py-4 ${styles.card}`}
                             >
@@ -76,16 +78,16 @@ export class AgendaDetail extends HTMLElement {
                             </div>
                         </>
                     )}
-                    <h2 className="text-center mt-5">演讲者</h2>
+                    <h2 className="text-center mt-5">{t('speaker')}</h2>
                     <section className="mt-4 mb-5">
                         {mentors?.map(this.renderMentor)}
                     </section>
 
-                    <h2 className="text-center">专场主题</h2>
+                    <h2 className="text-center">{t('sessionTopic')}</h2>
                     <section className={`mt-4 mb-5 ${styles.card}`}>
                         <h5 className="text-center my-2">{category?.name}</h5>
                         <p className="mb-3 px-3">{category?.summary}</p>
-                        {currentPage.length > 0 ? (
+                        {currentPage.length > 0 && (
                             <div
                                 className="py-2"
                                 style={{
@@ -94,19 +96,19 @@ export class AgendaDetail extends HTMLElement {
                                 }}
                             >
                                 <h5 className="pt-2 text-center">
-                                    主题相关议题
+                                    {t('relatedTopics')}
                                 </h5>
                                 <ListGroup>
                                     {currentPage.map(({ id, title }) => (
-                                        <ListItem
+                                        <ListGroupItem
                                             href={'activity/agenda?pid=' + id}
                                         >
                                             {title}
-                                        </ListItem>
+                                        </ListGroupItem>
                                     ))}
                                 </ListGroup>
                             </div>
-                        ) : null}
+                        )}
                     </section>
                     <EvaluationForm program={id + ''} />
                 </div>

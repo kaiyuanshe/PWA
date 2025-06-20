@@ -21,7 +21,13 @@ jobs:
                   node-version: 22
                   cache: pnpm
             - name: Install Dependencies
-              run: pnpm i --frozen-lockfile
+              run: |
+                  cat >> .npmrc <<EOF
+                  //npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}
+                  @kaiyuanshe:registry=https://npm.pkg.github.com
+                  always-auth=true
+                  EOF
+                  pnpm i --frozen-lockfile
 
             - name: Build Production
               run: pnpm build

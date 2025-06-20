@@ -1,7 +1,6 @@
 import { Evaluation } from '@kaiyuanshe/data-server';
 import { computed, observable } from 'mobx';
-import { NewData } from 'mobx-restful';
-import { Query } from 'mobx-strapi';
+import { Filter, NewData } from 'mobx-restful';
 
 import { CollectionModel } from './service';
 import { UserSessionModel } from './Session';
@@ -30,7 +29,7 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
     @observable
     userSubmitted = false;
 
-    async getAll(query: Query<Evaluation> = {}) {
+    async getAll(query: Filter<Evaluation> = {}) {
         await super.getAll(query);
 
         const { id: uid } = this.session.user || {};

@@ -1,12 +1,5 @@
-import { Project } from '@kaiyuanshe/data-server';
-import {
-    Button,
-    FileInput,
-    FormField,
-    Step,
-    TabPanel,
-    TabView
-} from 'boot-cell';
+import { ProgramTypeEnum3, Project } from '@kaiyuanshe/data-server';
+import { Button, FilePicker, FormField, Tab, Tabs } from 'boot-cell';
 import debounce from 'lodash.debounce';
 import { observable } from 'mobx';
 import { NewData } from 'mobx-restful';
@@ -19,6 +12,7 @@ import {
 } from 'web-cell';
 import { formToJSON } from 'web-utility';
 
+import { t } from '../../i18n';
 import { activity, organization, program, project, session } from '../../model';
 
 export interface ExhibitionApplyProps extends WebCellProps {
@@ -35,7 +29,7 @@ export class ExhibitionApply
 {
     @attribute
     @observable
-    accessor aid = '';
+    accessor aid = 0;
 
     @attribute
     @observable
@@ -48,7 +42,7 @@ export class ExhibitionApply
     connectedCallback() {
         this.classList.add('d-block', 'container');
 
-        if (this.aid !== activity.currentOne.id) activity.getOne(+this.aid);
+        if (this.aid !== activity.currentOne.id) activity.getOne(this.aid);
     }
 
     handleBack = (event: Event) => {
@@ -89,11 +83,11 @@ export class ExhibitionApply
         await program.updateOne({
             activity: this.aid,
             organization: id,
-            type: 'exhibition',
+            type: 'exhibition' as ProgramTypeEnum3,
             title: name,
             mentors: [session.user.id]
         });
-        self.alert(`展示组织 ${name} 的展位申请已提交`);
+        self.alert(t('organization', { name }));
 
         history.back();
     };
@@ -110,8 +104,8 @@ export class ExhibitionApply
                     type="search"
                     name="name"
                     required
-                    label="名称"
-                    placeholder="可搜索已注册组织"
+                    label={t('name')}
+                    placeholder={t('searchOrgPlaceholder')}
                     list="organization-list"
                     onInput={this.searchOrganization}
                     onChange={this.searchOrganization}
@@ -122,27 +116,35 @@ export class ExhibitionApply
                         <option value={name} />
                     ))}
                 </datalist>
-                <FormField name="slogan" label="标语" value={slogan ?? ''} />
+                <FormField
+                    name="slogan"
+                    label={t('slogan')}
+                    value={slogan ?? ''}
+                />
                 <FormField
                     is="textarea"
                     name="summary"
-                    label="简介"
+                    label={t('intro')}
                     value={summary ?? ''}
                 />
-                <FormField label="标识">
-                    <FileInput name="logo" value={logo?.url} />
+                <FormField label={t('logo')}>
+                    <FilePicker
+                        name="logo"
+                        accept="image/*"
+                        defaultValue={logo?.url}
+                    />
                 </FormField>
                 <FormField
                     type="url"
                     name="link"
-                    label="官方网址"
+                    label={t('website')}
                     value={link ?? ''}
                 />
                 <FormField
                     type="url"
                     name="message_link"
-                    label="即时通讯链接"
-                    placeholder="加群二维码、公众平台账号等对应的链接"
+                    label={t('imLink')}
+                    placeholder={t('imLinkPlaceholder')}
                     value={messageLink ?? ''}
                 />
                 <div className="text-center">
@@ -152,7 +154,7 @@ export class ExhibitionApply
                         color="success"
                         disabled={loading}
                     >
-                        提交组织
+                        {t('submitOrg')}
                     </Button>
                     <Button
                         className="px-4 mr-3"
@@ -160,7 +162,7 @@ export class ExhibitionApply
                         disabled={loading}
                         onClick={this.saveOrganization}
                     >
-                        展示项目
+                        {t('showProject')}
                     </Button>
                     <Button
                         className="px-4"
@@ -168,7 +170,7 @@ export class ExhibitionApply
                         color="danger"
                         disabled={loading}
                     >
-                        返回
+                        {t('back')}
                     </Button>
                 </div>
             </form>
@@ -209,11 +211,11 @@ export class ExhibitionApply
         await program.updateOne({
             activity: this.aid,
             project: id,
-            type: 'exhibition',
+            type: 'exhibition' as ProgramTypeEnum3,
             title: name,
             mentors: [uid]
         });
-        self.alert(`展示项目 ${name} 的展位申请已提交`);
+        self.alert(t('projectBoothSubmitted', { name }));
 
         history.back();
     };
@@ -230,8 +232,8 @@ export class ExhibitionApply
                     type="search"
                     name="name"
                     required
-                    label="名称"
-                    placeholder="可搜索已注册项目"
+                    label={t('name')}
+                    placeholder={t('searchProjectPlaceholder')}
                     list="project-list"
                     onInput={this.searchProject}
                     onChange={this.searchProject}
@@ -245,23 +247,27 @@ export class ExhibitionApply
                 <FormField
                     is="textarea"
                     name="summary"
-                    label="简介"
+                    label={t('intro')}
                     value={summary ?? ''}
                 />
                 <FormField
                     type="date"
                     name="start_date"
                     required
-                    label="发起日期"
+                    label={t('startDate')}
                 />
-                <FormField type="date" name="end_date" label="结束日期" />
-                <FormField label="标识">
-                    <FileInput name="logo" value={logo?.url} />
+                <FormField type="date" name="end_date" label={t('endDate')} />
+                <FormField label={t('logo')}>
+                    <FilePicker
+                        name="logo"
+                        accept="image/*"
+                        defaultValue={logo?.url}
+                    />
                 </FormField>
                 <FormField
                     type="url"
                     name="link"
-                    label="官方网址"
+                    label={t('website')}
                     value={link ?? ''}
                 />
                 <div className="text-center">
@@ -271,7 +277,7 @@ export class ExhibitionApply
                         color="success"
                         disabled={loading}
                     >
-                        提交项目
+                        {t('submitProject')}
                     </Button>
                     <Button
                         className="px-4"
@@ -279,7 +285,7 @@ export class ExhibitionApply
                         color="danger"
                         disabled={loading}
                     >
-                        返回
+                        {t('back')}
                     </Button>
                 </div>
             </form>
@@ -292,18 +298,20 @@ export class ExhibitionApply
 
         return (
             <>
-                <h2 className="mt-5 mb-4">开源市集 展位申请</h2>
+                <h2 className="mt-5 mb-4">{t('marketBoothApply')}</h2>
 
-                <TabView linear activeIndex={step}>
-                    <Step icon={1}>参展单位</Step>
-                    <TabPanel className="text-center">
+                <Tabs>
+                    <Tab
+                        caption={`(1) ${t('exhibitionUnit')}`}
+                        className="text-center"
+                    >
                         <Button
                             className="px-5 m-3"
                             color="warning"
                             size="lg"
                             onClick={() => (this.step = 2)}
                         >
-                            个人
+                            {t('individual')}
                         </Button>
                         <Button
                             className="px-5"
@@ -311,20 +319,18 @@ export class ExhibitionApply
                             size="lg"
                             onClick={() => (this.step = 1)}
                         >
-                            组织
+                            {t('organization')}
                         </Button>
                         <article
                             className="text-left"
                             innerHTML={description}
                         />
-                    </TabPanel>
-
-                    <Step icon={2}>组织信息</Step>
-                    <TabPanel>{this.renderOrganization()}</TabPanel>
-
-                    <Step icon={3}>项目信息</Step>
-                    <TabPanel>{this.renderProject()}</TabPanel>
-                </TabView>
+                    </Tab>
+                    <Tab caption={t('orgInfo')}>
+                        {this.renderOrganization()}
+                    </Tab>
+                    <Tab caption={t('projectInfo')}>{this.renderProject()}</Tab>
+                </Tabs>
             </>
         );
     }

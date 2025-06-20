@@ -1,17 +1,21 @@
 import {
     Category,
     Evaluation,
+    Organization,
     Place,
-    Program as _Program} from '@kaiyuanshe/data-server';
+    Program as _Program,
+    Project
+} from '@kaiyuanshe/data-server';
 import { observable } from 'mobx';
-import { NewData, toggle } from 'mobx-restful';
-import { Query } from 'mobx-strapi';
+import { Filter, NewData, toggle } from 'mobx-restful';
 
 import { ActivityModel } from './Activity';
 import { CollectionModel } from './service';
 
 export interface Program extends _Program {
     category?: Category;
+    organization?: Organization;
+    project?: Project;
     place?: Place;
 }
 
@@ -35,18 +39,8 @@ export class ProgramModel extends CollectionModel<Program> {
         super();
     }
 
-    async getAll({
-        activity,
-        verified = true,
-        _sort = 'start_time:ASC',
-        ...query
-    }: Query<Program>) {
-        await super.getAll({
-            activity,
-            verified,
-            _sort,
-            ...query
-        });
+    async getAll({ activity, ...query }: Filter<Program>) {
+        await super.getAll({ activity, ...query });
         const agenda: Program[] = [],
             exhibitions: Program[] = [];
 
@@ -75,7 +69,7 @@ export class ProgramModel extends CollectionModel<Program> {
             id,
             activity,
             category
-        }: Pick<Query<Program>, 'id' | 'activity' | 'category'> = {
+        }: Pick<Filter<Program>, 'id' | 'activity' | 'category'> = {
             id: this.currentOne.id,
             activity: this.currentOne.activity?.id,
             category: this.currentOne.category?.id

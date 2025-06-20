@@ -1,8 +1,9 @@
-import { Button, FileInput, FormField } from 'boot-cell';
+import { Button, FilePicker, FormField } from 'boot-cell';
 import { NewData } from 'mobx-restful';
 import { component, observer } from 'web-cell';
 import { formToJSON } from 'web-utility';
 
+import { t } from '../i18n';
 import { session, User } from '../model';
 
 @component({ tagName: 'profile-page' })
@@ -39,49 +40,50 @@ export class ProfilePage extends HTMLElement {
             <form className="container my-5" onSubmit={this.handleSubmit}>
                 <input type="hidden" name="id" value={id} />
 
-                <h2>用户基本信息</h2>
+                <h2>{t('userInfo')}</h2>
 
                 <div className="row mt-4">
                     <FormField
                         className="col-12 col-sm-6 col-md-3"
                         name="name"
                         required
-                        label="昵称"
+                        label={t('nickname')}
                         value={nickname || name}
                     />
                     <FormField
                         className="col-12 col-sm-6 col-md-3"
                         is="output"
                         name="username"
-                        label="用户名"
+                        label={t('username')}
                         value={username}
                     />
                     <FormField
                         className="col-12 col-sm-6 col-md-3"
                         is="output"
                         name="email"
-                        label="电邮地址"
+                        label={t('email')}
                         value={email}
                     />
                     <FormField
                         className="col-12 col-sm-6 col-md-3"
                         type="tel"
                         name="mobilePhone"
-                        label="手机号码"
+                        label={t('mobile')}
                         value={mobilePhone}
                     />
                     <FormField
                         className="col-12 col-sm-8"
                         is="textarea"
                         name="summary"
-                        label="个人简介"
+                        label={t('personalIntro')}
                         value={bio || summary}
                     />
-                    <FormField className="col-12 col-sm-4" label="头像">
-                        <FileInput
+                    <FormField className="col-12 col-sm-4" label={t('avatar')}>
+                        <FilePicker
                             name="avatar"
                             required
-                            value={avatar_url || avatar?.url}
+                            accept="image/*"
+                            defaultValue={avatar_url || avatar?.url}
                         />
                     </FormField>
                 </div>
@@ -92,7 +94,7 @@ export class ProfilePage extends HTMLElement {
                     disabled={loading}
                     onClick={this.handleSync}
                 >
-                    同步 GitHub
+                    {t('syncGithub')}
                 </Button>
                 <Button
                     type="submit"
@@ -100,7 +102,7 @@ export class ProfilePage extends HTMLElement {
                     size="lg"
                     disabled={loading}
                 >
-                    保存
+                    {t('save')}
                 </Button>
             </form>
         );

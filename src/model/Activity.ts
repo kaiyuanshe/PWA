@@ -26,8 +26,10 @@ export enum PartnershipTypes {
     vendor = 'vendor'
 }
 
+// @ts-expect-error Enum compatibility bug
 export interface Partnership extends _Partnership {
     organization?: Organization;
+    activity?: Activity;
 }
 
 export class ActivityModel extends CollectionModel<Activity> {
@@ -58,7 +60,7 @@ export class ActivityModel extends CollectionModel<Activity> {
         let activity: Activity;
 
         if (body[0]) {
-            activity = { ...body[0].activity } as Activity;
+            activity = { ...body[0].activity };
             activity.partnerships = body;
         } else
             activity = (await service.get<Activity>('activities/' + id)).body;

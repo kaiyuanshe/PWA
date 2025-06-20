@@ -27,6 +27,7 @@
         "lodash.debounce": "^4.0.8",
         "marked": "^15.0.12",
         "mobx": "^6.13.7",
+        "mobx-i18n": "^0.7.1",
         "mobx-restful": "^2.1.0",
         "mobx-strapi": "^0.6.0",
         "web-cell": "^3.1.0",
@@ -37,6 +38,10 @@
         "@eslint/js": "^9.29.0",
         "@html-eslint/eslint-plugin": "^0.41.0",
         "@kaiyuanshe/data-server": "^1.0.0",
+        "@parcel/config-default": "~2.15.2",
+        "@parcel/packager-raw-url": "~2.15.2",
+        "@parcel/transformer-less": "~2.15.2",
+        "@parcel/transformer-typescript-tsc": "~2.15.2",
         "@parcel/transformer-webmanifest": "2.15.2",
         "@stylistic/eslint-plugin": "^4.4.1",
         "@types/lodash.debounce": "^4.0.9",
@@ -49,7 +54,7 @@
         "husky": "^9.1.7",
         "jiti": "^2.4.2",
         "lint-staged": "^16.1.2",
-        "parcel": "^2.15.2",
+        "parcel": "~2.15.2",
         "postcss": "^8.5.6",
         "prettier": "^3.5.3",
         "prettier-plugin-css-order": "^2.1.2",
@@ -75,14 +80,6 @@
     "lint-staged": {
         "*.{html,md,css,less,json,yml,js,ts,tsx}": "prettier --write",
         "*.{js,ts,tsx}": "eslint --fix"
-    },
-    "postcss": {
-        "modules": true,
-        "plugins": {
-            "autoprefixer": {
-                "grid": true
-            }
-        }
     },
     "scripts": {
         "prepare": "husky install",

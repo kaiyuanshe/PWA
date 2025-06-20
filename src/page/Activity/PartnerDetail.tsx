@@ -1,9 +1,9 @@
-import { Embed, encodeQRC, Image, SpinnerBox } from 'boot-cell';
+import { Image, Ratio, SpinnerBox } from 'boot-cell';
 import { observable } from 'mobx';
-import { NestedData } from 'mobx-strapi';
 import { attribute, component, observer } from 'web-cell';
 
 import { TimeRange } from '../../component/TimeRange';
+import { t } from '../../i18n';
 import { organization, Program, User } from '../../model';
 import * as styles from './ShowRoom.module.less';
 
@@ -12,10 +12,10 @@ import * as styles from './ShowRoom.module.less';
 export class PartnerDetail extends HTMLElement {
     @attribute
     @observable
-    accessor oid = '';
+    accessor oid = 0;
 
     connectedCallback() {
-        organization.getOne(+this.oid);
+        organization.getOne(this.oid);
     }
 
     renderProgram = ({
@@ -38,13 +38,13 @@ export class PartnerDetail extends HTMLElement {
         </div>
     );
 
-    renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
+    renderMentor = ({ avatar, username, summary }: User) => (
         <div className={`row px-2 ${styles.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
             <div className="col-10 my-4">
-                <h5>{name}</h5>
+                <h5>{username}</h5>
                 <p>{summary}</p>
             </div>
         </div>
@@ -62,13 +62,14 @@ export class PartnerDetail extends HTMLElement {
                     <h1 className="mt-5 text-center">{name}</h1>
                     <p className="h4 my-4 text-center">{slogan}</p>
                     {video && (
-                        <Embed
-                            is="video"
-                            className={styles['main-video']}
-                            src={video.url}
-                            controls
-                            autoplay
-                        />
+                        <Ratio aspectRatio="4x3">
+                            <video
+                                className={styles['main-video']}
+                                src={video.url}
+                                controls
+                                autoplay
+                            />
+                        </Ratio>
                     )}
                     <header className={`row mt-5 mb-5 px-2 ${styles.card}`}>
                         <div className="col-2 my-4 text-center">
@@ -79,13 +80,13 @@ export class PartnerDetail extends HTMLElement {
                                     src={encodeQRC(messageLink)}
                                 />
                             )}
-                            <p>联系方式</p>
+                            <p>{t('contact')}</p>
                         </div>
                         <div className="col-10 my-4">{summary}</div>
                     </header>
                     {programs.length > 0 ? (
                         <>
-                            <h2 className="text-center">精彩内容</h2>
+                            <h2 className="text-center">{t('highlights')}</h2>
                             <section className="my-5">
                                 {programs.map(this.renderProgram)}
                             </section>
@@ -93,7 +94,7 @@ export class PartnerDetail extends HTMLElement {
                     ) : null}
                     {mentors.length > 0 ? (
                         <>
-                            <h2 className="text-center">参会大咖</h2>
+                            <h2 className="text-center">{t('guests')}</h2>
                             <section className="my-5">
                                 {mentors.map(this.renderMentor)}
                             </section>

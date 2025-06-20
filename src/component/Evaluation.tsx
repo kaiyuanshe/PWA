@@ -1,5 +1,11 @@
 import { Evaluation } from '@kaiyuanshe/data-server';
-import { Button, Field, FormField, InputGroup, ScoreRange } from 'boot-cell';
+import {
+    Button,
+    FormControl,
+    FormField,
+    InputGroup,
+    RangeInput
+} from 'boot-cell';
 import { observable } from 'mobx';
 import { NewData } from 'mobx-restful';
 import {
@@ -12,6 +18,7 @@ import {
 } from 'web-cell';
 import { formToJSON } from 'web-utility';
 
+import { t } from '../i18n';
 import { evaluation, session } from '../model';
 
 export interface EvaluationProps extends WebCellProps {
@@ -59,33 +66,36 @@ export class EvaluationForm
 
         return (
             <form onSubmit={this.saveEvaluation}>
-                <FormField label="评分">
-                    <ScoreRange
+                <FormField label={t('score')}>
+                    <RangeInput
                         className="text-warning"
+                        icon={value => (value ? '★' : '☆')}
                         name="score"
                         required
+                        min={0}
+                        max={5}
                         value={(showAll ? averageScore : score) + ''}
                         disabled={showAll}
                     />
                 </FormField>
                 {!session.user ? (
-                    <p className="text-muted">登录即可评论</p>
+                    <p className="text-muted">{t('loginToComment')}</p>
                 ) : userSubmitted ? (
-                    <FormField label="您的评语">
-                        <Field
-                            is="output"
-                            className="text-white"
-                            value={detail}
-                        />
+                    <FormField label={t('yourComment')}>
+                        <output className="text-white" value={detail} />
                     </FormField>
                 ) : (
                     <>
                         <InputGroup>
-                            我来说两句
-                            <Field is="textarea" name="detail" value={detail} />
+                            {t('saySomething')}
+                            <FormControl
+                                as="textarea"
+                                name="detail"
+                                value={detail}
+                            />
                         </InputGroup>
                         <Button className="mt-3" type="submit" color="primary">
-                            提交
+                            {t('submit')}
                         </Button>
                     </>
                 )}

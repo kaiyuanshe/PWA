@@ -1,20 +1,19 @@
-import { bootI18n } from 'web-utility';
+import { TranslationModel } from 'mobx-i18n';
 
-import { zh_CN } from './zh-CN';
-import { zh_TW } from './zh-TW';
-import { en_US } from './en-US';
-import { ja_JP } from './ja-JP';
-import { ko_KR } from './ko-KR';
+import zhCN from './zh-CN';
 
-export const { words } = bootI18n({
-    'zh-CN': zh_CN,
-    'zh-SG': zh_CN,
-    'zh-TW': zh_TW,
-    'zh-HK': zh_TW,
-    'zh-MO': zh_TW,
-    'en-US': en_US,
-    'ja-JP': ja_JP,
-    'ko-KR': ko_KR
+export const i18n = new TranslationModel({
+    'zh-CN': zhCN,
+    'zh-TW': () => import('./zh-TW'),
+    'zh-HK': () => import('./zh-TW'),
+    'en-US': () => import('./en-US')
 });
 
-self.addEventListener('languagechange', () => self.location.reload());
+export const { t } = i18n;
+
+export const LanguageName: Record<(typeof i18n)['currentLanguage'], string> = {
+    'zh-CN': '简体中文',
+    'zh-TW': '正體中文',
+    'zh-HK': '繁體中文',
+    'en-US': 'English'
+};
