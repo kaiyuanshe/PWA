@@ -4,7 +4,7 @@ import { attribute, component, observer } from 'web-cell';
 
 import { TimeRange } from '../../component/TimeRange';
 import { t } from '../../i18n';
-import { organization, Program, User } from '../../model';
+import { encodeURLQRC, organization, Program, User } from '../../model';
 import * as styles from './ShowRoom.module.less';
 
 @component({ tagName: 'partner-detail' })
@@ -32,7 +32,7 @@ export class PartnerDetail extends HTMLElement {
             >
                 <p>{title}</p>
                 <TimeRange start={start_time} end={end_time} />
-                <address>{place?.location}</address>
+                <address>{place?.address.building}</address>
             </div>
             <div className="col-7 my-4">{summary}</div>
         </div>
@@ -77,29 +77,30 @@ export class PartnerDetail extends HTMLElement {
                             {messageLink && (
                                 <Image
                                     className="mt-3 mb-2"
-                                    src={encodeQRC(messageLink)}
+                                    src={encodeURLQRC(messageLink)}
                                 />
                             )}
                             <p>{t('contact')}</p>
                         </div>
                         <div className="col-10 my-4">{summary}</div>
                     </header>
-                    {programs.length > 0 ? (
+                    {programs.length > 0 && (
                         <>
                             <h2 className="text-center">{t('highlights')}</h2>
                             <section className="my-5">
                                 {programs.map(this.renderProgram)}
                             </section>
                         </>
-                    ) : null}
-                    {mentors.length > 0 ? (
+                    )}
+                    {mentors.length > 0 && (
                         <>
                             <h2 className="text-center">{t('guests')}</h2>
                             <section className="my-5">
+                                {/* @ts-expect-error Type compatibility bug */}
                                 {mentors.map(this.renderMentor)}
                             </section>
                         </>
-                    ) : null}
+                    )}
                 </div>
             </SpinnerBox>
         );

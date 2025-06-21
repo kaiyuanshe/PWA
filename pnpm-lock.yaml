@@ -48,8 +48,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(mobx@6.13.7)(typescript@5.8.3)
       mobx-strapi:
-        specifier: ^0.6.0
-        version: 0.6.0(typescript@5.8.3)
+        specifier: ^0.6.3
+        version: 0.6.3(typescript@5.8.3)
       web-cell:
         specifier: ^3.1.0
         version: 3.1.0(typescript@5.8.3)
@@ -3113,8 +3113,8 @@ packages:
     peerDependencies:
       mobx: '>=6.11'
 
-  mobx-strapi@0.6.0:
-    resolution: {integrity: sha512-7ZLMOt7zE3MiXgbGtqrq3flz1sLrNc3N7uHj0bG2SyKZwvIOJ4WrCimzk14zcQ7Vam7B/8TdT50Oy6tEiAcwsw==}
+  mobx-strapi@0.6.3:
+    resolution: {integrity: sha512-zYuHIB0Tixtj6IPdNG1EMJeeOvQOG1ESDKZ/VZ3/GbUhjERxog+fcMQ4IkfBRRHzFOtaoAjyg1GIQZawxFU3ow==}
 
   mobx@6.13.7:
     resolution: {integrity: sha512-aChaVU/DO5aRPmk1GX8L+whocagUUpBQqoPtJk+cm7UOXUk87J4PeWCh6nNmTTIfEhiR9DI/+FnA8dln/hTK7g==}
@@ -7643,9 +7643,11 @@ snapshots:
       - jsdom
       - typescript
 
-  mobx-strapi@0.6.0(typescript@5.8.3):
+  mobx-strapi@0.6.3(typescript@5.8.3):
     dependencies:
       '@swc/helpers': 0.5.17
+      idb-keyval: 6.2.2
+      koajax: 3.1.2(typescript@5.8.3)
       mobx: 6.13.7
       mobx-restful: 2.1.0(mobx@6.13.7)(typescript@5.8.3)
       qs: 6.14.0

@@ -24,16 +24,19 @@ export class ProgramModel extends CollectionModel<Program> {
     baseURI = 'programs';
 
     @observable
-    currentAgenda: Program[] = [];
+    accessor currentAgenda: Program[] = [];
 
     @observable
-    currentExhibitions: Program[] = [];
+    accessor currentExhibitions: Program[] = [];
 
     @observable
-    evaluations: Evaluation[] = [];
+    accessor evaluations: Evaluation[] = [];
 
     @observable
-    activityInfoList: Program[] = [];
+    accessor activityInfoList: Program[] = [];
+
+    @observable
+    accessor sameCategoryList: Program[] = [];
 
     constructor(public activity: ActivityModel) {
         super();
@@ -79,7 +82,7 @@ export class ProgramModel extends CollectionModel<Program> {
             `programs?activity=${activity}&category=${category}&id_ne=${id}`
         );
 
-        return (this.list = body);
+        return (this.sameCategoryList = body);
     }
 
     @toggle('downloading')

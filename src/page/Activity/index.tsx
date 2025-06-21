@@ -205,7 +205,7 @@ export class AgendaPage
                             <>
                                 <dt>{t('venue')}</dt>
                                 <dd>
-                                    <address>{place.location}</address>
+                                    <address>{place.address.building}</address>
                                 </dd>
                             </>
                         )}
@@ -244,7 +244,7 @@ export class AgendaPage
             </CardBody>
             {place && (
                 <CardFooter>
-                    <address>{place.location}</address>
+                    <address>{place.address.building}</address>
                 </CardFooter>
             )}
         </Card>

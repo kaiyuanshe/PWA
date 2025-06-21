@@ -32,13 +32,12 @@ export class ProfilePage extends HTMLElement {
     render() {
         const { user, userGithub, downloading } = session;
         const loading = downloading > 0,
-            { id, name, username, email, mobilePhone, summary, avatar } =
-                user || {},
+            { id, username, email, mobilePhone, summary, avatar } = user || {},
             { name: nickname, bio, avatar_url } = userGithub || {};
 
         return (
             <form className="container my-5" onSubmit={this.handleSubmit}>
-                <input type="hidden" name="id" value={id} />
+                <input type="hidden" name="id" value={id + ''} />
 
                 <h2>{t('userInfo')}</h2>
 
@@ -48,7 +47,7 @@ export class ProfilePage extends HTMLElement {
                         name="name"
                         required
                         label={t('nickname')}
-                        value={nickname || name}
+                        value={nickname || username}
                     />
                     <FormField
                         className="col-12 col-sm-6 col-md-3"

@@ -8,7 +8,7 @@ import { computed } from 'mobx';
 import { toggle } from 'mobx-restful';
 import { Day, formatDate } from 'web-utility';
 
-import { CollectionModel, service } from './service';
+import { CollectionModel } from './service';
 
 // @ts-expect-error Enum compatibility bug
 export interface Activity extends _Activity {
@@ -54,7 +54,7 @@ export class ActivityModel extends CollectionModel<Activity> {
 
     @toggle('downloading')
     async getOne(id: Activity['id']) {
-        const { body } = await service.get<Partnership[]>(
+        const { body } = await this.client.get<Partnership[]>(
             'partner-ships?_sort=level:DESC&activity=' + id
         );
         let activity: Activity;
@@ -63,8 +63,8 @@ export class ActivityModel extends CollectionModel<Activity> {
             activity = { ...body[0].activity };
             activity.partnerships = body;
         } else
-            activity = (await service.get<Activity>('activities/' + id)).body;
-
+            activity = (await this.client.get<Activity>('activities/' + id))
+                .body;
         const { description, ...data } = activity;
 
         return (this.currentOne = {

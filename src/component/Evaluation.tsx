@@ -72,7 +72,9 @@ export class EvaluationForm
                         icon={value => (value ? '★' : '☆')}
                         name="score"
                         required
+                        // @ts-expect-error Type compatibility bug
                         min={0}
+                        // @ts-expect-error Type compatibility bug
                         max={5}
                         value={(showAll ? averageScore : score) + ''}
                         disabled={showAll}

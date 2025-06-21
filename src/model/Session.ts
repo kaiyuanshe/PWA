@@ -1,8 +1,9 @@
-import { BaseModel, NewData, toggle } from 'mobx-restful';
+import { NewData, toggle } from 'mobx-restful';
+import { SessionModel } from 'mobx-strapi';
 
 import { User } from './service';
 
-export class UserSessionModel extends BaseModel {
+export class UserSessionModel extends SessionModel<User> {
     @toggle('uploading')
     async updateProfile({
         id = this.user?.id,
@@ -11,10 +12,11 @@ export class UserSessionModel extends BaseModel {
     }: NewData<User>) {
         const user = await super.updateProfile({ id, ...data });
 
-        await UserSessionModel.upload(
+        await this.upload(
             'user',
-            user.id,
+            user.documentId,
             'avatar',
+            // @ts-expect-error Type compatibility bug
             [avatar],
             'users-permissions'
         );
@@ -22,3 +24,5 @@ export class UserSessionModel extends BaseModel {
         return user;
     }
 }
+
+export default new UserSessionModel();

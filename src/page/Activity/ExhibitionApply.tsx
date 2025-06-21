@@ -53,7 +53,7 @@ export class ExhibitionApply
     };
 
     searchOrganization = debounce(
-        ({ data }: InputEvent) => data && organization.searchBy('name', data),
+        ({ data }: InputEvent) => data && organization.search(data),
         500
     );
 
@@ -85,6 +85,7 @@ export class ExhibitionApply
             organization: id,
             type: 'exhibition' as ProgramTypeEnum3,
             title: name,
+            // @ts-expect-error Type compatibility bug
             mentors: [session.user.id]
         });
         self.alert(t('organization', { name }));
@@ -178,7 +179,7 @@ export class ExhibitionApply
     }
 
     searchProject = debounce(
-        ({ data }: InputEvent) => data && project.searchBy('name', data),
+        ({ data }: InputEvent) => data && project.search(data),
         500
     );
 
@@ -213,6 +214,7 @@ export class ExhibitionApply
             project: id,
             type: 'exhibition' as ProgramTypeEnum3,
             title: name,
+            // @ts-expect-error Type compatibility bug
             mentors: [uid]
         });
         self.alert(t('projectBoothSubmitted', { name }));

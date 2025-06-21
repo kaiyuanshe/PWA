@@ -9,8 +9,10 @@ export class OrganizationModel extends CollectionModel<Organization> {
     name = 'organization';
     baseURI = 'organizations';
 
+    searchKeys = ['name'] as const;
+
     @observable
-    programs: Program[] = [];
+    accessor programs: Program[] = [];
 
     @toggle('downloading')
     async getOne(id: Organization['id']) {

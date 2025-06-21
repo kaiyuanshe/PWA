@@ -52,8 +52,8 @@ documentReady.then(async () => {
 
     if (!token) return session.getProfile();
 
-    const { name, avatar } = await session.signIn(token);
+    const { username, avatar } = await session.signInOauth(token);
 
     history.replaceState(null, document.title, '/');
-    self.location.replace(!name || !avatar ? '#profile' : '');
+    self.location.replace(!username || !avatar ? '#profile' : '');
 });

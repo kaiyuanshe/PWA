@@ -9,7 +9,7 @@ import { CellRouter } from 'cell-router';
 import { observer } from 'web-cell';
 
 import { t } from '../i18n';
-import { service, session } from '../model';
+import { session } from '../model';
 import { AgendaPage } from './Activity';
 import { AgendaDetail } from './Activity/AgendaDetail';
 import { ExhibitionApply } from './Activity/ExhibitionApply';
@@ -65,10 +65,7 @@ export const PageFrame = observer(() => (
                 <NavLink {...props}>{title}</NavLink>
             ))}
             {!session.user ? (
-                <Button
-                    color="primary"
-                    href={service.baseURI + 'connect/github/'}
-                >
+                <Button color="primary" href={session.oAuthLinkOf('github')}>
                     {t('signIn')}
                 </Button>
             ) : (

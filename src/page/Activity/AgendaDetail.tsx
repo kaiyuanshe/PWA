@@ -1,7 +1,6 @@
 import { Image, ListGroup, ListGroupItem, SpinnerBox } from 'boot-cell';
 import { observable } from 'mobx';
-import { attribute, component } from 'web-cell';
-import { observer } from 'web-cell';
+import { attribute, component, observer } from 'web-cell';
 
 import { EvaluationForm } from '../../component/Evaluation';
 import { TimeRange } from '../../component/TimeRange';
@@ -36,7 +35,7 @@ export class AgendaDetail extends HTMLElement {
     );
 
     render() {
-        const { downloading, currentOne, currentPage } = program;
+        const { downloading, currentOne, sameCategoryList } = program;
         const {
             title,
             start_time,
@@ -63,7 +62,7 @@ export class AgendaDetail extends HTMLElement {
                             {ProgramMap[type]}
                         </div>
                         <address className="col-4 text-right">
-                            {place?.location}
+                            {place?.address.building}
                         </address>
                     </div>
                     {summary && (
@@ -80,6 +79,7 @@ export class AgendaDetail extends HTMLElement {
                     )}
                     <h2 className="text-center mt-5">{t('speaker')}</h2>
                     <section className="mt-4 mb-5">
+                        {/* @ts-expect-error Type compatibility bug */}
                         {mentors?.map(this.renderMentor)}
                     </section>
 
@@ -87,7 +87,7 @@ export class AgendaDetail extends HTMLElement {
                     <section className={`mt-4 mb-5 ${styles.card}`}>
                         <h5 className="text-center my-2">{category?.name}</h5>
                         <p className="mb-3 px-3">{category?.summary}</p>
-                        {currentPage.length > 0 && (
+                        {sameCategoryList.length > 0 && (
                             <div
                                 className="py-2"
                                 style={{
@@ -99,8 +99,9 @@ export class AgendaDetail extends HTMLElement {
                                     {t('relatedTopics')}
                                 </h5>
                                 <ListGroup>
-                                    {currentPage.map(({ id, title }) => (
+                                    {sameCategoryList.map(({ id, title }) => (
                                         <ListGroupItem
+                                            key={id}
                                             href={'activity/agenda?pid=' + id}
                                         >
                                             {title}

@@ -27,7 +27,7 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
     }
 
     @observable
-    userSubmitted = false;
+    accessor userSubmitted = false;
 
     async getAll(query: Filter<Evaluation> = {}) {
         await super.getAll(query);
