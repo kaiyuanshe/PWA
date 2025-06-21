@@ -9,22 +9,22 @@
 
 ## 重要链接
 
--   开发看板：https://github.com/kaiyuanshe/PWA/projects/1?fullscreen=true
--   后端 API：https://github.com/kaiyuanshe/service
+- 开发看板：https://github.com/kaiyuanshe/PWA/projects/1?fullscreen=true
+- 后端 API：https://github.com/kaiyuanshe/service
 
 ## Technology stack
 
--   Language: [TypeScript v4][5]
--   Component engine: [WebCell v2][6]
--   Component suite: [BootStrap v4][7]
--   PWA framework: [Workbox v6][8]
--   Package bundler: [Parcel v1][9]
--   CI / CD: GitHub [Actions][10] + [Pages][11]
+- Language: [TypeScript v5][5]
+- Component engine: [WebCell v3][6]
+- Component suite: [BootStrap v5][7]
+- PWA framework: [Workbox v7][8]
+- Package bundler: [Parcel v2][9]
+- CI / CD: GitHub [Actions][10] + [Pages][11]
 
 ## Development
 
 ```shell
-npm install
+pnpm install
 
 npm start
 ```
@@ -32,7 +32,7 @@ npm start
 ## Deployment
 
 ```shell
-npm run build
+pnpm build
 ```
 
 [1]: https://kaiyuanshe.cn/

@@ -1,94 +1,98 @@
-import { Button } from 'boot-cell/source/Form/Button';
-import { Card } from 'boot-cell/source/Content/Card';
-import { TabView, TabPanel } from 'boot-cell/source/Content/TabView';
-import { NavLink } from 'boot-cell/source/Navigator/Nav';
-import { observer } from 'mobx-web-cell';
+import { Button, Card, CardBody, CardFooter, Tab, Tabs } from 'boot-cell';
+import { observable } from 'mobx';
 import {
-    createCell,
+    attribute,
     component,
-    mixin,
-    WebCellProps,
-    watch,
-    attribute
+    observer,
+    WebCell,
+    WebCellProps
 } from 'web-cell';
-import { formatDate } from 'web-utility/source/date';
+import { formatDate } from 'web-utility';
 
-import { session, program } from '../../model';
-import style from './index.module.less';
+import { t } from '../../i18n';
+import { Program, program, session } from '../../model';
+import * as styles from './index.module.less';
 
-const formatActivityTime = (startTime: string, endTime: string) => {
-    return `${formatDate(startTime)} / ${formatDate(endTime)}`;
-};
+const formatActivityTime = (startTime: string, endTime: string) =>
+    `${formatDate(startTime)} / ${formatDate(endTime)}`;
+
 interface IUserPage extends WebCellProps {
     uid: string;
 }
+
+export default interface UserInfo extends WebCell<IUserPage> {}
+
+@component({ tagName: 'user-info' })
 @observer
-@component({
-    tagName: 'user-info',
-    renderTarget: 'children'
-})
-export default class UserInfo extends mixin<IUserPage>() {
+export default class UserInfo
+    extends HTMLElement
+    implements WebCell<IUserPage>
+{
     @attribute
-    @watch
-    uid: string;
+    @observable
+    accessor uid = 0;
 
     connectedCallback() {
         program.getMentors(this.uid);
-
-        super.connectedCallback();
     }
 
+    renderProgramCard = ({
+        start_time,
+        end_time,
+        place,
+        summary,
+        title
+    }: Program) => (
+        <Card key={title} className={styles.activity_item} title={title}>
+            <div>
+                {t('time')}
+                {formatActivityTime(start_time, end_time)}
+            </div>
+            <div>
+                {t('address')}
+                {place.address.building}
+            </div>
+            <div>
+                {t('summary')}
+                {summary}
+            </div>
+        </Card>
+    );
+
     render() {
-        const avatarUrl: string =
+        const avatarUrl =
             session?.user?.avatar?.url ||
             'https://kaiyuanshe.cn/image/KaiYuanShe-logo.png';
 
         return (
-            <div className={style.user_container}>
-                <Card className={style.user_card}>
+            <div className={styles.user_container}>
+                <Card className={styles.user_card}>
                     <img
                         src={avatarUrl}
-                        alt="用户头像"
-                        className={style.avatar}
+                        alt={t('userAvatar')}
+                        className={styles.avatar}
                     />
-                    <h3>{session.user.username}</h3>
-                    <div>{session.user.summary}</div>
-                    <div className={style.btn_container}>
+                    <CardBody>
+                        <h3>{session.user.username}</h3>
+                        <div>{session.user.summary}</div>
+                    </CardBody>
+                    <CardFooter className={styles.btn_container}>
                         <Button color="primary" href="profile">
-                            编辑用户资料
+                            {t('editProfile')}
                         </Button>
-                    </div>
+                    </CardFooter>
                 </Card>
-                <div className={style.activity_container}>
-                    <TabView mode="masthead">
-                        <NavLink>报名列表</NavLink>
-                        <TabPanel className={style.activity_panel}>
+                <div className={styles.activity_container}>
+                    <Tabs mode="masthead">
+                        <Tab
+                            caption={t('registrationList')}
+                            className={styles.activity_panel}
+                        >
                             {program.activityInfoList.map(
-                                ({
-                                    start_time,
-                                    end_time,
-                                    place,
-                                    summary,
-                                    title
-                                }) => (
-                                    <Card
-                                        className={style.activity_item}
-                                        title={title}
-                                    >
-                                        <div>
-                                            时间：
-                                            {formatActivityTime(
-                                                start_time,
-                                                end_time
-                                            )}
-                                        </div>
-                                        <div>地址：{place}</div>
-                                        <div>简介：{summary}</div>
-                                    </Card>
-                                )
+                                this.renderProgramCard
                             )}
-                        </TabPanel>
-                    </TabView>
+                        </Tab>
+                    </Tabs>
                 </div>
             </div>
         );

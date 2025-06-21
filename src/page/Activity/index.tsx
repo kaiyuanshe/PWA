@@ -1,53 +1,59 @@
 import 'array-unique-proposal';
-import {
-    WebCellProps,
-    component,
-    mixin,
-    watch,
-    attribute,
-    createCell,
-    Fragment
-} from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { formatDate } from 'web-utility/source/date';
-import { scrollTo } from 'web-utility/source/DOM';
 
-import { Status, Theme } from 'boot-cell/source/utility/constant';
-import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
-import { Image } from 'boot-cell/source/Media/Image';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { Button } from 'boot-cell/source/Form/Button';
-import { Card, CardHeader, CardFooter } from 'boot-cell/source/Content/Card';
-import { Badge } from 'boot-cell/source/Reminder/Badge';
-import { TooltipBox } from 'boot-cell/source/Prompt/Tooltip';
+import {
+    Badge,
+    Button,
+    Card,
+    CardBody,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+    FormField,
+    Image,
+    SpinnerBox,
+    Status,
+    Theme,
+    TooltipBox
+} from 'boot-cell';
+import { observable } from 'mobx';
+import {
+    attribute,
+    component,
+    observer,
+    WebCell,
+    WebCellProps
+} from 'web-cell';
+import { formatDate, scrollTo } from 'web-utility';
 
 import { TimeRange } from '../../component/TimeRange';
+import { t } from '../../i18n';
+import { activity, Program, program, session } from '../../model';
 import { ProgramMap } from './constants';
-import style from './index.module.less';
-import { activity, program, Program, session } from '../../model';
+import * as styles from './index.module.less';
 
 const BadgeColors = [...Object.values(Status), ...Object.values(Theme)];
 
-interface AgendaPageState {
-    date: string;
-    category: string;
-}
-
 export interface AgendaPageProps extends WebCellProps {
-    aid: string;
+    aid: number;
 }
 
-@observer
-@component({
-    tagName: 'agenda-page',
-    renderTarget: 'children'
-})
-export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
-    @attribute
-    @watch
-    aid = '2';
+export interface AgendaPage extends WebCell<AgendaPageProps> {}
 
-    state = { date: '', category: '' };
+@component({ tagName: 'agenda-page' })
+@observer
+export class AgendaPage
+    extends HTMLElement
+    implements WebCell<AgendaPageProps>
+{
+    @attribute
+    @observable
+    accessor aid = 2;
+
+    @observable
+    accessor date = '';
+
+    @observable
+    accessor category = '';
 
     static get toady() {
         return formatDate(Date.now(), 'YYYY-MM-DD');
@@ -58,13 +64,10 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
             const { currentDays } = activity,
                 today = AgendaPage.toady;
 
-            this.setState({
-                date: currentDays.find(day => day === today) || currentDays[0]
-            });
+            this.date =
+                currentDays.find(day => day === today) || currentDays[0];
         });
         program.getAll({ activity: this.aid });
-
-        super.connectedCallback();
     }
 
     showCurrent = async (event: MouseEvent) => {
@@ -72,11 +75,13 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
 
         const now = Date.now(),
             today = AgendaPage.toady,
-            { date } = this.state,
+            { date } = this,
             { currentAgenda } = program;
 
-        if (date !== today) await this.setState({ date: today, category: '' });
-
+        if (date !== today) {
+            this.date = today;
+            this.category = '';
+        }
         const { id } =
             currentAgenda.find(
                 ({ start_time }) => +new Date(start_time) <= now
@@ -100,12 +105,12 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
         return session.user ? (
             button
         ) : (
-            <TooltipBox text="请先登录">{button}</TooltipBox>
+            <TooltipBox content={t('loginFirst')}>{button}</TooltipBox>
         );
     }
 
     renderFilter(programsOfToday: Program[]) {
-        const { date, category } = this.state,
+        const { date, category } = this,
             { currentDays } = activity;
 
         return (
@@ -117,12 +122,10 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
                     is="select"
                     className="col-6 col-sm-4"
                     value={date}
-                    onChange={({ target }) =>
-                        this.setState({
-                            date: (target as HTMLSelectElement).value,
-                            category: ''
-                        })
-                    }
+                    onChange={({ target }) => {
+                        this.date = (target as HTMLSelectElement).value;
+                        this.category = '';
+                    }}
                 >
                     {currentDays.map(day => (
                         <option>{day}</option>
@@ -133,21 +136,21 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
                     className="col-6 col-sm-4"
                     value={category + ''}
                     onChange={({ target }) =>
-                        this.setState({
-                            category: (target as HTMLSelectElement).value
-                        })
+                        (this.category = (target as HTMLSelectElement).value)
                     }
                 >
-                    <option value="0">全部类别</option>
+                    <option value="0">{t('allCategories')}</option>
                     {programsOfToday
                         .uniqueBy(({ category: { id } }) => id)
                         .map(({ category: { id, name } }) => (
-                            <option value={id}>{name}</option>
+                            <option key={id} value={id + ''}>
+                                {name}
+                            </option>
                         ))}
                 </FormField>
                 <div className="col-12 col-sm-4">
                     <Button block color="success" onClick={this.showCurrent}>
-                        当前议题
+                        {t('currentAgenda')}
                     </Button>
                 </div>
             </form>
@@ -165,14 +168,11 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
         place
     }: Program) => (
         <div
+            key={'program-' + id}
             className="col-12 col-sm-6 col-md-4 mb-4 d-flex"
             id={'program-' + id}
-            key={'program-' + id}
         >
-            <Card
-                style={{ flex: '1' }}
-                title={<a href={'activity/agenda?pid=' + id}>{title}</a>}
-            >
+            <Card className="flex-fill">
                 <CardHeader className="d-flex justify-content-around">
                     <Badge color={BadgeColors[+cid % BadgeColors.length]}>
                         {name}
@@ -181,31 +181,36 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
                         {ProgramMap[type]}
                     </Badge>
                 </CardHeader>
-                <dl>
-                    <dt>讲师</dt>
-                    <dd className="d-flex flex-wrap justify-content-between py-2">
-                        {mentors.map(({ avatar, name, username }) => (
-                            <div>
-                                {avatar && (
-                                    <Image
-                                        className="rounded mr-2"
-                                        style={{ width: '2rem' }}
-                                        src={avatar.url}
-                                    />
-                                )}
-                                {name || username}
-                            </div>
-                        ))}
-                    </dd>
-                    {place && (
-                        <>
-                            <dt>场地</dt>
-                            <dd>
-                                <address>{place.location}</address>
-                            </dd>
-                        </>
-                    )}
-                </dl>
+                <CardBody>
+                    <CardTitle>
+                        <a href={'activity/agenda?pid=' + id}>{title}</a>
+                    </CardTitle>
+                    <dl>
+                        <dt>{t('lecturer')}</dt>
+                        <dd className="d-flex flex-wrap justify-content-between py-2">
+                            {mentors.map(({ avatar, username }) => (
+                                <div>
+                                    {avatar && (
+                                        <Image
+                                            className="rounded mr-2"
+                                            style={{ width: '2rem' }}
+                                            src={avatar.url}
+                                        />
+                                    )}
+                                    {username}
+                                </div>
+                            ))}
+                        </dd>
+                        {place && (
+                            <>
+                                <dt>{t('venue')}</dt>
+                                <dd>
+                                    <address>{place.address.building}</address>
+                                </dd>
+                            </>
+                        )}
+                    </dl>
+                </CardBody>
                 <CardFooter>
                     <TimeRange
                         className="text-center"
@@ -219,49 +224,55 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
 
     renderExhibition = ({ id, organization, project, place }: Program) => (
         <Card
-            className={`mt-2 shadow-sm ${style.exhibition}`}
-            id={'program-' + id}
             key={'program-' + id}
-            title={
-                <a
-                    className="stretched-link"
-                    target="_blank"
-                    href={project ? project.link : organization?.link}
-                >
-                    {project ? project.name : organization?.name}
-                </a>
-            }
-            image={project ? project.logo?.url : organization?.logo?.url}
+            className={`mt-2 shadow-sm ${styles.exhibition}`}
+            id={'program-' + id}
         >
-            {project ? project.summary : organization?.summary}
+            <img src={project?.logo?.url || organization?.logo?.url} />
+            <CardBody>
+                <CardTitle>
+                    <a
+                        className="stretched-link"
+                        target="_blank"
+                        href={project?.link || organization?.link}
+                        rel="noreferrer"
+                    >
+                        {project?.name || organization?.name}
+                    </a>
+                </CardTitle>
+                {project?.summary || organization?.summary}
+            </CardBody>
             {place && (
                 <CardFooter>
-                    <address>{place.location}</address>
+                    <address>{place.address.building}</address>
                 </CardFooter>
             )}
         </Card>
     );
 
-    render(_, { date, category }: AgendaPageState) {
-        const {
-                loading,
-                current: { banner, id }
-            } = activity,
-            { currentAgenda, currentExhibitions, loading: pending } = program;
+    render() {
+        const { date, category } = this,
+            { currentOne } = activity,
+            { currentAgenda, currentExhibitions } = program;
+        const loading = activity.downloading > 0,
+            pending = program.downloading > 0,
+            { banner, id } = currentOne;
 
         const programsOfToday = currentAgenda.filter(({ start_time }) =>
             start_time.startsWith(date)
         );
         const programs = !+category
             ? programsOfToday
-            : programsOfToday.filter(({ category: { id } }) => category == id);
+            : programsOfToday.filter(({ category: { id } }) => +category == id);
 
         return (
             <SpinnerBox cover={loading}>
                 {banner && <Image background src={banner.url} />}
 
                 <main className="container">
-                    <h2 className="mt-5 text-center">大会议程</h2>
+                    <h2 className="mt-5 text-center">
+                        {t('conferenceAgenda')}
+                    </h2>
                     <p className="mt-4 text-center text-muted">
                         {this.renderApply(`activity/speech/edit?aid=${id}`)}
                     </p>
@@ -271,14 +282,15 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
                             {programs[0] ? (
                                 programs.map(this.renderAgenda)
                             ) : (
-                                <p className="m-auto">没有议程</p>
+                                <p className="m-auto">{t('noAgenda')}</p>
                             )}
                         </SpinnerBox>
                     </section>
 
-                    <h2 className="mt-5 text-center">开源市集</h2>
+                    <h2 className="mt-5 text-center">{t('openMarket')}</h2>
                     <p className="mt-4 text-center text-muted">
-                        本届大会的开源市集设置于<strong>成都分会场</strong>
+                        {t('openMarketVenue')}
+                        <strong>{t('chengduVenue')}</strong>
                         <br />
                         {this.renderApply(
                             'activity/exhibition/apply?aid=' + id
@@ -295,7 +307,7 @@ export class AgendaPage extends mixin<AgendaPageProps, AgendaPageState>() {
                         size="lg"
                         href={'activity/showroom?aid=' + id}
                     >
-                        合作伙伴
+                        {t('partners')}
                     </Button>
                 </footer>
             </SpinnerBox>

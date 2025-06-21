@@ -1,37 +1,21 @@
-import {
-    component,
-    mixin,
-    watch,
-    attribute,
-    createCell,
-    Fragment
-} from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { NestedData } from 'mobx-strapi';
-
-import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
-import { Embed } from 'boot-cell/source/Media/Embed';
-import { Image } from 'boot-cell/source/Media/Image';
-import { encodeQRC } from 'boot-cell/source/utility/QRCode';
+import { Image, Ratio, SpinnerBox } from 'boot-cell';
+import { observable } from 'mobx';
+import { attribute, component, observer } from 'web-cell';
 
 import { TimeRange } from '../../component/TimeRange';
-import style from './ShowRoom.module.less';
-import { Program, organization, User } from '../../model';
+import { t } from '../../i18n';
+import { encodeURLQRC, organization, Program, User } from '../../model';
+import * as styles from './ShowRoom.module.less';
 
+@component({ tagName: 'partner-detail' })
 @observer
-@component({
-    tagName: 'partner-detail',
-    renderTarget: 'children'
-})
-export class PartnerDetail extends mixin() {
+export class PartnerDetail extends HTMLElement {
     @attribute
-    @watch
-    oid = '';
+    @observable
+    accessor oid = 0;
 
     connectedCallback() {
         organization.getOne(this.oid);
-
-        super.connectedCallback();
     }
 
     renderProgram = ({
@@ -41,83 +25,82 @@ export class PartnerDetail extends mixin() {
         place,
         summary
     }: Program) => (
-        <div className={`row mb-5 px-2 ${style.card}`}>
+        <div className={`row mb-5 px-2 ${styles.card}`}>
             <div
                 className="col-5 my-4"
                 style={{ borderRight: '1px dashed white' }}
             >
                 <p>{title}</p>
                 <TimeRange start={start_time} end={end_time} />
-                <address>{place?.location}</address>
+                <address>{place?.address.building}</address>
             </div>
             <div className="col-7 my-4">{summary}</div>
         </div>
     );
 
-    renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
-        <div className={`row px-2 ${style.card}`}>
+    renderMentor = ({ avatar, username, summary }: User) => (
+        <div className={`row px-2 ${styles.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
             <div className="col-10 my-4">
-                <h5>{name}</h5>
+                <h5>{username}</h5>
                 <p>{summary}</p>
             </div>
         </div>
     );
 
     render() {
-        const {
-            loading,
-            current: { name, slogan, video, logo, summary, message_link },
-            programs
-        } = organization;
+        const { downloading, currentOne, programs } = organization;
+        const { name, slogan, video, logo, summary, messageLink } = currentOne;
 
         const mentors = programs.map(({ mentors }) => mentors).flat();
 
         return (
-            <SpinnerBox className={style.ground} cover={loading}>
+            <SpinnerBox className={styles.ground} cover={downloading > 0}>
                 <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{name}</h1>
                     <p className="h4 my-4 text-center">{slogan}</p>
                     {video && (
-                        <Embed
-                            is="video"
-                            className={style['main-video']}
-                            src={video.url}
-                            controls
-                            autoplay
-                        />
+                        <Ratio aspectRatio="4x3">
+                            <video
+                                className={styles['main-video']}
+                                src={video.url}
+                                controls
+                                autoplay
+                            />
+                        </Ratio>
                     )}
-                    <header className={`row mt-5 mb-5 px-2 ${style.card}`}>
+                    <header className={`row mt-5 mb-5 px-2 ${styles.card}`}>
                         <div className="col-2 my-4 text-center">
                             <Image thumbnail src={logo?.url} />
-                            {message_link && (
+                            {messageLink && (
                                 <Image
                                     className="mt-3 mb-2"
-                                    src={encodeQRC(message_link)}
+                                    src={encodeURLQRC(messageLink)}
                                 />
                             )}
-                            <p>联系方式</p>
+                            <p>{t('contact')}</p>
                         </div>
                         <div className="col-10 my-4">{summary}</div>
                     </header>
-                    {programs.length > 0 ? (
+                    {programs.length > 0 && (
                         <>
-                            <h2 className="text-center">精彩内容</h2>
+                            <h2 className="text-center">{t('highlights')}</h2>
                             <section className="my-5">
                                 {programs.map(this.renderProgram)}
                             </section>
                         </>
-                    ) : null}
-                    {mentors.length > 0 ? (
+                    )}
+                    {mentors.length > 0 && (
                         <>
-                            <h2 className="text-center">参会大咖</h2>
+                            <h2 className="text-center">{t('guests')}</h2>
                             <section className="my-5">
+                                {/* @ts-expect-error Type compatibility bug */}
                                 {mentors.map(this.renderMentor)}
                             </section>
                         </>
-                    ) : null}
+                    )}
                 </div>
             </SpinnerBox>
         );

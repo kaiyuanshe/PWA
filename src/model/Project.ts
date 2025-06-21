@@ -1,20 +1,10 @@
-import { BaseData, MediaData, NestedData, CollectionModel } from 'mobx-strapi';
+import { Project } from '@kaiyuanshe/data-server';
 
-import { User } from './service';
-import { Organization } from './Organization';
+import { CollectionModel } from './service';
 
-export interface Project extends BaseData {
-    name: string;
-    logo?: MediaData;
-    link: string;
-    summary?: string;
-    start_date: string;
-    end_date?: string;
-    members: NestedData<User>[];
-    organization?: NestedData<Organization>;
-}
-
-export class ProjectModel extends CollectionModel<Project, 'name' | 'summary'> {
+export class ProjectModel extends CollectionModel<Project> {
     name = 'project';
-    basePath = 'projects';
+    baseURI = 'projects';
+
+    searchKeys = ['name'] as const;
 }

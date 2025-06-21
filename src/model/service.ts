@@ -1,26 +1,27 @@
-import { BaseUser, BaseData, MediaData, service } from 'mobx-strapi';
+import { Partnership } from '@kaiyuanshe/data-server';
+import { Byte, Encoder } from '@nuintun/qrcode';
+import { DataObject, Filter } from 'mobx-restful';
+import { StrapiListModel } from 'mobx-strapi';
 
-import { Organization } from './Organization';
+import session from './Session';
 
-if (self.location.hostname !== 'localhost')
-    service.baseURI = 'https://data.kaiyuanshe.cn/';
+if (!['localhost', '127.0.0.1', '0.0.0.0'].includes(location.hostname))
+    session.client.baseURI = 'https://data.kaiyuanshe.cn/api/';
 
-export interface User extends BaseUser {
-    name?: string;
-    organizations: Organization[];
-    avatar?: MediaData;
-    summary: string;
-    telphone?: string;
+export abstract class CollectionModel<
+    D extends DataObject,
+    F extends Filter<D> = Filter<D>
+> extends StrapiListModel<D, F> {
+    client = session.client;
+
+    select(key: keyof D, value: D[keyof D]) {
+        return (this.currentOne = this.allItems.find(
+            item => item[key] === value
+        ));
+    }
 }
 
-export interface Place extends BaseData {
-    name: string;
-    location: string;
-    capacity: number;
-    indoor: boolean;
-    available_times: any[];
-    contacts: User[];
-    owner: Organization;
-    equipments: any[];
-    films: MediaData[];
-}
+export type User = Required<Partnership>['creator'];
+
+export const encodeURLQRC = (raw: string) =>
+    new Encoder().encode(new Byte(raw)).toDataURL();

@@ -1,27 +1,22 @@
+import { Button, FilePicker, FormCheck, FormField } from 'boot-cell';
+import { observable } from 'mobx';
 import {
-    WebCellProps,
-    component,
-    mixin,
-    watch,
     attribute,
-    createCell
+    component,
+    observer,
+    WebCell,
+    WebCellProps
 } from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { Minute } from 'web-utility/source/date';
-import { formToJSON } from 'web-utility/source/DOM';
+import { formToJSON, Minute } from 'web-utility';
 
-import { Button } from 'boot-cell/source/Form/Button';
-import { Field } from 'boot-cell/source/Form/Field';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { ToggleField } from 'boot-cell/source/Form/ToggleField';
+import { t } from '../../i18n';
 import {
-    session,
+    activity,
     category,
-    project,
     organization,
     program,
-    activity,
-    history
+    project,
+    session
 } from '../../model';
 
 export interface SpeechEditPageProps extends WebCellProps {
@@ -29,123 +24,128 @@ export interface SpeechEditPageProps extends WebCellProps {
     pid?: string;
 }
 
+export interface SpeechEditPage extends WebCell<SpeechEditPageProps> {}
+
+@component({ tagName: 'speech-edit-page' })
 @observer
-@component({
-    tagName: 'speech-edit-page',
-    renderTarget: 'children'
-})
-export class SpeechEditPage extends mixin<SpeechEditPageProps>() {
+export class SpeechEditPage
+    extends HTMLElement
+    implements WebCell<SpeechEditPageProps>
+{
     @attribute
-    @watch
-    aid: string;
+    @observable
+    accessor aid = 0;
 
     @attribute
-    @watch
-    pid?: string;
+    @observable
+    accessor pid = 0;
 
     connectedCallback() {
         const { aid } = this;
 
-        if (aid !== activity.current.id) activity.getOne(aid);
+        if (aid !== activity.currentOne.id) activity.getOne(aid);
 
         category.getAll();
         project.getAll();
         organization.getAll();
-
-        super.connectedCallback();
     }
 
     async save(event: Event) {
         event.preventDefault();
         event.stopPropagation();
 
-        const { title } = await program.update(
+        const { title } = await program.updateOne(
             formToJSON(event.target as HTMLFormElement)
         );
-        self.alert(`您的《${title}》讲题已提交，请静候组织者审核~`);
+        self.alert(t('topicSubmitted', { title }));
 
-        history.replace('');
+        location.hash = '';
     }
 
     render() {
         const { aid } = this,
             { user } = session,
-            { start_time } = activity.current;
-        const end_time = new Date(+new Date(start_time) + 40 * Minute).toJSON();
+            { startTime } = activity.currentOne;
+        const endTime = new Date(+new Date(startTime) + 40 * Minute).toJSON();
 
         return (
             <form className="container" onSubmit={this.save}>
-                <h1 className="h2 my-4">讲题申报</h1>
+                <h1 className="h2 my-4">{t('topicApply')}</h1>
 
                 <input type="hidden" name="activity" value={aid + ''} />
-                <input type="hidden" name="start_time" value={start_time} />
-                <input type="hidden" name="end_time" value={end_time} />
-                <input type="hidden" name="mentors" value={user?.id} />
-
-                <FormField name="title" required label="题目" labelColumn={2} />
+                <input type="hidden" name="startTime" value={startTime} />
+                <input type="hidden" name="endTime" value={endTime} />
+                <input
+                    type="hidden"
+                    name="mentors"
+                    value={user?.id.toString()}
+                />
+                <FormField
+                    name="title"
+                    required
+                    label={t('topicTitle')}
+                    labelColumn={2}
+                />
                 <FormField
                     is="textarea"
                     name="summary"
                     required
                     minLength={5}
-                    label="简介"
+                    label={t('intro')}
                     labelColumn={2}
                 />
-                <FormField label="类型" labelColumn={2}>
-                    <ToggleField
+                <FormField label={t('type')} labelColumn={2}>
+                    <FormCheck
                         type="radio"
                         name="type"
                         value="lecture"
                         required
                         inline
                         className="h-100 align-items-center"
-                    >
-                        演讲
-                    </ToggleField>
-                    <ToggleField
+                        label={t('lecture')}
+                    />
+                    <FormCheck
                         type="radio"
                         name="type"
                         value="workshop"
                         required
                         inline
                         className="h-100 align-items-center"
-                    >
-                        动手训练营（工作坊）
-                    </ToggleField>
+                        label={t('workshop')}
+                    />
                 </FormField>
                 <FormField
                     is="select"
                     name="category"
                     required
-                    label="分类"
+                    label={t('category')}
                     labelColumn={2}
                 >
                     {category.allItems.map(({ id, name }) => (
-                        <option key={`category-${id}`} value={id}>
+                        <option key={`category-${id}`} value={id + ''}>
                             {name}
                         </option>
                     ))}
                 </FormField>
-                <FormField label="文档" labelColumn={2}>
-                    <Field
+                <FormField label={t('document')} labelColumn={2}>
+                    <FilePicker
                         type="file"
                         name="documents"
                         multiple
-                        // @ts-ignore
                         accept=".doc,.docx,.ppt,.pptx,.pdf,.odt,.odp"
-                        label="Word 文档、PPT、PDF、开放文档格式"
-                        fileButton="选择"
+                        label={t('documentLabel')}
+                        fileButton={t('select')}
                     />
                 </FormField>
                 <FormField
                     is="select"
                     name="project"
-                    label="相关项目"
+                    label={t('relatedProject')}
                     labelColumn={2}
                 >
-                    <option value="">（暂无）</option>
+                    <option value="">{t('none')}</option>
                     {project.allItems.map(({ id, name }) => (
-                        <option key={`project-${id}`} value={id}>
+                        <option key={`project-${id}`} value={id + ''}>
                             {name}
                         </option>
                     ))}
@@ -153,26 +153,26 @@ export class SpeechEditPage extends mixin<SpeechEditPageProps>() {
                 <FormField
                     is="select"
                     name="organization"
-                    label="相关组织"
+                    label={t('relatedOrg')}
                     labelColumn={2}
                 >
-                    <option value="">（暂无）</option>
+                    <option value="">{t('none')}</option>
                     {organization.allItems.map(({ id, name }) => (
-                        <option key={`organization-${id}`} value={id}>
+                        <option key={`organization-${id}`} value={id + ''}>
                             {name}
                         </option>
                     ))}
                 </FormField>
                 <footer className="my-4 text-center">
                     <Button type="submit" color="success" className="mr-3">
-                        提交
+                        {t('submit')}
                     </Button>
                     <Button
                         type="reset"
                         color="danger"
-                        onClick={() => history.replace('')}
+                        onClick={() => (location.hash = '')}
                     >
-                        放弃
+                        {t('discard')}
                     </Button>
                 </footer>
             </form>

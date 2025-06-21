@@ -1,100 +1,92 @@
-import { component, mixin, watch, attribute, createCell } from 'web-cell';
-import { observer } from 'mobx-web-cell';
+import { Button, ButtonGroup, Image, Ratio, SpinnerBox } from 'boot-cell';
 import classNames from 'classnames';
-import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
-import { ButtonGroup } from 'boot-cell/source/Form/ButtonGroup';
-import { Button } from 'boot-cell/source/Form/Button';
-import { Embed } from 'boot-cell/source/Media/Embed';
-import { Image } from 'boot-cell/source/Media/Image';
+import { observable } from 'mobx';
+import { attribute, component, observer } from 'web-cell';
 
-import style from './ShowRoom.module.less';
+import { t } from '../../i18n';
+import { activity, Partnership } from '../../model';
 import { PartnerMap } from './constants';
-import { Partnership, activity } from '../../model';
+import * as styles from './ShowRoom.module.less';
 
-// const buttons = ['直播日程表', '云端展厅', '大会讲师', '官方社群'];
+const buttons = () => [
+    t('liveSchedule'),
+    t('cloudShowroom'),
+    t('conferenceLecturer'),
+    t('officialCommunity')
+];
 
+@component({ tagName: 'main-playroom' })
 @observer
-@component({
-    tagName: 'main-playroom',
-    renderTarget: 'children'
-})
-export class ShowRoom extends mixin() {
+export class ShowRoom extends HTMLElement {
     @attribute
-    @watch
-    aid = '';
+    @observable
+    accessor aid = 0;
 
     connectedCallback() {
-        if (this.aid !== activity.current.id) activity.getOne(this.aid);
-
-        super.connectedCallback();
+        if (this.aid !== activity.currentOne.id) activity.getOne(this.aid);
     }
 
-    renderPartner({
+    renderPartner = ({
         organization: { id, slogan, video, summary, logo },
         type,
         level
-    }: Partnership) {
-        return (
-            <div className="col-12 col-sm-6 col-md-3 my-4">
-                <a
-                    className={classNames(
-                        style.frame,
-                        level > 1 && style.VIP,
-                        'text-decoration-none',
-                        'text-white'
-                    )}
-                    href={'activity/partner?oid=' + id}
-                >
-                    <div className={style.tag}>{PartnerMap[type]}</div>
-                    {slogan && (
-                        <h5 style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                            {slogan}
-                        </h5>
-                    )}
-                    {video && <Embed is="video" hoverPlay src={video.url} />}
-                    <p style={{ fontSize: '13px' }}>{summary}</p>
-                    <Image
-                        className={style.logoTag}
-                        thumbnail
-                        src={logo?.url}
-                    />
-                </a>
-            </div>
-        );
-    }
+    }: Partnership) => (
+        <div className="col-12 col-sm-6 col-md-3 my-4">
+            <a
+                className={classNames(
+                    styles.frame,
+                    level > 1 && styles.VIP,
+                    'text-decoration-none',
+                    'text-white'
+                )}
+                href={'activity/partner?oid=' + id}
+            >
+                <div className={styles.tag}>{PartnerMap[type]}</div>
+                {slogan && <h5 className="fs-6 fw-bold">{slogan}</h5>}
+                {video && (
+                    <Ratio aspectRatio="16x9">
+                        <video hoverPlay src={video.url} />
+                    </Ratio>
+                )}
+                <p style={{ fontSize: '13px' }}>{summary}</p>
+                <Image className={styles.logoTag} thumbnail src={logo?.url} />
+            </a>
+        </div>
+    );
 
     render() {
-        const {
-            loading,
-            current: { name, slogan, partner_ships }
-        } = activity;
+        const { downloading, currentOne } = activity;
+        const { name, slogan, partnerships } = currentOne;
 
         return (
-            <SpinnerBox className={style.ground} cover={loading}>
+            <SpinnerBox className={styles.ground} cover={downloading > 0}>
                 <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{name}</h1>
                     <p className="h4 my-4 text-center">{slogan}</p>
-                    <Embed
-                        is="iframe"
-                        className={style['main-video']}
-                        src="//player.bilibili.com/player.html?aid=676457093&bvid=BV1PU4y1g7Gd&cid=435097919&page=1"
-                        allowFullscreen
-                    />
-                    <div className={style.buttonsTray}>
-{/*                         <ButtonGroup>
-                            {buttons.map(text => (
+
+                    <Ratio aspectRatio="16x9">
+                        <iframe
+                            className={styles['main-video']}
+                            src="//player.bilibili.com/player.html?aid=676457093&bvid=BV1PU4y1g7Gd&cid=435097919&page=1"
+                            allowFullscreen
+                        />
+                    </Ratio>
+                    <div className={styles.buttonsTray}>
+                        <ButtonGroup>
+                            {buttons().map(text => (
                                 <Button
-                                    className={style.buttons}
-                                    color="secondary"
+                                    key={text}
+                                    className={styles.buttons}
+                                    variant="secondary"
                                 >
                                     {text}
                                 </Button>
                             ))}
-                        </ButtonGroup> */}
+                        </ButtonGroup>
                     </div>
 
                     <section className="row mt-5">
-                        {partner_ships?.map(this.renderPartner)}
+                        {partnerships?.map(this.renderPartner)}
                     </section>
                 </div>
             </SpinnerBox>

@@ -1,78 +1,49 @@
-import { observable } from 'mobx';
 import {
-    BaseData,
-    NewData,
-    Query,
-    MediaData,
-    NestedData,
-    CollectionModel,
-    service,
-    loading
-} from 'mobx-strapi';
+    Category,
+    Evaluation,
+    Organization,
+    Place,
+    Program as _Program,
+    Project
+} from '@kaiyuanshe/data-server';
+import { observable } from 'mobx';
+import { Filter, NewData, toggle } from 'mobx-restful';
 
-import { Place, User } from './service';
-import { Category } from './Category';
-import { Evaluation } from './Evaluation';
-import { Activity, ActivityModel } from './Activity';
-import { Project } from './Project';
-import { Organization } from './Organization';
+import { ActivityModel } from './Activity';
+import { CollectionModel } from './service';
 
-export interface Program extends BaseData {
-    title: string;
-    start_time: string;
-    end_time: string;
-    summary?: string;
-    mentors: NestedData<User>[];
-    activity: NestedData<Activity>;
-    type: 'lecture' | 'workshop' | 'exhibition';
-    place?: NestedData<Place>;
-    evaluations: any[];
-    accounts: any[];
-    documents: MediaData[];
-    verified: boolean;
-    category: NestedData<Category>;
-    project?: NestedData<Project>;
-    organization?: NestedData<Organization>;
+export interface Program extends _Program {
+    category?: Category;
+    organization?: Organization;
+    project?: Project;
+    place?: Place;
 }
 
-export class ProgramModel extends CollectionModel<
-    Program,
-    'id' | 'title' | 'mentors'
-> {
+export class ProgramModel extends CollectionModel<Program> {
     name = 'program';
-    basePath = 'programs';
+    baseURI = 'programs';
 
     @observable
-    currentAgenda: Program[] = [];
+    accessor currentAgenda: Program[] = [];
 
     @observable
-    currentExhibitions: Program[] = [];
+    accessor currentExhibitions: Program[] = [];
 
     @observable
-    evaluations: Evaluation[] = [];
+    accessor evaluations: Evaluation[] = [];
 
     @observable
-    activityInfoList: Program[] = [];
+    accessor activityInfoList: Program[] = [];
 
-    activity: ActivityModel;
+    @observable
+    accessor sameCategoryList: Program[] = [];
 
-    constructor(activity: ActivityModel) {
+    constructor(public activity: ActivityModel) {
         super();
-        this.activity = activity;
     }
 
-    async getAll({
-        activity,
-        verified = true,
-        _sort = 'start_time:ASC',
-        ...query
-    }: Query<Program>) {
-        await super.getAll({
-            activity,
-            verified,
-            _sort,
-            ...query
-        });
+    async getAll({ activity, ...query }: Filter<Program>) {
+        await super.getAll({ activity, ...query });
         const agenda: Program[] = [],
             exhibitions: Program[] = [];
 
@@ -82,44 +53,49 @@ export class ProgramModel extends CollectionModel<
 
         this.currentAgenda = agenda;
         this.currentExhibitions = exhibitions;
+
         return this.allItems;
     }
 
-    async getMentors(mentorId) {
-        const { body } = await service.get<Program[]>(
+    @toggle('downloading')
+    async getMentors(mentorId: number) {
+        const { body } = await this.client.get<Program[]>(
             `programs?mentors=${mentorId}&verified=false`
         );
+
         return (this.activityInfoList = body);
     }
 
-    @loading
+    @toggle('downloading')
     async getSameCategory(
         {
             id,
             activity,
             category
-        }: Pick<Query<Program>, 'id' | 'activity' | 'category'> = {
-            id: this.current.id,
-            activity: this.current.activity?.id,
-            category: this.current.category?.id
+        }: Pick<Filter<Program>, 'id' | 'activity' | 'category'> = {
+            id: this.currentOne.id,
+            activity: this.currentOne.activity?.id,
+            category: this.currentOne.category?.id
         }
     ) {
-        const { body } = await service.get<Program[]>(
+        const { body } = await this.client.get<Program[]>(
             `programs?activity=${activity}&category=${category}&id_ne=${id}`
         );
-        return (this.list = body);
+
+        return (this.sameCategoryList = body);
     }
 
-    @loading
+    @toggle('downloading')
     async getEvaluation(pid: number) {
-        const { body } = await service.get<Evaluation[]>(
+        const { body } = await this.client.get<Evaluation[]>(
             'evaluations?program=' + pid
         );
+
         return (this.evaluations = body);
     }
 
-    @loading
-    async update({
+    @toggle('downloading')
+    async updateOne({
         type,
         start_time,
         end_time,
@@ -127,12 +103,14 @@ export class ProgramModel extends CollectionModel<
         ...data
     }: NewData<Program>) {
         if (type === 'exhibition') {
-            if (!(start_time && end_time) && activity !== this.current.id)
-                await this.activity.getOne(activity);
+            if (!(start_time && end_time) && activity !== this.currentOne.id)
+                await this.activity.getOne(activity as number);
 
-            ({ start_time, end_time } = this.activity.current);
+            ({ startTime: start_time, endTime: end_time } =
+                this.activity.currentOne);
         }
-        return super.update({
+
+        return super.updateOne({
             type,
             start_time,
             end_time,

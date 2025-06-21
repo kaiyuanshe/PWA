@@ -15,39 +15,61 @@
     "bugs": {
         "url": "https://github.com/kaiyuanshe/PWA/issues"
     },
-    "main": "src/index.html",
     "dependencies": {
-        "@nuintun/qrcode": "^3.0.1",
-        "array-unique-proposal": "^0.3.1",
-        "boot-cell": "^1.9.5",
+        "@nuintun/qrcode": "^5.0.2",
+        "array-unique-proposal": "^0.3.4",
+        "boot-cell": "^2.0.0-rc.18",
         "browser-unhandled-rejection": "^1.0.2",
-        "cell-router": "^2.0.4",
-        "classnames": "^2.3.1",
+        "cell-router": "^4.0.1",
+        "classnames": "^2.5.1",
+        "dom-renderer": "^2.6.2",
+        "koajax": "^3.1.2",
         "lodash.debounce": "^4.0.8",
-        "marked": "^2.1.3",
-        "mobx": "^5.15.7",
-        "mobx-strapi": "^0.2.4",
-        "mobx-web-cell": "^0.3.5",
-        "web-cell": "^2.3.0",
-        "web-utility": "^2.6.0"
+        "marked": "^15.0.12",
+        "mobx": "^6.13.7",
+        "mobx-i18n": "^0.7.1",
+        "mobx-restful": "^2.1.0",
+        "mobx-strapi": "^0.6.3",
+        "web-cell": "^3.1.0",
+        "web-utility": "^4.4.3"
     },
     "devDependencies": {
-        "@types/classnames": "^2.3.1",
-        "@types/lodash.debounce": "^4.0.6",
-        "@types/marked": "^2.0.4",
-        "@typescript-eslint/eslint-plugin": "^4.28.4",
-        "@typescript-eslint/parser": "^4.28.4",
-        "autoprefixer": "^9.8.6",
-        "eslint": "^7.31.0",
-        "eslint-config-prettier": "^8.3.0",
-        "husky": "^7.0.1",
-        "less": "^4.1.1",
-        "lint-staged": "^11.1.1",
-        "parcel-bundler": "^1.12.5",
-        "postcss-modules": "^3.2.2",
-        "prettier": "^2.3.2",
-        "typescript": "^4.3.5",
-        "workbox-cli": "^6.1.5"
+        "@cspell/eslint-plugin": "^9.1.1",
+        "@eslint/js": "^9.29.0",
+        "@html-eslint/eslint-plugin": "^0.41.0",
+        "@kaiyuanshe/data-server": "^1.0.0",
+        "@parcel/config-default": "~2.15.2",
+        "@parcel/packager-raw-url": "~2.15.2",
+        "@parcel/transformer-less": "~2.15.2",
+        "@parcel/transformer-typescript-tsc": "~2.15.2",
+        "@parcel/transformer-webmanifest": "2.15.2",
+        "@stylistic/eslint-plugin": "^4.4.1",
+        "@types/lodash.debounce": "^4.0.9",
+        "@types/node": "^22.15.32",
+        "eslint": "^9.29.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-simple-import-sort": "^12.1.1",
+        "globals": "^16.2.0",
+        "husky": "^9.1.7",
+        "jiti": "^2.4.2",
+        "lint-staged": "^16.1.2",
+        "parcel": "~2.15.2",
+        "postcss": "^8.5.6",
+        "prettier": "^3.5.3",
+        "prettier-plugin-css-order": "^2.1.2",
+        "typescript": "~5.8.3",
+        "typescript-eslint": "^8.34.1",
+        "workbox-cli": "^7.3.0"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@parcel/watcher",
+            "@swc/core",
+            "core-js",
+            "lmdb",
+            "msgpackr-extract"
+        ]
     },
     "prettier": {
         "singleQuote": true,
@@ -59,17 +81,9 @@
         "*.{html,md,css,less,json,yml,js,ts,tsx}": "prettier --write",
         "*.{js,ts,tsx}": "eslint --fix"
     },
-    "postcss": {
-        "modules": true,
-        "plugins": {
-            "autoprefixer": {
-                "grid": true
-            }
-        }
-    },
     "scripts": {
         "prepare": "husky install",
-        "test": "lint-staged",
+        "test": "lint-staged  &&  tsc --noEmit",
         "start": "parcel src/index.html --open",
         "pack-dist": "parcel build src/index.html --public-url .",
         "pack-sw": "rm -f dist/sw.js.map  &&  workbox generateSW",

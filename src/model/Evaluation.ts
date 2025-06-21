@@ -1,27 +1,13 @@
+import { Evaluation } from '@kaiyuanshe/data-server';
 import { computed, observable } from 'mobx';
-import {
-    BaseData,
-    NestedData,
-    NewData,
-    Query,
-    CollectionModel
-} from 'mobx-strapi';
+import { Filter, NewData } from 'mobx-restful';
 
-import { User } from './service';
+import { CollectionModel } from './service';
 import { UserSessionModel } from './Session';
-import { Program } from './Program';
-
-export interface Evaluation extends BaseData {
-    score: number;
-    detail: string;
-    contribution?: BaseData; // To implement
-    program?: NestedData<Program>;
-    creator: NestedData<User>;
-}
 
 export class EvaluationModel extends CollectionModel<Evaluation> {
     name = 'evaluation';
-    basePath = 'evaluations';
+    baseURI = 'evaluations';
 
     session: UserSessionModel;
 
@@ -41,9 +27,9 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
     }
 
     @observable
-    userSubmitted = false;
+    accessor userSubmitted = false;
 
-    async getAll(query: Query<Evaluation> = {}) {
+    async getAll(query: Filter<Evaluation> = {}) {
         await super.getAll(query);
 
         const { id: uid } = this.session.user || {};
@@ -51,16 +37,17 @@ export class EvaluationModel extends CollectionModel<Evaluation> {
         const item = this.allItems.find(({ creator: { id } }) => id === uid);
 
         if (item) {
-            this.current = item;
+            this.currentOne = item;
             this.userSubmitted = true;
         }
+
         return this.allItems;
     }
 
-    async update(data: NewData<Evaluation>) {
-        await super.update(data);
+    async updateOne(data: NewData<Evaluation>) {
+        await super.updateOne(data);
         await this.getAll();
 
-        return this.current;
+        return this.currentOne;
     }
 }

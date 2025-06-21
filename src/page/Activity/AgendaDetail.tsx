@@ -1,71 +1,55 @@
-import {
-    component,
-    mixin,
-    watch,
-    attribute,
-    createCell,
-    Fragment
-} from 'web-cell';
-import { observer } from 'mobx-web-cell';
-import { NestedData } from 'mobx-strapi';
+import { Image, ListGroup, ListGroupItem, SpinnerBox } from 'boot-cell';
+import { observable } from 'mobx';
+import { attribute, component, observer } from 'web-cell';
 
-import { SpinnerBox } from 'boot-cell/source/Prompt/Spinner';
-import { Image } from 'boot-cell/source/Media/Image';
-import { ListGroup, ListItem } from 'boot-cell/source/Content/ListGroup';
-
-import { TimeRange } from '../../component/TimeRange';
 import { EvaluationForm } from '../../component/Evaluation';
-import { ProgramMap } from './constants';
-import style from './ShowRoom.module.less';
+import { TimeRange } from '../../component/TimeRange';
+import { t } from '../../i18n';
 import { program, User } from '../../model';
+import { ProgramMap } from './constants';
+import * as styles from './ShowRoom.module.less';
 
+@component({ tagName: 'agenda-detail' })
 @observer
-@component({
-    tagName: 'agenda-detail',
-    renderTarget: 'children'
-})
-export class AgendaDetail extends mixin() {
+export class AgendaDetail extends HTMLElement {
     @attribute
-    @watch
-    pid = '';
+    @observable
+    accessor pid = '';
 
-    connectedCallback() {
-        program.getOne(this.pid).then(() => program.getSameCategory());
+    async connectedCallback() {
+        await program.getOne(this.pid);
 
-        super.connectedCallback();
+        program.getSameCategory();
     }
 
-    renderMentor = ({ avatar, name, summary }: NestedData<User>) => (
-        <div className={`row px-2 ${style.card}`}>
+    renderMentor = ({ avatar, username, summary }: User) => (
+        <div className={`row px-2 ${styles.card}`}>
             <div className="col-2 my-4">
                 {avatar && <Image thumbnail src={avatar.url} />}
             </div>
             <div className="col-10 my-4">
-                <h5>{name}</h5>
+                <h5>{username}</h5>
                 <p>{summary}</p>
             </div>
         </div>
     );
 
     render() {
+        const { downloading, currentOne, sameCategoryList } = program;
         const {
-            loading,
-            current: {
-                title,
-                start_time,
-                end_time,
-                type,
-                summary,
-                place,
-                mentors,
-                category,
-                id
-            },
-            list
-        } = program;
+            title,
+            start_time,
+            end_time,
+            type,
+            summary,
+            place,
+            mentors,
+            category,
+            id
+        } = currentOne;
 
         return (
-            <SpinnerBox className={style.ground} cover={loading}>
+            <SpinnerBox className={styles.ground} cover={downloading > 0}>
                 <div className="container overflow-auto text-white">
                     <h1 className="mt-5 text-center">{title}</h1>
                     <div className="row mt-3">
@@ -78,29 +62,32 @@ export class AgendaDetail extends mixin() {
                             {ProgramMap[type]}
                         </div>
                         <address className="col-4 text-right">
-                            {place?.location}
+                            {place?.address.building}
                         </address>
                     </div>
                     {summary && (
                         <>
-                            <h2 className="text-center mt-5">议题简介</h2>
+                            <h2 className="text-center mt-5">
+                                {t('agendaIntro')}
+                            </h2>
                             <div
-                                className={`row mt-4 mb-5 px-3 py-4 ${style.card}`}
+                                className={`row mt-4 mb-5 px-3 py-4 ${styles.card}`}
                             >
                                 {summary}
                             </div>
                         </>
                     )}
-                    <h2 className="text-center mt-5">演讲者</h2>
+                    <h2 className="text-center mt-5">{t('speaker')}</h2>
                     <section className="mt-4 mb-5">
+                        {/* @ts-expect-error Type compatibility bug */}
                         {mentors?.map(this.renderMentor)}
                     </section>
 
-                    <h2 className="text-center">专场主题</h2>
-                    <section className={`mt-4 mb-5 ${style.card}`}>
+                    <h2 className="text-center">{t('sessionTopic')}</h2>
+                    <section className={`mt-4 mb-5 ${styles.card}`}>
                         <h5 className="text-center my-2">{category?.name}</h5>
                         <p className="mb-3 px-3">{category?.summary}</p>
-                        {list.length > 0 ? (
+                        {sameCategoryList.length > 0 && (
                             <div
                                 className="py-2"
                                 style={{
@@ -109,21 +96,22 @@ export class AgendaDetail extends mixin() {
                                 }}
                             >
                                 <h5 className="pt-2 text-center">
-                                    主题相关议题
+                                    {t('relatedTopics')}
                                 </h5>
                                 <ListGroup>
-                                    {list.map(({ id, title }) => (
-                                        <ListItem
+                                    {sameCategoryList.map(({ id, title }) => (
+                                        <ListGroupItem
+                                            key={id}
                                             href={'activity/agenda?pid=' + id}
                                         >
                                             {title}
-                                        </ListItem>
+                                        </ListGroupItem>
                                     ))}
                                 </ListGroup>
                             </div>
-                        ) : null}
+                        )}
                     </section>
-                    <EvaluationForm program={id} />
+                    <EvaluationForm program={id + ''} />
                 </div>
             </SpinnerBox>
         );

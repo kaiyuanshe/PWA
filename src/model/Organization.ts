@@ -1,46 +1,33 @@
+import { Organization } from '@kaiyuanshe/data-server';
 import { observable } from 'mobx';
-import {
-    BaseData,
-    MediaData,
-    CollectionModel,
-    service,
-    loading
-} from 'mobx-strapi';
+import { toggle } from 'mobx-restful';
 
 import { Program } from './Program';
+import { CollectionModel } from './service';
 
-export interface Organization extends BaseData {
-    name: string;
-    slogan?: string;
-    logo?: MediaData;
-    link: string;
-    summary: string;
-    video?: MediaData;
-    message_link: string;
-}
-
-export class OrganizationModel extends CollectionModel<
-    Organization,
-    'name' | 'slogan' | 'summary'
-> {
+export class OrganizationModel extends CollectionModel<Organization> {
     name = 'organization';
-    basePath = 'organizations';
+    baseURI = 'organizations';
+
+    searchKeys = ['name'] as const;
 
     @observable
-    programs: Program[] = [];
+    accessor programs: Program[] = [];
 
-    @loading
+    @toggle('downloading')
     async getOne(id: Organization['id']) {
-        const { body: list } = await service.get<Program[]>(
+        const { body: list } = await this.client.get<Program[]>(
             'programs/?organization=' + id
         );
         this.programs = list;
 
         if (list[0])
-            return (this.current = list[0].organization as Organization);
+            return (this.currentOne = list[0].organization as Organization);
 
-        const { body } = await service.get<Organization>('organizations/' + id);
+        const { body } = await this.client.get<Organization>(
+            'organizations/' + id
+        );
 
-        return (this.current = body);
+        return (this.currentOne = body);
     }
 }

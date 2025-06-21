@@ -1,49 +1,57 @@
+import { Evaluation } from '@kaiyuanshe/data-server';
 import {
-    WebCellProps,
-    component,
-    mixin,
-    watch,
+    Button,
+    FormControl,
+    FormField,
+    InputGroup,
+    RangeInput
+} from 'boot-cell';
+import { observable } from 'mobx';
+import { NewData } from 'mobx-restful';
+import {
     attribute,
-    createCell,
-    Fragment
+    component,
+    observer,
+    reaction,
+    WebCell,
+    WebCellProps
 } from 'web-cell';
-import { formToJSON } from 'web-utility/source/DOM';
-import { observer } from 'mobx-web-cell';
-import { NewData } from 'mobx-strapi';
+import { formToJSON } from 'web-utility';
 
-import { InputGroup } from 'boot-cell/source/Form/InputGroup';
-import { Button } from 'boot-cell/source/Form/Button';
-import { FormField } from 'boot-cell/source/Form/FormField';
-import { ScoreRange } from 'boot-cell/source/Form/ScoreRange';
-import { Field } from 'boot-cell/source/Form/Field';
-
-import { Evaluation, evaluation, session } from '../model';
+import { t } from '../i18n';
+import { evaluation, session } from '../model';
 
 export interface EvaluationProps extends WebCellProps {
     program?: string;
     contribution?: string;
 }
 
+export interface EvaluationForm extends WebCell<EvaluationProps> {}
+
+@component({ tagName: 'evaluation-form' })
 @observer
-@component({
-    tagName: 'evaluation-form',
-    renderTarget: 'children'
-})
-export class EvaluationForm extends mixin<EvaluationProps>() {
+export class EvaluationForm
+    extends HTMLElement
+    implements WebCell<EvaluationProps>
+{
     @attribute
-    @watch
-    set program(program: string) {
-        this.setProps({ program }).then(() => evaluation.getAll({ program }));
+    @observable
+    accessor program = '';
+
+    @reaction(({ program }) => program)
+    getEvaluation(program: string) {
+        evaluation.getAll({ program });
     }
 
     @attribute
-    @watch
-    contribution?: string;
+    @observable
+    accessor contribution = '';
 
     saveEvaluation = (event: Event) => {
-        event.preventDefault(), event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
 
-        return evaluation.update({
+        return evaluation.updateOne({
             creator: session.user.id,
             program: this.program,
             contribution: this.contribution,
@@ -52,42 +60,44 @@ export class EvaluationForm extends mixin<EvaluationProps>() {
     };
 
     render() {
-        const {
-            userSubmitted,
-            averageScore,
-            current: { score, detail }
-        } = evaluation;
-        const showAll = !session.user || userSubmitted;
+        const { userSubmitted, averageScore, currentOne } = evaluation;
+        const { score, detail } = currentOne,
+            showAll = !session.user || userSubmitted;
 
         return (
             <form onSubmit={this.saveEvaluation}>
-                <FormField label="评分">
-                    <ScoreRange
+                <FormField label={t('score')}>
+                    <RangeInput
                         className="text-warning"
+                        icon={value => (value ? '★' : '☆')}
                         name="score"
                         required
+                        // @ts-expect-error Type compatibility bug
+                        min={0}
+                        // @ts-expect-error Type compatibility bug
+                        max={5}
                         value={(showAll ? averageScore : score) + ''}
                         disabled={showAll}
                     />
                 </FormField>
                 {!session.user ? (
-                    <p className="text-muted">登录即可评论</p>
+                    <p className="text-muted">{t('loginToComment')}</p>
                 ) : userSubmitted ? (
-                    <FormField label="您的评语">
-                        <Field
-                            is="output"
-                            className="text-white"
-                            value={detail}
-                        />
+                    <FormField label={t('yourComment')}>
+                        <output className="text-white" value={detail} />
                     </FormField>
                 ) : (
                     <>
                         <InputGroup>
-                            我来说两句
-                            <Field is="textarea" name="detail" value={detail} />
+                            {t('saySomething')}
+                            <FormControl
+                                as="textarea"
+                                name="detail"
+                                value={detail}
+                            />
                         </InputGroup>
                         <Button className="mt-3" type="submit" color="primary">
-                            提交
+                            {t('submit')}
                         </Button>
                     </>
                 )}

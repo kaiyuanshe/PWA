@@ -1,17 +1,15 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "es6",
+        "module": "ES2020",
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "allowJs": true,
+        "useDefineForClassFields": true,
         "sourceMap": true,
-        "jsx": "react",
-        "jsxFactory": "createCell",
-        "jsxFragmentFactory": "Fragment",
+        "jsx": "react-jsx",
+        "jsxImportSource": "dom-renderer",
         "lib": ["ES2020", "DOM"],
-        "rootDir": "src"
+        "skipLibCheck": true
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "*.ts"]
 }

@@ -1,16 +1,16 @@
-import 'regenerator-runtime/runtime';
 import { auto } from 'browser-unhandled-rejection';
-import { APIError } from 'mobx-strapi';
-import { serviceWorkerUpdate } from 'web-utility';
-import { documentReady, render, createCell } from 'web-cell';
+import { DOMRenderer } from 'dom-renderer';
+import { HTTPError } from 'koajax';
+import { documentReady, serviceWorkerUpdate } from 'web-utility';
 
-import { PageFrame } from './page';
 import { session } from './model';
+import { PageFrame } from './page';
 
 auto();
 
 self.addEventListener('unhandledrejection', event => {
-    const { message, body } = event.reason as APIError;
+    const { message, response } = event.reason as HTTPError;
+    const { body } = response || {};
 
     if (!message) return;
 
@@ -48,12 +48,12 @@ serviceWorker?.addEventListener('controllerchange', () =>
 documentReady.then(async () => {
     const token = new URLSearchParams(self.location.search).get('access_token');
 
-    render(<PageFrame />);
+    new DOMRenderer().render(<PageFrame />);
 
     if (!token) return session.getProfile();
 
-    const { name, avatar } = await session.signIn(token);
+    const { username, avatar } = await session.signInOauth(token);
 
     history.replaceState(null, document.title, '/');
-    self.location.replace(!name || !avatar ? '#profile' : '');
+    self.location.replace(!username || !avatar ? '#profile' : '');
 });
